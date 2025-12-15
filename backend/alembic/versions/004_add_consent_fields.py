@@ -1,0 +1,41 @@
+"""Add GDPR consent fields to users table
+
+Revision ID: 004_add_consent_fields
+Revises: 003_float_grada_points
+Create Date: 2025-12-15 08:16:00
+
+"""
+from alembic import op
+import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
+
+# revision identifiers, used by Alembic.
+revision = '004_add_consent_fields'
+down_revision = '003_float_grada_points'
+branch_labels = None
+depends_on = None
+
+
+def upgrade() -> None:
+    """Add GDPR consent tracking fields to users table."""
+    # Add acepta_privacidad column
+    op.add_column('users', sa.Column('acepta_privacidad', sa.Boolean(), 
+                                      nullable=False, server_default='false'))
+    
+    # Add fecha_consentimiento column
+    op.add_column('users', sa.Column('fecha_consentimiento', 
+                                      sa.DateTime(timezone=True), nullable=True))
+    
+    # Add ip_consentimiento column
+    op.add_column('users', sa.Column('ip_consentimiento', sa.String(length=45), 
+                                      nullable=True))
+    
+    # For existing users, set acepta_privacidad to False (they will need to re-accept)
+    # This is intentional for GDPR compliance
+
+
+def downgrade() -> None:
+    """Remove GDPR consent tracking fields from users table."""
+    op.drop_column('users', 'ip_consentimiento')
+    op.drop_column('users', 'fecha_consentimiento')
+    op.drop_column('users', 'acepta_privacidad')

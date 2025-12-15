@@ -1,0 +1,254 @@
+"""
+API endpoints for Jornadas.
+"""
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from typing import List
+
+from app.database import get_db
+from app.models import Jornada, Liga, User, Partido
+from app.schemas import JornadaCreate, JornadaUpdate, JornadaResponse, JornadaWithStats
+from app.api.deps import get_current_user
+
+router = APIRouter()
+
+@router.get("/", response_model=List[JornadaWithStats])
+async def list_jornadas_by_liga(
+    liga_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Listar todas las jornadas de una liga.
+    """
+    # Verificar liga
+    liga = await db.get(Liga, liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Liga no encontrada"
+        )
+    
+    # Obtener jornadas
+    result = await db.execute(
+        select(Jornada).where(Jornada.liga_id == liga_id).order_by(Jornada.numero, Jornada.created_at)
+    )
+    jornadas = result.scalars().all()
+    
+    # Añadir stats (total partidos)
+    jornadas_with_stats = []
+    for jornada in jornadas:
+        result_partidos = await db.execute(
+            select(Partido).where(Partido.jornada_id == jornada.id)
+        )
+        total_partidos = len(result_partidos.scalars().all())
+        
+        jornada_dict = {
+            "id": jornada.id,
+            "nombre": jornada.nombre,
+            "fecha_inicio": jornada.fecha_inicio,
+            "fecha_fin": jornada.fecha_fin,
+            "numero": jornada.numero,
+            "liga_id": jornada.liga_id,
+            "created_at": jornada.created_at,
+            "total_partidos": total_partidos
+        }
+        jornadas_with_stats.append(jornada_dict)
+        
+    return jornadas_with_stats
+
+@router.post("/", response_model=JornadaResponse, status_code=status.HTTP_201_CREATED)
+async def create_jornada(
+    jornada_data: JornadaCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Crear una nueva jornada.
+    """
+    # Verificar liga
+    liga = await db.get(Liga, jornada_data.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Liga no encontrada"
+        )
+    
+    nueva_jornada = Jornada(
+        nombre=jornada_data.nombre,
+        fecha_inicio=jornada_data.fecha_inicio,
+        fecha_fin=jornada_data.fecha_fin,
+        numero=jornada_data.numero,
+        liga_id=jornada_data.liga_id
+    )
+    
+    db.add(nueva_jornada)
+    await db.commit()
+    await db.refresh(nueva_jornada)
+    
+    return nueva_jornada
+
+@router.get("/{jornada_id}", response_model=JornadaResponse)
+async def get_jornada(
+    jornada_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Obtener una jornada específica.
+    """
+    jornada = await db.get(Jornada, jornada_id)
+    
+    if not jornada:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jornada no encontrada"
+        )
+    
+    # Verificar permisos via liga
+    liga = await db.get(Liga, jornada.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+    
+    return jornada
+
+@router.put("/{jornada_id}", response_model=JornadaResponse)
+async def update_jornada(
+    jornada_id: int,
+    jornada_data: JornadaUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Actualizar una jornada.
+    """
+    jornada = await db.get(Jornada, jornada_id)
+    
+    if not jornada:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jornada no encontrada"
+        )
+    
+    # Verificar permisos
+    liga = await db.get(Liga, jornada.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+    
+    # Actualizar campos
+    if jornada_data.nombre is not None:
+        jornada.nombre = jornada_data.nombre
+    if jornada_data.fecha_inicio is not None:
+        jornada.fecha_inicio = jornada_data.fecha_inicio
+    if jornada_data.fecha_fin is not None:
+        jornada.fecha_fin = jornada_data.fecha_fin
+    if jornada_data.numero is not None:
+        jornada.numero = jornada_data.numero
+    
+    await db.commit()
+    await db.refresh(jornada)
+    
+    return jornada
+
+@router.delete("/{jornada_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_jornada(
+    jornada_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Eliminar una jornada.
+    """
+    jornada = await db.get(Jornada, jornada_id)
+    
+    if not jornada:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jornada no encontrada"
+        )
+    
+    # Verificar permisos
+    liga = await db.get(Liga, jornada.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+    
+    await db.delete(jornada)
+    await db.commit()
+
+
+@router.post("/{jornada_id}/generar-calendario")
+async def generar_calendario(
+    jornada_id: int,
+    tipo_deporte_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Generar partidos automáticamente para una jornada usando round-robin.
+    
+    Asigna 5 equipos diferentes a cada partido:
+    - Equipo Local
+    - Equipo Visitante  
+    - Equipo Árbitro
+    - Equipo Grada Local
+    - Equipo Grada Visitante
+    
+    Requiere mínimo 5 equipos en la liga.
+    """
+    from app.services.calendar_generator import generar_calendario_jornada
+    
+    # Get jornada
+    jornada = await db.get(Jornada, jornada_id)
+    
+    if not jornada:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jornada no encontrada"
+        )
+    
+    # Verify liga ownership
+    liga = await db.get(Liga, jornada.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos para esta liga"
+        )
+    
+    # Generate calendar
+    try:
+        partidos = await generar_calendario_jornada(
+            db=db,
+            jornada_id=jornada_id,
+            liga_id=jornada.liga_id,
+            tipo_deporte_id=tipo_deporte_id
+        )
+        
+        await db.commit()
+        
+        return {
+            "message": f"Calendario generado exitosamente",
+            "jornada_id": jornada_id,
+            "partidos_creados": len(partidos),
+            "equipos_por_partido": 5
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al generar calendario: {str(e)}"
+        )

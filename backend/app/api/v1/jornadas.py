@@ -3,7 +3,7 @@ API endpoints for Jornadas.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from typing import List
 
 from app.database import get_db
@@ -74,12 +74,19 @@ async def create_jornada(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Liga no encontrada"
         )
+
+    numero = jornada_data.numero
+    if numero is None:
+        max_numero = await db.scalar(
+            select(func.max(Jornada.numero)).where(Jornada.liga_id == jornada_data.liga_id)
+        )
+        numero = (max_numero or 0) + 1
     
     nueva_jornada = Jornada(
         nombre=jornada_data.nombre,
         fecha_inicio=jornada_data.fecha_inicio,
         fecha_fin=jornada_data.fecha_fin,
-        numero=jornada_data.numero,
+        numero=numero,
         liga_id=jornada_data.liga_id
     )
     
@@ -194,18 +201,20 @@ async def generar_calendario(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Generar partidos automáticamente para una jornada usando round-robin.
+    Generar partidos automáticamente para una jornada.
     
-    Asigna 5 equipos diferentes a cada partido:
+    El algoritmo utilizado depende del modo de competición de la liga:
+    - Liga multi-deporte: Genera TODOS los partidos posibles (todas las combinaciones)
+    - Liga de un solo deporte: Usa Round-Robin tradicional (Berger)
+    
+    Asigna 5 equipos diferentes a cada partido cuando hay suficientes:
     - Equipo Local
     - Equipo Visitante  
     - Equipo Árbitro
     - Equipo Grada Local
     - Equipo Grada Visitante
-    
-    Requiere mínimo 5 equipos en la liga.
     """
-    from app.services.calendar_generator import generar_calendario_jornada
+    from app.services.calendar_generator import generar_calendario_jornada, generar_calendario_all_vs_all
     
     # Get jornada
     jornada = await db.get(Jornada, jornada_id)
@@ -223,20 +232,41 @@ async def generar_calendario(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No tienes permisos para esta liga"
         )
-    
-    # Generate calendar
-    try:
-        partidos = await generar_calendario_jornada(
-            db=db,
-            jornada_id=jornada_id,
-            liga_id=jornada.liga_id,
-            tipo_deporte_id=tipo_deporte_id
+
+    # Ensure jornada.numero is set (required for Round-Robin algorithm)
+    if jornada.numero is None:
+        max_numero = await db.scalar(
+            select(func.max(Jornada.numero)).where(Jornada.liga_id == jornada.liga_id)
         )
+        jornada.numero = (max_numero or 0) + 1
+        await db.flush()
+    
+    # Generate calendar based on league mode
+    try:
+        if liga.modo_competicion == 'multi_deporte':
+            # All-vs-all mode: generate all possible combinations
+            partidos = await generar_calendario_all_vs_all(
+                db=db,
+                jornada_id=jornada_id,
+                liga_id=jornada.liga_id,
+                tipo_deporte_id=tipo_deporte_id
+            )
+            modo_usado = "Todas las combinaciones (multi-deporte)"
+        else:
+            # Traditional Round-Robin mode
+            partidos = await generar_calendario_jornada(
+                db=db,
+                jornada_id=jornada_id,
+                liga_id=jornada.liga_id,
+                tipo_deporte_id=tipo_deporte_id
+            )
+            modo_usado = "Round-Robin tradicional (único deporte)"
         
         await db.commit()
         
         return {
             "message": f"Calendario generado exitosamente",
+            "modo": modo_usado,
             "jornada_id": jornada_id,
             "partidos_creados": len(partidos),
             "equipos_por_partido": 5
@@ -252,3 +282,4 @@ async def generar_calendario(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al generar calendario: {str(e)}"
         )
+

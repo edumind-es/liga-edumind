@@ -4,6 +4,7 @@ export interface Liga {
     descripcion?: string;
     temporada?: string;
     activa: boolean;
+    modo_competicion: 'unico_deporte' | 'multi_deporte';
     usuario_id: number;
     created_at: string;
     updated_at?: string;
@@ -24,6 +25,7 @@ export interface CreateLigaData {
     nombre: string;
     descripcion?: string;
     temporada?: string;
+    modo_competicion?: 'unico_deporte' | 'multi_deporte';
 }
 
 export interface UpdateLigaData {
@@ -31,6 +33,7 @@ export interface UpdateLigaData {
     descripcion?: string;
     temporada?: string;
     activa?: boolean;
+    modo_competicion?: 'unico_deporte' | 'multi_deporte';
     public_pin?: string;
 }
 
@@ -94,6 +97,10 @@ export interface TipoDeporte {
     nombre: string;
     codigo: string;
     tipo_marcador: string;
+    permite_empate?: boolean;
+    icono?: string;
+    config?: Record<string, any>;
+    descripcion?: string;
 }
 
 export interface PartidoCreate {

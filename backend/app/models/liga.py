@@ -15,6 +15,7 @@ class Liga(Base):
     descripcion = Column(Text, nullable=True)
     temporada = Column(String(20), nullable=True)  # "2024-2025"
     activa = Column(Boolean, default=True, nullable=False)
+    modo_competicion = Column(String(20), nullable=False, default='unico_deporte')  # 'unico_deporte' | 'multi_deporte'
     public_pin = Column(String(6), nullable=True)  # PIN de 6 dígitos para acceso público
     
     # Usuario propietario

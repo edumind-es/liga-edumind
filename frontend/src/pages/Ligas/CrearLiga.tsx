@@ -18,7 +18,8 @@ export default function CrearLiga() {
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
-        temporada: ''
+        temporada: '',
+        modo_competicion: 'unico_deporte' as 'unico_deporte' | 'multi_deporte'
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +97,47 @@ export default function CrearLiga() {
                                 value={formData.temporada}
                                 onChange={(e) => setFormData({ ...formData, temporada: e.target.value })}
                             />
+                        </div>
+
+                        <div className="space-y-3">
+                            <Label className="text-ink">Modo de Competición</Label>
+                            <div className="space-y-3">
+                                <label className="flex items-start gap-3 p-4 rounded-lg border border-paper/20 hover:border-mint/40 cursor-pointer transition-all group">
+                                    <input
+                                        type="radio"
+                                        name="modo_competicion"
+                                        value="unico_deporte"
+                                        checked={formData.modo_competicion === 'unico_deporte'}
+                                        onChange={(e) => setFormData({ ...formData, modo_competicion: e.target.value as 'unico_deporte' | 'multi_deporte' })}
+                                        className="mt-1 text-mint focus:ring-mint"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-ink group-hover:text-mint transition-colors">Liga de un solo deporte (Round Robin)</div>
+                                        <p className="text-sm text-sub mt-1">
+                                            Sistema tradicional. Cada equipo juega contra todos los demás una vez por ronda.
+                                            Con 6 equipos: 3 partidos por jornada.
+                                        </p>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-start gap-3 p-4 rounded-lg border border-paper/20 hover:border-sky/40 cursor-pointer transition-all group">
+                                    <input
+                                        type="radio"
+                                        name="modo_competicion"
+                                        value="multi_deporte"
+                                        checked={formData.modo_competicion === 'multi_deporte'}
+                                        onChange={(e) => setFormData({ ...formData, modo_competicion: e.target.value as 'unico_deporte' | 'multi_deporte' })}
+                                        className="mt-1 text-sky focus:ring-sky"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-ink group-hover:text-sky transition-colors">Liga multi-deporte (Todas las combinaciones)</div>
+                                        <p className="text-sm text-sub mt-1">
+                                            Ideal para jornadas por deporte. Genera TODOS los enfrentamientos posibles.
+                                            Con 5 equipos: 10 partidos por jornada.
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
                         <div className="space-y-2">

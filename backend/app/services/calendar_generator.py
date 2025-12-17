@@ -58,6 +58,125 @@ def _select_support_roles(
     return arbitro, tutor_grada_local, tutor_grada_visitante
 
 
+async def generar_calendario_all_vs_all(
+    db: AsyncSession,
+    jornada_id: int,
+    liga_id: int,
+    tipo_deporte_id: int
+) -> List[Partido]:
+    """
+    Generate ALL possible matches for a jornada (all-vs-all / all combinations).
+    For N teams, generates C(N,2) = N*(N-1)/2 matches.
+    
+    Used for multi-sport leagues where each jornada plays all possible combinations.
+    
+    Args:
+        db: Database session
+        jornada_id: ID of the jornada
+        liga_id: ID of the league
+        tipo_deporte_id: ID of the sport type
+        
+    Returns:
+        List of created Partido objects
+        
+    Raises:
+        ValueError: If less than 2 teams in league
+    """
+    # Get all equipos in liga (sorted alphabetically for deterministic ordering)
+    result = await db.execute(
+        select(Equipo)
+        .where(Equipo.liga_id == liga_id)
+        .order_by(Equipo.nombre)
+    )
+    equipos = list(result.scalars().all())
+    
+    if len(equipos) < 2:
+        raise ValueError("Se requieren mínimo 2 equipos para generar calendario")
+    
+    # Initialize role usage tracking
+    uso_roles = _initialize_role_usage(equipos)
+    
+    # Get all existing partidos to populate role usage stats (excluding current jornada)
+    result = await db.execute(
+        select(Partido).where(Partido.liga_id == liga_id)
+    )
+    partidos_existentes = list(result.scalars().all())
+    
+    for p in partidos_existentes:
+        if p.jornada_id == jornada_id:
+            continue
+        
+        if p.equipo_local_id in uso_roles:
+            uso_roles[p.equipo_local_id]["local"] += 1
+        if p.equipo_visitante_id in uso_roles:
+            uso_roles[p.equipo_visitante_id]["visitante"] += 1
+        if p.arbitro_id and p.arbitro_id in uso_roles:
+            uso_roles[p.arbitro_id]["arbitro"] += 1
+        if p.tutor_grada_local_id and p.tutor_grada_local_id in uso_roles:
+            uso_roles[p.tutor_grada_local_id]["grada"] += 1
+        if p.tutor_grada_visitante_id and p.tutor_grada_visitante_id in uso_roles:
+            uso_roles[p.tutor_grada_visitante_id]["grada"] += 1
+    
+    # Delete existing partidos for this jornada
+    await db.execute(
+        delete(Partido).where(Partido.jornada_id == jornada_id)
+    )
+    await db.flush()
+    
+    partidos_creados = []
+    
+    # Generate all possible combinations of teams (all-vs-all)
+    for equipo_a, equipo_b in combinations(equipos, 2):
+        # Determine Local/Visitor based on historical balance
+        if uso_roles[equipo_a.id]["local"] <= uso_roles[equipo_b.id]["local"]:
+            equipo_local, equipo_visitante = equipo_a, equipo_b
+        else:
+            equipo_local, equipo_visitante = equipo_b, equipo_a
+        
+        # Select support roles
+        en_juego = {equipo_local.id, equipo_visitante.id}
+        arbitro, grada_local, grada_visitante = _select_support_roles(
+            equipos, uso_roles, en_juego
+        )
+        
+        # Generate random PIN
+        pin = f"{random.randint(0, 999999):06d}"
+        
+        # Create partido
+        partido = Partido(
+            liga_id=liga_id,
+            jornada_id=jornada_id,
+            tipo_deporte_id=tipo_deporte_id,
+            equipo_local_id=equipo_local.id,
+            equipo_visitante_id=equipo_visitante.id,
+            arbitro_id=arbitro.id if arbitro else None,
+            tutor_grada_local_id=grada_local.id if grada_local else None,
+            tutor_grada_visitante_id=grada_visitante.id if grada_visitante else None,
+            fecha_hora=datetime.now(),
+            pin=pin,
+            marcador={}
+        )
+        
+        db.add(partido)
+        partidos_creados.append(partido)
+        
+        # Update usage for next iteration
+        uso_roles[equipo_local.id]["local"] += 1
+        uso_roles[equipo_visitante.id]["visitante"] += 1
+        if arbitro:
+            uso_roles[arbitro.id]["arbitro"] += 1
+        if grada_local:
+            uso_roles[grada_local.id]["grada"] += 1
+        if grada_visitante:
+            uso_roles[grada_visitante.id]["grada"] += 1
+    
+    # Commit all changes
+    await db.flush()
+    
+    return partidos_creados
+
+
+
 
 async def generar_calendario_jornada(
     db: AsyncSession,

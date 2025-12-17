@@ -10,6 +10,7 @@ class LigaBase(BaseModel):
     descripcion: str | None = None
     temporada: str | None = Field(None, max_length=20, description="Ej: 2024-2025")
     activa: bool = True
+    modo_competicion: str = Field(default='unico_deporte', description="Modo de competición: 'unico_deporte' o 'multi_deporte'")
 
 # Create schema
 class LigaCreate(LigaBase):
@@ -21,6 +22,7 @@ class LigaUpdate(BaseModel):
     descripcion: str | None = None
     temporada: str | None = None
     activa: bool | None = None
+    modo_competicion: str | None = Field(None, description="Modo de competición: 'unico_deporte' o 'multi_deporte'")
     public_pin: str | None = Field(
         None,
         description="PIN de 6 caracteres para acceso público. Usa null/vacío para deshabilitar.",
@@ -76,6 +78,7 @@ class PublicLogin(BaseModel):
 class LigaResponse(LigaBase):
     id: int
     usuario_id: int
+    modo_competicion: str
     public_pin: str | None = None
     created_at: datetime
     updated_at: datetime | None

@@ -109,6 +109,11 @@ export default function Login() {
                                         </button>
 
                                         <div className="text-center mt-5 pt-4 border-top">
+                                            <div className="mb-3">
+                                                <Link to="/express" className="btn btn-outline-primary w-100">
+                                                    ⚡ Marcador Express (sin registro)
+                                                </Link>
+                                            </div>
                                             <p className="mb-0 text-sub">
                                                 ¿No tienes cuenta?{' '}
                                                 <Link to="/register" className="link-primary fw-semibold">

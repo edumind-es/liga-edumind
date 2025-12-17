@@ -22,6 +22,10 @@ import DashboardLayout from './layouts/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
 import PublicLogin from './pages/Public/PublicLogin';
 import PublicDashboard from './pages/Public/PublicDashboard';
+import ExpressLanding from './pages/Express/ExpressLanding';
+import ExpressWizard from './pages/Express/ExpressWizard';
+import ExpressMatch from './pages/Express/ExpressMatch';
+import ExpressActa from './pages/Express/ExpressActa';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -48,6 +52,14 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Express Scoreboard - Public Routes */}
+          <Route path="/express">
+            <Route index element={<ExpressLanding />} />
+            <Route path="nuevo" element={<ExpressWizard />} />
+            <Route path="partido/:matchId" element={<ExpressMatch />} />
+            <Route path="acta/:matchId" element={<ExpressActa />} />
+          </Route>
 
           {/* Protected Routes */}
           <Route

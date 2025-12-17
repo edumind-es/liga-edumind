@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { jornadasApi } from '@/api/jornadas';
 import { ligasApi } from '@/api/ligas';
 import { Liga } from '@/types/liga';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/utils/apiUtils';
 
 export default function CrearJornada() {
     const { ligaId } = useParams<{ ligaId: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [liga, setLiga] = useState<Liga | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -32,15 +36,21 @@ export default function CrearJornada() {
         setError(null);
 
         try {
+            const ligaNumericId = parseInt(ligaId);
             await jornadasApi.create({
                 ...formData,
                 fecha_inicio: formData.fecha_inicio ? new Date(formData.fecha_inicio).toISOString() : undefined,
                 fecha_fin: formData.fecha_fin ? new Date(formData.fecha_fin).toISOString() : undefined,
-                liga_id: parseInt(ligaId)
+                liga_id: ligaNumericId
             });
+            await queryClient.invalidateQueries({ queryKey: ['jornadas', { ligaId: ligaNumericId }] });
+            await queryClient.invalidateQueries({ queryKey: ['ligas', ligaNumericId] });
+            toast.success('Jornada creada correctamente');
             navigate(`/ligas/${ligaId}/jornadas`);
-        } catch {
-            setError('Error al crear la jornada');
+        } catch (err) {
+            const message = getErrorMessage(err);
+            setError(message);
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }

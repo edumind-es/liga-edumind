@@ -111,6 +111,34 @@ export default function EDUmindFooter({
                 </p>
             </div>
 
+            <div className="footer-legal" style={{
+                marginTop: '1rem',
+                textAlign: 'center',
+                fontSize: '0.875rem',
+                color: '#6b7280'
+            }}>
+                <a href="https://edumind.es/es/privacidad" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s'
+                }}>Privacidad</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://edumind.es/es/cookies" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none'
+                }}>Cookies</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://edumind.es/es/terminos" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none'
+                }}>Términos</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://edumind.es/es/arco" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none'
+                }}>ARCO</a>
+            </div>
+
             <div className="footer-meta">
                 {showVersion && (
                     <span className="badge version-badge">{versionBadge}</span>

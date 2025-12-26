@@ -96,9 +96,31 @@ class Partido(Base):
             local = self.marcador.get("puntos_local", 0)
             visitante = self.marcador.get("puntos_visitante", 0)
         elif tipo == "tries":
-            local = self.marcador.get("puntos_local", 0)
-            visitante = self.marcador.get("puntos_visitante", 0)
+            # Sumar tries + conversiones para total
+            local = (self.marcador.get("tries_local", 0) * 5) + (self.marcador.get("conversiones_local", 0) * 2)
+            visitante = (self.marcador.get("tries_visitante", 0) * 5) + (self.marcador.get("conversiones_visitante", 0) * 2)
+        elif tipo == "carreras":
+            local = self.marcador.get("carreras_local", 0)
+            visitante = self.marcador.get("carreras_visitante", 0)
+        elif tipo == "towertouchball":
+            # Sumar torres (3 puntos) + conos (1 punto cada uno)
+            torres_local = self.marcador.get("torres_local", 0)
+            torres_visitante = self.marcador.get("torres_visitante", 0)
+            
+            # Contar conos derribados (True = 1 punto)
+            conos_local = sum([
+                1 for i in range(1, 7) 
+                if self.marcador.get(f"cono_local_{i}", False)
+            ])
+            conos_visitante = sum([
+                1 for i in range(1, 7) 
+                if self.marcador.get(f"cono_visitante_{i}", False)
+            ])
+            
+            local = (torres_local * 3) + conos_local
+            visitante = (torres_visitante * 3) + conos_visitante
         else:
+            # Fallback genérico
             local = self.marcador.get("local", 0)
             visitante = self.marcador.get("visitante", 0)
         

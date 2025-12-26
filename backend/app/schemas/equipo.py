@@ -23,6 +23,7 @@ class EquipoResponse(EquipoBase):
     id: int
     liga_id: int
     logo_filename: str | None
+    logo_url: str | None = None  # URL to optimized team logo
     acceso_token: str | None
     puntos_totales: int
     ganados: int

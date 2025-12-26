@@ -178,8 +178,11 @@ async def upload_logo(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Subir logo para un equipo.
+    Upload and optimize team logo.
+    Automatically resizes to 200x200px and converts to WebP format.
     """
+    from app.services.image_service import ImageService
+    
     equipo = await db.get(Equipo, equipo_id)
     
     if not equipo:
@@ -196,35 +199,53 @@ async def upload_logo(
             detail="No tienes permisos"
         )
     
-    # Validar tipo de archivo
-    if not file.content_type or not file.content_type.startswith('image/'):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Solo se permiten archivos de imagen"
-        )
+    # Delete old logo if exists
+    if equipo.logo_url:
+        ImageService.delete_team_logo(equipo.logo_url)
     
-    # Generar nombre único
-    ext = file.filename.split('.')[-1] if '.' in file.filename else 'png'
-    filename = f"equipo_{equipo_id}_{secrets.token_hex(8)}.{ext}"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
+    # Process and save new logo
+    logo_url = await ImageService.save_team_logo(file, equipo_id)
     
-    # Guardar archivo
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    with open(filepath, 'wb') as f:
-        content = await file.read()
-        f.write(content)
-    
-    # Eliminar logo anterior si existe
-    if equipo.logo_filename:
-        old_path = os.path.join(settings.UPLOAD_DIR, equipo.logo_filename)
-        if os.path.exists(old_path):
-            os.remove(old_path)
-    
-    # Actualizar equipo
-    equipo.logo_filename = filename
+    # Update equipo
+    equipo.logo_url = logo_url
     await db.commit()
+    await db.refresh(equipo)
     
     return {
-        "logo_filename": filename,
-        "logo_url": f"/static/uploads/{filename}"
+        "logo_url": logo_url,
+        "message": "Logo actualizado exitosamente"
     }
+
+@router.delete("/{equipo_id}/logo", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_logo(
+    equipo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Delete team logo.
+    """
+    from app.services.image_service import ImageService
+    
+    equipo = await db.get(Equipo, equipo_id)
+    
+    if not equipo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Equipo no encontrado"
+        )
+    
+    # Verificar permisos
+    liga = await db.get(Liga, equipo.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+    
+    # Delete logo from disk
+    if equipo.logo_url:
+        ImageService.delete_team_logo(equipo.logo_url)
+        equipo.logo_url = None
+        await db.commit()
+

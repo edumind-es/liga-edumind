@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Upload, Image as ImageIcon, Edit2 } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Image as ImageIcon, Edit2, Trash2, X } from 'lucide-react';
 import { equiposApi } from '@/api/equipos';
 import { ligasApi } from '@/api/ligas';
 import { Liga, Equipo } from '@/types/liga';
@@ -56,10 +56,65 @@ export default function EditarEquipo() {
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setLogoFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast.error('Solo se permiten archivos de imagen');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('La imagen no puede superar 5MB');
+            return;
+        }
+
+        setLogoFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveLogo = async () => {
+        if (!equipoId) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL || '/api/v1'}/equipos/${equipoId}/logo`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Error al eliminar logo');
+            }
+
+            setPreviewUrl(null);
+            setLogoFile(null);
+            toast.success('Logo eliminado correctamente');
+        } catch {
+            toast.error('Error al eliminar el logo');
+        }
+    };
+
+    const handleCancelPreview = () => {
+        setLogoFile(null);
+        // Restore original logo if exists
+        if (equipo?.logo_filename) {
+            setPreviewUrl(getImageUrl(`/static/uploads/${equipo.logo_filename}`));
+        } else {
+            setPreviewUrl(null);
         }
     };
 
@@ -74,12 +129,28 @@ export default function EditarEquipo() {
                 ...formData
             });
 
-            // 2. Upload logo if selected
+            // 2. Upload logo if new file selected
             if (logoFile) {
-                await equiposApi.uploadLogo(parseInt(equipoId), logoFile);
+                try {
+                    const formData = new FormData();
+                    formData.append('file', logoFile);
+
+                    const token = localStorage.getItem('token');
+                    await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/equipos/${equipoId}/logo`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    toast.success('Equipo y logo actualizados correctamente');
+                } catch {
+                    toast.warning('Equipo actualizado, pero error al subir logo');
+                }
+            } else {
+                toast.success('Equipo actualizado correctamente');
             }
 
-            toast.success('Equipo actualizado correctamente');
             navigate(`/ligas/${ligaId}/equipos`);
         } catch {
             toast.error('Error al actualizar el equipo');
@@ -142,51 +213,81 @@ export default function EditarEquipo() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="logo" className="text-ink">Logo del equipo</Label>
-                            <div className="flex items-center gap-6 p-6 bg-lme-surface-soft/50 rounded-xl border border-lme-border border-dashed">
-                                <div className="shrink-0">
-                                    {previewUrl ? (
-                                        <div className="relative group">
-                                            <img
-                                                src={previewUrl}
-                                                alt="Logo preview"
-                                                className="h-24 w-24 rounded-full object-cover border-4 border-lme-surface shadow-glass"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                <Edit2 className="h-6 w-6 text-white" />
+                            <Label htmlFor="logo" className="text-ink">Logo del equipo (opcional)</Label>
+
+                            {previewUrl ? (
+                                <div className="space-y-3">
+                                    <div className="relative inline-block">
+                                        <img
+                                            src={previewUrl}
+                                            alt="Logo del equipo"
+                                            className="w-32 h-32 object-cover rounded-lg border-2 border-lme-border shadow-lg"
+                                        />
+                                        {logoFile && (
+                                            <button
+                                                type="button"
+                                                onClick={handleCancelPreview}
+                                                className="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full p-1 hover:bg-gray-600 transition-colors"
+                                                title="Cancelar cambio"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <label htmlFor="logo" className="cursor-pointer">
+                                            <div className="flex items-center gap-2 px-4 py-2 border border-lme-border rounded-lg hover:border-lme-primary hover:bg-lme-primary/5 transition-colors">
+                                                <Upload className="h-4 w-4 text-lme-muted" />
+                                                <span className="text-sm text-lme-muted">Cambiar logo</span>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="h-24 w-24 rounded-full bg-lme-surface-soft flex items-center justify-center text-sub border-2 border-dashed border-lme-border">
-                                            <ImageIcon className="h-8 w-8 opacity-50" />
-                                        </div>
+                                            <Input
+                                                type="file"
+                                                id="logo"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleFileChange}
+                                            />
+                                        </label>
+
+                                        {equipo?.logo_filename && !logoFile && (
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleRemoveLogo}
+                                                className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-1" />
+                                                Eliminar logo
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    {logoFile && (
+                                        <p className="text-xs text-green-600">
+                                            ✓ Nuevo logo seleccionado: {logoFile.name}
+                                        </p>
                                     )}
                                 </div>
-                                <div className="flex-1 space-y-3">
-                                    <div className="relative">
+                            ) : (
+                                <div className="flex items-center gap-3">
+                                    <label htmlFor="logo" className="cursor-pointer">
+                                        <div className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-lme-border rounded-lg hover:border-lme-primary hover:bg-lme-primary/5 transition-colors">
+                                            <Upload className="h-5 w-5 text-lme-muted" />
+                                            <span className="text-sm text-lme-muted">Seleccionar logo</span>
+                                        </div>
                                         <Input
-                                            id="logo"
                                             type="file"
+                                            id="logo"
                                             accept="image/*"
+                                            className="hidden"
                                             onChange={handleFileChange}
-                                            className="hidden" // Hide default input
                                         />
-                                        <Label
-                                            htmlFor="logo"
-                                            className="cursor-pointer inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-mint/10 text-mint hover:bg-mint/20 h-10 px-4 py-2 border border-mint/20"
-                                        >
-                                            <Upload className="h-4 w-4 mr-2" />
-                                            {logoFile ? 'Cambiar archivo' : 'Seleccionar archivo'}
-                                        </Label>
-                                        <span className="ml-3 text-sm text-sub">
-                                            {logoFile ? logoFile.name : 'Ningún archivo seleccionado'}
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-sub">
-                                        Formatos soportados: PNG, JPG, GIF (Max. 5MB)
-                                    </p>
+                                    </label>
+                                    <span className="text-xs text-lme-muted">JPG, PNG o WebP • Máx 5MB</span>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         <div className="flex justify-end gap-3 pt-6 border-t border-lme-border">

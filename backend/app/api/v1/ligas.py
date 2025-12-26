@@ -100,6 +100,7 @@ async def get_liga(
         "descripcion": liga.descripcion,
         "temporada": liga.temporada,
         "activa": liga.activa,
+        "modo_competicion": liga.modo_competicion,
         "usuario_id": liga.usuario_id,
         "public_pin": liga.public_pin,
         "created_at": liga.created_at,

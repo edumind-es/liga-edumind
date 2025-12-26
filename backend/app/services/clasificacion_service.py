@@ -141,11 +141,17 @@ class ClasificacionService:
         if not equipo:
             return
         
-        # Obtener partidos finalizados del equipo
+        # Obtener TODOS los partidos finalizados donde el equipo participó en CUALQUIER rol
         result = await db.execute(
             select(Partido).where(
                 Partido.finalizado == True,
-                (Partido.equipo_local_id == equipo_id) | (Partido.equipo_visitante_id == equipo_id)
+                (
+                    (Partido.equipo_local_id == equipo_id) |
+                    (Partido.equipo_visitante_id == equipo_id) |
+                    (Partido.arbitro_id == equipo_id) |
+                    (Partido.tutor_grada_local_id == equipo_id) |
+                    (Partido.tutor_grada_visitante_id == equipo_id)
+                )
             )
         )
         partidos = result.scalars().all()
@@ -159,8 +165,9 @@ class ClasificacionService:
         equipo.puntos_arbitro = 0
         equipo.puntos_grada = 0
         
-        # Acumular
+        # Acumular puntos de TODOS los roles
         for partido in partidos:
+            # ROL 1: Equipo Local
             if partido.equipo_local_id == equipo_id:
                 equipo.puntos_totales += partido.puntos_local
                 if partido.resultado == "V":
@@ -171,10 +178,8 @@ class ClasificacionService:
                     equipo.perdidos += 1
                 
                 equipo.puntos_juego_limpio += partido.puntos_juego_limpio_local
-                if partido.arbitro_id == equipo_id:
-                    equipo.puntos_arbitro += partido.puntos_arbitro
-                equipo.puntos_grada += partido.puntos_grada_local
             
+            # ROL 2: Equipo Visitante
             elif partido.equipo_visitante_id == equipo_id:
                 equipo.puntos_totales += partido.puntos_visitante
                 if partido.resultado == "D":
@@ -185,9 +190,18 @@ class ClasificacionService:
                     equipo.perdidos += 1
                 
                 equipo.puntos_juego_limpio += partido.puntos_juego_limpio_visitante
-                if partido.arbitro_id == equipo_id:
-                    equipo.puntos_arbitro += partido.puntos_arbitro
-                equipo.puntos_grada += partido.puntos_grada_visitante
+            
+            # ROL 3: Árbitro
+            if partido.arbitro_id == equipo_id:
+                equipo.puntos_arbitro += partido.puntos_arbitro or 0
+            
+            # ROL 4: Grada Local
+            if partido.tutor_grada_local_id == equipo_id:
+                equipo.puntos_grada += partido.puntos_grada_local or 0
+            
+            # ROL 5: Grada Visitante
+            if partido.tutor_grada_visitante_id == equipo_id:
+                equipo.puntos_grada += partido.puntos_grada_visitante or 0
         
         # Sumar puntos educativos al total
         equipo.puntos_totales += (

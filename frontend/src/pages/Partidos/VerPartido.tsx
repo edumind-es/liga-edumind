@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { partidosApi } from '../../api/partidos';
 import { PartidoDetailed, Marcador } from '../../types/liga';
 import { Trophy, Medal, User, FileText, Users } from 'lucide-react';
-import { Scoreboard } from '@/components/ui/Scoreboard';
+import ScoreboardDisplay from '../Express/scoreboard/ScoreboardDisplay';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
@@ -84,6 +84,20 @@ export default function VerPartido() {
         }
     };
 
+    const handleMarcadorUpdate = async (updates: Record<string, any>) => {
+        if (!partido) return;
+
+        const newMarcador = { ...marcador, ...updates };
+        setMarcador(newMarcador);
+
+        try {
+            await partidosApi.updateMarcador(partido.id, { marcador: newMarcador });
+        } catch (error) {
+            console.error('Error updating marcador:', error);
+            toast.error('Error al actualizar marcador');
+        }
+    };
+
     if (isLoading) return <div className="p-8 text-center">Cargando...</div>;
     if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
     if (!partido) return <div className="p-8 text-center">Partido no encontrado</div>;
@@ -105,7 +119,37 @@ export default function VerPartido() {
                 />
                 <Button
                     variant="outline"
-                    onClick={() => window.open(`${import.meta.env.VITE_API_URL || '/api/v1'}/partidos/${partido.id}/export/acta`, '_blank')}
+                    onClick={async () => {
+                        try {
+                            const token = localStorage.getItem('token');
+                            const response = await fetch(
+                                `${import.meta.env.VITE_API_URL || '/api/v1'}/partidos/${partido.id}/export/acta`,
+                                {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                }
+                            );
+
+                            if (!response.ok) {
+                                toast.error('Error al descargar acta');
+                                return;
+                            }
+
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `acta_partido_${partido.id}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                        } catch (error) {
+                            console.error('Error downloading PDF:', error);
+                            toast.error('Error al descargar acta');
+                        }
+                    }}
                     className="shadow-sm hover:shadow-md transition-all"
                 >
                     <FileText className="h-4 w-4 mr-2" />
@@ -113,19 +157,12 @@ export default function VerPartido() {
                 </Button>
             </div>
 
-            {/* Scoreboard Component */}
+            {/* Sport-Specific Scoreboard with Timer */}
             <div className="mb-8">
-                <Scoreboard
-                    equipoLocal={partido.equipo_local}
-                    equipoVisitante={partido.equipo_visitante}
+                <ScoreboardDisplay
+                    tipo={partido.tipo_deporte.tipo_marcador}
                     marcador={marcador}
-                    tipoDeporte={partido.tipo_deporte}
-                    isLive={true}
-                    onScoreChange={(newMarcador) => {
-                        setMarcador(newMarcador);
-                        partidosApi.updateMarcador(partido.id, { marcador: newMarcador }).catch(console.error);
-                    }}
-                    evaluacion={evaluacion}
+                    onUpdate={handleMarcadorUpdate}
                 />
             </div>
 

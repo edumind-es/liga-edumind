@@ -14,6 +14,7 @@ class Equipo(Base):
     nombre = Column(String(100), nullable=False)
     logo_filename = Column(String(255), nullable=True)
     color_principal = Column(String(7), nullable=True)  # Hex color (#FF5733)
+    logo_url = Column(String(255), nullable=True)  # URL to team logo image
     
     # Token de acceso público (para QR)
     acceso_token = Column(String(64), unique=True, nullable=True, index=True)

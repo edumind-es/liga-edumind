@@ -34,10 +34,14 @@ def _select_support_roles(
     """
     Select arbitro, tutor_grada_local, tutor_grada_visitante.
     Prioritize teams with lowest usage in those roles to ensure fairness.
+    
+    With 4 teams: Returns (arbitro, grada_local, None) - no visiting crowd.
+    With 5+ teams: Returns (arbitro, grada_local, grada_visitante).
     """
     disponibles = [e for e in equipos if e.id not in en_juego]
     
-    if len(disponibles) < 3:
+    # Need at least 1 team for referee
+    if len(disponibles) < 1:
         return None, None, None
     
     # Sort by arbitro usage (ascending) - pick the team that has been arbitro the least
@@ -47,12 +51,15 @@ def _select_support_roles(
     # Remove arbitro from available pool
     restantes = [e for e in disponibles if e.id != arbitro.id]
     
-    if len(restantes) < 2:
+    # If no teams left, only return referee
+    if len(restantes) < 1:
         return arbitro, None, None
     
     # Sort by grada usage - pick teams that have been in stands the least
     restantes.sort(key=lambda e: (uso_roles[e.id]["grada"], uso_roles[e.id]["arbitro"], e.id))
     tutor_grada_local = restantes[0]
+    
+    # Only assign visiting crowd if there are 2+ remaining teams (i.e., 5+ teams total)
     tutor_grada_visitante = restantes[1] if len(restantes) > 1 else None
     
     return arbitro, tutor_grada_local, tutor_grada_visitante
@@ -213,8 +220,8 @@ async def generar_calendario_jornada(
     )
     equipos = list(result.scalars().all())
     
-    if len(equipos) < 5:
-        raise ValueError("Se requieren mínimo 5 equipos para generar calendario automático")
+    if len(equipos) < 4:
+        raise ValueError("Se requieren mínimo 4 equipos para generar calendario automático")
     
     # Initialize role usage tracking from historical data
     uso_roles = _initialize_role_usage(equipos)

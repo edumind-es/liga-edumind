@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { TimerControls } from '@/components/TimerControls';
+import { WhistleButton } from '@/components/WhistleButton';
 
 interface ScoreboardDisplayProps {
     tipo: string;
@@ -66,10 +67,13 @@ function GolesScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
     return (
         <div className="space-y-4">
-            <TimerControls
-                tiempoRestante={marcador.tiempo_restante || 45 * 60}
-                onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
-            />
+            <div className="flex items-center justify-between gap-4">
+                <TimerControls
+                    tiempoRestante={marcador.tiempo_restante || 45 * 60}
+                    onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
+                />
+                <WhistleButton size="lg" />
+            </div>
             <div className="grid grid-cols-2 gap-8">
                 <ScoreColumn
                     label="Local"
@@ -97,10 +101,13 @@ function PuntosScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
     return (
         <div className="space-y-4">
-            <TimerControls
-                tiempoRestante={marcador.tiempo_restante || 40 * 60}
-                onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
-            />
+            <div className="flex items-center justify-between gap-4">
+                <TimerControls
+                    tiempoRestante={marcador.tiempo_restante || 40 * 60}
+                    onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
+                />
+                <WhistleButton size="lg" />
+            </div>
             <div className="grid grid-cols-2 gap-8">
                 <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold text-ink">Local</h3>
@@ -137,10 +144,13 @@ function SetsScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
     return (
         <div className="space-y-6">
-            <TimerControls
-                tiempoRestante={marcador.tiempo_restante || 25 * 60}
-                onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
-            />
+            <div className="flex items-center justify-between gap-4">
+                <TimerControls
+                    tiempoRestante={marcador.tiempo_restante || 25 * 60}
+                    onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
+                />
+                <WhistleButton size="lg" />
+            </div>
             <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
                     <div className="text-sm text-sub mb-1">Sets Local</div>
@@ -187,10 +197,13 @@ function TriesScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
     return (
         <div className="space-y-4">
-            <TimerControls
-                tiempoRestante={marcador.tiempo_restante || 40 * 60}
-                onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
-            />
+            <div className="flex items-center justify-between gap-4">
+                <TimerControls
+                    tiempoRestante={marcador.tiempo_restante || 40 * 60}
+                    onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
+                />
+                <WhistleButton size="lg" />
+            </div>
             <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-4">
                     <h3 className="text-center text-lg font-semibold text-ink">Local</h3>
@@ -252,10 +265,13 @@ function CarrerasScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
     return (
         <div className="space-y-4">
-            <TimerControls
-                tiempoRestante={marcador.tiempo_restante || 90 * 60}
-                onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
-            />
+            <div className="flex items-center justify-between gap-4">
+                <TimerControls
+                    tiempoRestante={marcador.tiempo_restante || 90 * 60}
+                    onUpdate={(newTime) => onUpdate({ tiempo_restante: newTime })}
+                />
+                <WhistleButton size="lg" />
+            </div>
             <div className="grid grid-cols-2 gap-8">
                 <ScoreColumn
                     label="Local"

@@ -1,115 +1,120 @@
-# 🏆 Liga EDUmind - Manual de Usuario y Guía de Inicio
+# 🏆 Liga EDUmind
 
-¡Bienvenido a **Liga EDUmind**!
+Sistema de gestión de ligas deportivas escolares desarrollado por [EDUmind](https://edumind.es).
 
-Esta aplicación es una herramienta digital diseñada para profesores de Educación Física que quieren gestionar ligas deportivas escolares con un enfoque especial: **los valores importan tanto como los goles**.
+![Liga EDUmind](https://liga.edumind.es/liga_logo_oficial.png)
 
-A diferencia de una liga normal, aquí utilizamos el modelo **MRPS** (Modelo de Responsabilidad Personal y Social), donde los equipos suman puntos no solo por ganar partidos, sino por su comportamiento, respeto y juego limpio.
+## ✨ Características
+
+- 📋 **Gestión de ligas**: Crea y administra múltiples ligas deportivas
+- 👥 **Equipos y jugadores**: Registro completo de equipos con logos y jugadores
+- 📅 **Calendarios automáticos**: Generación automática de jornadas y partidos
+- 📊 **Clasificaciones en tiempo real**: Tablas de posiciones actualizadas automáticamente
+- ⚽ **Modo Express**: Partidos rápidos sin necesidad de crear toda una liga
+- 📺 **Scoreboard en vivo**: Marcador en tiempo real para mostrar en pantallas
+- 📄 **Actas de partido**: Generación automática de actas con incidencias
+- 🔔 **Notificaciones**: Sistema de avisos para partidos y eventos
+
+## 🛠️ Tecnologías
+
+### Backend
+- **Python 3.11+** con FastAPI
+- **PostgreSQL** como base de datos
+- **SQLAlchemy** ORM
+- **Alembic** para migraciones
+
+### Frontend
+- **React 18** con TypeScript
+- **Vite** como bundler
+- **React Router** para navegación
+- **CSS Modules** para estilos
+
+## 🚀 Instalación
+
+### Requisitos previos
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL 14+
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# Ejecutar migraciones
+alembic upgrade head
+
+# Iniciar servidor
+uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+El frontend estará disponible en `http://localhost:5173`
+
+## 📁 Estructura del Proyecto
+
+```
+liga_edumind/
+├── backend/
+│   ├── app/
+│   │   ├── api/          # Endpoints de la API
+│   │   ├── models/       # Modelos SQLAlchemy
+│   │   ├── schemas/      # Schemas Pydantic
+│   │   ├── services/     # Lógica de negocio
+│   │   └── main.py       # Punto de entrada
+│   ├── alembic/          # Migraciones
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # Componentes reutilizables
+│   │   ├── pages/        # Páginas de la aplicación
+│   │   ├── services/     # Llamadas a la API
+│   │   └── App.tsx       # Componente principal
+│   └── package.json
+└── README.md
+```
+
+## 🎯 Demo
+
+Puedes ver el sistema en funcionamiento en: **[liga.edumind.es](https://liga.edumind.es)**
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor, lee las guías de contribución antes de enviar un Pull Request.
+
+1. Fork el proyecto
+2. Crea tu rama de feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📧 Contacto
+
+**EDUmind** - [hola@edumind.es](mailto:hola@edumind.es)
+
+- Web: [edumind.es](https://edumind.es)
+- Twitter: [@edumind_es](https://twitter.com/edumind_es)
 
 ---
 
-## 📘 ¿Qué es esta aplicación?
-
-Imagina que es una libreta digital inteligente que te ayuda a:
-1.  **Organizar tus clases**: Crear ligas para tus grupos (ej. "3º ESO A - Fútbol Sala").
-2.  **Gestionar equipos**: Registrar a tus alumnos y asignarlos a equipos.
-3.  **Crear calendarios**: Generar automáticamente todos los partidos de la temporada ("todos contra todos").
-4.  **Arbitrar partidos**: Usar un marcador digital en clase que permite sumar goles y evaluar el comportamiento en tiempo real.
-5.  **Ver clasificaciones**: La tabla se actualiza sola, sumando los "Puntos de Juego" y los "Puntos de Valores".
-
----
-
-## 🧩 Partes de la Aplicación (Glosario Sencillo)
-
-Para que te muevas con soltura, aquí explicamos las secciones principales:
-
-### 1. El Panel de Control (Dashboard)
-Es tu pantalla de inicio. Aquí verás todas tus ligas activas de un vistazo.
--   **Botón "Crear nueva liga"**: El punto de partida para empezar una nueva competición.
--   **Tarjetas de Liga**: Cada recuadro representa una clase o torneo. Pincha en "Ver Liga" para entrar a gestionarla.
-
-### 2. Gestión de Liga
-Una vez dentro de una liga, tienes varias pestañas:
--   **Clasificación**: La tabla de posiciones. ¡Ojo! Aquí verás columnas especiales de "Juego Limpio".
--   **Equipos**: Donde das de alta a los grupos de alumnos. Puedes ponerles nombre, escudo y color.
--   **Jornadas**: El calendario. Aquí ves qué partidos tocan hoy.
--   **Partidos**: El listado completo de encuentros.
-
-### 3. El Marcador Digital (Scoreboard)
-Esta es la "joya de la corona" para usar en clase con una tablet o portátil.
--   **Modo Árbitro**: Te permite sumar goles y, lo más importante, dar puntos positivos (👍) o negativos (👎) según el comportamiento (respeto al árbitro, ayuda al compañero, etc.).
--   **Sonidos**: ¡El marcador pita y celebra los goles!
-
----
-
-## 🚀 Guía de Puesta en Marcha (Paso a Paso)
-
-Si te han pasado este código y necesitas "arrancar" la aplicación en tu ordenador, no te preocupes. No necesitas ser programador, solo seguir estos pasos como si fuera una receta de cocina.
-
-La aplicación tiene dos partes que deben funcionar a la vez:
-1.  **El Cerebro (Backend)**: Guarda los datos y hace los cálculos.
-2.  **La Cara (Frontend)**: Lo que tú ves y tocas en la pantalla.
-
-### Requisitos Previos
-Necesitas tener instalado en tu ordenador:
--   Una terminal (la pantalla negra de comandos).
--   **Python** (para el cerebro).
--   **Node.js** (para la cara).
-
-### Paso 1: Encender el Cerebro (Backend)
-
-1.  Abre una terminal.
-2.  Navega hasta la carpeta del proyecto.
-3.  Entra en la carpeta del cerebro:
-    ```bash
-    cd backend
-    ```
-4.  Activa el entorno virtual (es como ponerle las pilas):
-    ```bash
-    source venv/bin/activate
-    ```
-    *(Si estás en Windows, el comando es `.\venv\Scripts\activate`)*
-5.  Arranca el servidor (asegúrate de usar el puerto 8001):
-    ```bash
-    UPLOAD_DIR=static/uploads ./venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
-    ```
-    ✅ **Señal de éxito**: Verás mensajes diciendo "Application startup complete". ¡Déjalo abierto!
-
-### Paso 2: Encender la Cara (Frontend)
-
-1.  Abre **otra** terminal nueva (no cierres la anterior).
-2.  Ve a la carpeta del proyecto.
-3.  Entra en la carpeta de la cara:
-    ```bash
-    cd frontend
-    ```
-4.  Arranca la interfaz visual:
-    ```bash
-    npm run dev
-    ```
-    ✅ **Señal de éxito**: Verás un enlace que dice `Local: http://localhost:5173/`.
-
-### Paso 3: ¡A jugar!
-
-1.  Abre tu navegador de internet (Chrome, Firefox, etc.).
-2.  Escribe en la barra de arriba: `http://localhost:5173`
-3.  ¡Listo! Deberías ver la pantalla de inicio de sesión.
-
----
-
-## 🆘 Solución de Problemas Comunes
-
-**"No me deja registrarme"**
--   Asegúrate de que la terminal del "Paso 1 (Backend)" sigue abierta y no tiene errores rojos.
--   Comprueba que estás usando el puerto **8001** como indicamos arriba.
-
-**"La pantalla se queda en blanco"**
--   Asegúrate de que la terminal del "Paso 2 (Frontend)" sigue abierta.
--   Prueba a recargar la página con `Ctrl + R` (o `Cmd + R` en Mac).
-
-**"No se guardan las fotos de los equipos"**
--   El sistema necesita una carpeta para guardarlas. El comando del Paso 1 ya se encarga de configurarlo correctamente.
-
----
-
-*Desarrollado con ❤️ para la comunidad educativa.*
+<p align="center">
+  Hecho con ❤️ por <a href="https://edumind.es">EDUmind</a> para la educación física
+</p>

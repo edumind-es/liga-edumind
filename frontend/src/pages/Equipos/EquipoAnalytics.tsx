@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import {
+    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
 import { equiposApi } from '@/api/equipos';
 import { ligasApi } from '@/api/ligas';
 import { Liga, Equipo } from '@/types/liga';
@@ -14,6 +17,7 @@ export default function EquipoAnalytics() {
     const { ligaId, equipoId } = useParams<{ ligaId: string; equipoId: string }>();
     const [liga, setLiga] = useState<Liga | null>(null);
     const [equipo, setEquipo] = useState<Equipo | null>(null);
+    const [history, setHistory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -24,12 +28,14 @@ export default function EquipoAnalytics() {
 
     const loadData = async (lId: number, eId: number) => {
         try {
-            const [ligaData, equipoData] = await Promise.all([
+            const [ligaData, equipoData, historyData] = await Promise.all([
                 ligasApi.getById(lId),
-                equiposApi.getById(eId)
+                equiposApi.getById(eId),
+                equiposApi.getStatsHistory(eId)
             ]);
             setLiga(ligaData);
             setEquipo(equipoData);
+            setHistory(historyData);
         } catch (err) {
             console.error(err);
         } finally {
@@ -106,6 +112,29 @@ export default function EquipoAnalytics() {
                     </CardHeader>
                     <CardContent className="pt-6">
                         <PointsEvolutionChart data={barData} />
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="mb-8">
+                <Card variant="glass">
+                    <CardHeader className="border-b border-lme-border bg-white/5">
+                        <CardTitle>Evolución de Valores</CardTitle>
+                        <CardDescription>Tendencia a lo largo de las jornadas</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6 h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={history}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="jornada" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line type="monotone" dataKey="juego_limpio" stroke="#16a34a" name="Juego Limpio" />
+                                <Line type="monotone" dataKey="grada" stroke="#f59e0b" name="Grada" />
+                                <Line type="monotone" dataKey="arbitraje" stroke="#2563eb" name="Arbitraje" />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </CardContent>
                 </Card>
             </div>

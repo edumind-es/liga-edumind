@@ -56,8 +56,10 @@ CLOUDFLARE_PURGE_INSTRUCTIONS.md
 # Deployment & Configuration
 deploy.sh
 *.conf
+*.fixed
 *.service
 docker/
+docs/
 !docker/Dockerfile
 !docker-compose.yml
 !docker-compose.prod.yml

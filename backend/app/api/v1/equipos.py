@@ -11,6 +11,7 @@ import os
 from app.database import get_db
 from app.models import Equipo, Liga, User
 from app.schemas import EquipoCreate, EquipoUpdate, EquipoResponse
+from app.models import Partido, Jornada
 from app.api.deps import get_current_user
 from app.config import settings
 
@@ -249,3 +250,103 @@ async def delete_logo(
         equipo.logo_url = None
         await db.commit()
 
+
+@router.get("/{equipo_id}/stats_history")
+async def get_equipo_stats_history(
+    equipo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Obtener historial de estadísticas partido a partido para gráficos de evolución.
+    """
+    equipo = await db.get(Equipo, equipo_id)
+    if not equipo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Equipo no encontrado"
+        )
+        
+    liga = await db.get(Liga, equipo.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+
+    # Consulta de partidos finalizados donde participa el equipo
+    query = select(Partido, Jornada).join(Jornada).where(
+        (Partido.liga_id == liga.id) &
+        (Partido.finalizado == True) &
+        ((Partido.equipo_local_id == equipo_id) | 
+         (Partido.equipo_visitante_id == equipo_id) |
+         (Partido.arbitro_id == equipo_id))
+    ).order_by(Jornada.numero)
+    
+    result = await db.execute(query)
+    rows = result.all()
+    
+    history = []
+    
+    for partido, jornada in rows:
+        stats = {
+            "jornada": f"J{jornada.numero}",
+            "jornada_numero": jornada.numero,
+            "partido_id": partido.id,
+            "juego_limpio": 0,
+            "arbitraje": 0.0, # Promedio si fue árbitro, o 0 si no
+            "grada": 0.0,
+            "rol": "jugador"
+        }
+        
+        if partido.equipo_local_id == equipo_id:
+            stats["juego_limpio"] = partido.puntos_juego_limpio_local
+            stats["grada"] = partido.puntos_grada_local
+            stats["rol"] = "local"
+        elif partido.equipo_visitante_id == equipo_id:
+            stats["juego_limpio"] = partido.puntos_juego_limpio_visitante
+            stats["grada"] = partido.puntos_grada_visitante
+            stats["rol"] = "visitante"
+        elif partido.arbitro_id == equipo_id:
+            # Calcular promedio de arbitraje
+            c = partido.arbitro_conocimiento or 0
+            g = partido.arbitro_gestion or 0
+            a = partido.arbitro_apoyo or 0
+            stats["arbitraje"] = round((c + g + a) / 3, 2)
+            stats["rol"] = "arbitro"
+            
+        history.append(stats)
+        
+    return history
+
+@router.post("/{equipo_id}/regenerate_token")
+async def regenerate_token(
+    equipo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Regenerar token de acceso para el equipo.
+    """
+    equipo = await db.get(Equipo, equipo_id)
+    if not equipo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Equipo no encontrado"
+        )
+        
+    liga = await db.get(Liga, equipo.liga_id)
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+        
+    # Regenerar token
+    new_token = secrets.token_urlsafe(32)
+    equipo.acceso_token = new_token
+    
+    await db.commit()
+    await db.refresh(equipo)
+    
+    return {"acceso_token": new_token}

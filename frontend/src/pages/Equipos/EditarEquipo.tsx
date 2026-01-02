@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Upload, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Trash2, X, ShieldAlert, RefreshCw } from 'lucide-react';
 import { equiposApi } from '@/api/equipos';
 import { ligasApi } from '@/api/ligas';
 import { Liga, Equipo } from '@/types/liga';
@@ -159,6 +159,22 @@ export default function EditarEquipo() {
         }
     };
 
+    const handleRegenerateToken = async () => {
+        if (!confirm('¿Estás seguro de que deseas regenerar el token de acceso? El código QR anterior dejará de funcionar inmediatamente.')) {
+            return;
+        }
+
+        try {
+            if (!equipoId) return;
+            await equiposApi.regenerateToken(parseInt(equipoId));
+
+            // Update local state if needed, or just notify
+            toast.success('Token regenerado correctamente. El nuevo código QR ya está activo.');
+        } catch {
+            toast.error('Error al regenerar el token');
+        }
+    };
+
     if (isLoading) return <div className="p-8 text-center text-sub">Cargando...</div>;
     if (!liga || !equipo) return <div className="p-8 text-center text-red-500">No encontrado</div>;
 
@@ -306,6 +322,35 @@ export default function EditarEquipo() {
                     </form>
                 </CardContent>
             </Card>
+
+            <Card variant="glass" className="mt-8 border-red-200/50 bg-red-50/10">
+                <CardHeader className="border-b border-lme-border">
+                    <CardTitle className="text-red-700 flex items-center gap-2">
+                        <ShieldAlert className="h-5 w-5" />
+                        Zona de Seguridad
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                    <div className="flex items-center justify-between p-4 bg-white/40 rounded-lg border border-red-100">
+                        <div>
+                            <h4 className="font-semibold text-ink">Token de Acceso QR</h4>
+                            <p className="text-sm text-sub mt-1">
+                                Si sospechas que el QR del equipo ha sido compartido incorrectamente, puedes regenerarlo aquí.
+                            </p>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                            onClick={handleRegenerateToken}
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Regenerar Token
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
         </div>
     );
 }

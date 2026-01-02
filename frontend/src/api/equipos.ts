@@ -26,6 +26,7 @@ export const equiposApi = {
         await apiClient.client.delete(`/equipos/${id}`);
     },
 
+
     uploadLogo: async (id: number, file: File): Promise<{ logo_url: string }> => {
         const formData = new FormData();
         formData.append('file', file);
@@ -34,6 +35,16 @@ export const equiposApi = {
                 'Content-Type': 'multipart/form-data',
             },
         });
+        return response.data;
+    },
+
+    getStatsHistory: async (id: number): Promise<any[]> => {
+        const response = await apiClient.client.get(`/equipos/${id}/stats_history`);
+        return response.data;
+    },
+
+    regenerateToken: async (id: number): Promise<{ acceso_token: string }> => {
+        const response = await apiClient.client.post(`/equipos/${id}/regenerate_token`);
         return response.data;
     }
 };

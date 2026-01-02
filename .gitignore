@@ -43,3 +43,30 @@ Thumbs.db
 node_modules/
 dist/
 .cache/
+
+# Internal Documentation & Audits
+AUDITORIA_*.md
+DOCUMENTACION_*.md
+SYSTEM_AUDIT_REPORT*.md
+SCALABILITY_AUDIT_PLAN.md
+README_COMPLETO.md
+TESTING_GUIDE.md
+CLOUDFLARE_PURGE_INSTRUCTIONS.md
+
+# Deployment & Configuration
+deploy.sh
+*.conf
+*.service
+docker/
+!docker/Dockerfile
+!docker-compose.yml
+!docker-compose.prod.yml
+
+# Data & Temporary Files
+classification.json
+matches.json
+sports.json
+team.json
+token.json
+backups/
+frontend_build/

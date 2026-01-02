@@ -185,6 +185,9 @@ export default function VerPartido() {
                                 return;
                             }
                             try {
+                                // Auto-save evaluation before finalizing to ensure data persistence
+                                await partidosApi.updateEvaluacion(partido.id, evaluacion);
+
                                 await partidosApi.finalizar(partido.id);
                                 toast.success('Partido finalizado correctamente');
                                 loadPartido(partido.id);

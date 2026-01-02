@@ -46,5 +46,10 @@ export const equiposApi = {
     regenerateToken: async (id: number): Promise<{ acceso_token: string }> => {
         const response = await apiClient.client.post(`/equipos/${id}/regenerate_token`);
         return response.data;
+    },
+
+    getBadges: async (id: number): Promise<any[]> => {
+        const response = await apiClient.client.get(`/equipos/${id}/badges`);
+        return response.data;
     }
 };

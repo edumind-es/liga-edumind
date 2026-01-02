@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
@@ -18,6 +19,7 @@ export default function EquipoAnalytics() {
     const [liga, setLiga] = useState<Liga | null>(null);
     const [equipo, setEquipo] = useState<Equipo | null>(null);
     const [history, setHistory] = useState<any[]>([]);
+    const [badges, setBadges] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -28,14 +30,16 @@ export default function EquipoAnalytics() {
 
     const loadData = async (lId: number, eId: number) => {
         try {
-            const [ligaData, equipoData, historyData] = await Promise.all([
+            const [ligaData, equipoData, historyData, badgesData] = await Promise.all([
                 ligasApi.getById(lId),
                 equiposApi.getById(eId),
-                equiposApi.getStatsHistory(eId)
+                equiposApi.getStatsHistory(eId),
+                equiposApi.getBadges(eId)
             ]);
             setLiga(ligaData);
             setEquipo(equipoData);
             setHistory(historyData);
+            setBadges(badgesData);
         } catch (err) {
             console.error(err);
         } finally {
@@ -138,6 +142,38 @@ export default function EquipoAnalytics() {
                     </CardContent>
                 </Card>
             </div>
+
+            {badges.length > 0 && (
+                <div className="mb-8">
+                    <Card variant="glass" className="bg-gradient-to-r from-yellow-50/50 to-amber-50/50 border-amber-100">
+                        <CardHeader className="border-b border-lme-border">
+                            <CardTitle className="flex items-center gap-2">
+                                <LucideIcons.Trophy className="h-6 w-6 text-yellow-600" />
+                                Medallero del Equipo
+                            </CardTitle>
+                            <CardDescription>Reconocimientos obtenidos por rendimiento y valores</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {badges.map((badge) => {
+                                    // Dynamic icon rendering
+                                    const IconComponent = (LucideIcons as any)[badge.icon] || LucideIcons.Award;
+
+                                    return (
+                                        <div key={badge.id} className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 border border-white/40 shadow-sm hover:shadow-md transition-all">
+                                            <div className={`p-3 rounded-full bg-white shadow-sm mb-3 ${badge.color}`}>
+                                                <IconComponent className="h-8 w-8" />
+                                            </div>
+                                            <h4 className="font-bold text-ink mb-1">{badge.name}</h4>
+                                            <p className="text-xs text-sub">{badge.description}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             <div className="grid gap-4 md:grid-cols-3">
                 <Card variant="glass" className="bg-gradient-to-br from-white/80 to-white/40">

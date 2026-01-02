@@ -350,3 +350,32 @@ async def regenerate_token(
     await db.refresh(equipo)
     
     return {"acceso_token": new_token}
+
+@router.get("/{equipo_id}/badges")
+async def get_equipo_badges(
+    equipo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Obtener medallas (badges) del equipo calculadas dinámicamente.
+    """
+    from app.services.badges_service import BadgesService
+    
+    equipo = await db.get(Equipo, equipo_id)
+    if not equipo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Equipo no encontrado"
+        )
+        
+    liga = await db.get(Liga, equipo.liga_id)
+    # Allow public access? For now restrict to authorized users as requested in general
+    if not liga or liga.usuario_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos"
+        )
+        
+    badges = await BadgesService.calculate_badges(equipo_id, db)
+    return badges

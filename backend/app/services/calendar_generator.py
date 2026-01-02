@@ -75,7 +75,13 @@ async def generar_calendario_all_vs_all(
     Generate ALL possible matches for a jornada (all-vs-all / all combinations).
     For N teams, generates C(N,2) = N*(N-1)/2 matches.
     
-    Used for multi-sport leagues where each jornada plays all possible combinations.
+    IMPROVED: Now balances role distribution WITHIN each jornada to ensure
+    all teams get equal opportunities as referee and spectators.
+    
+    Role distribution by team count:
+    - 3 teams: 3 matches, each team plays 2x, referees 1x
+    - 4 teams: 6 matches, each team plays 3x, referees ~1-2x, spectates ~1-2x
+    - 5+ teams: Full role support (referee + 2 spectator groups)
     
     Args:
         db: Database session
@@ -87,7 +93,7 @@ async def generar_calendario_all_vs_all(
         List of created Partido objects
         
     Raises:
-        ValueError: If less than 2 teams in league
+        ValueError: If less than 3 teams in league (need 3 for meaningful rotation)
     """
     # Get all equipos in liga (sorted alphabetically for deterministic ordering)
     result = await db.execute(
@@ -97,32 +103,19 @@ async def generar_calendario_all_vs_all(
     )
     equipos = list(result.scalars().all())
     
-    if len(equipos) < 2:
-        raise ValueError("Se requieren mínimo 2 equipos para generar calendario")
+    if len(equipos) < 3:
+        raise ValueError("Se requieren mínimo 3 equipos para generar calendario multideporte")
     
-    # Initialize role usage tracking
-    uso_roles = _initialize_role_usage(equipos)
-    
-    # Get all existing partidos to populate role usage stats (excluding current jornada)
-    result = await db.execute(
-        select(Partido).where(Partido.liga_id == liga_id)
-    )
-    partidos_existentes = list(result.scalars().all())
-    
-    for p in partidos_existentes:
-        if p.jornada_id == jornada_id:
-            continue
-        
-        if p.equipo_local_id in uso_roles:
-            uso_roles[p.equipo_local_id]["local"] += 1
-        if p.equipo_visitante_id in uso_roles:
-            uso_roles[p.equipo_visitante_id]["visitante"] += 1
-        if p.arbitro_id and p.arbitro_id in uso_roles:
-            uso_roles[p.arbitro_id]["arbitro"] += 1
-        if p.tutor_grada_local_id and p.tutor_grada_local_id in uso_roles:
-            uso_roles[p.tutor_grada_local_id]["grada"] += 1
-        if p.tutor_grada_visitante_id and p.tutor_grada_visitante_id in uso_roles:
-            uso_roles[p.tutor_grada_visitante_id]["grada"] += 1
+    # Initialize role usage tracking for THIS jornada only (local balancing)
+    uso_jornada = {
+        equipo.id: {
+            "local": 0,
+            "visitante": 0,
+            "arbitro": 0,
+            "grada": 0
+        } 
+        for equipo in equipos
+    }
     
     # Delete existing partidos for this jornada
     await db.execute(
@@ -133,18 +126,43 @@ async def generar_calendario_all_vs_all(
     partidos_creados = []
     
     # Generate all possible combinations of teams (all-vs-all)
-    for equipo_a, equipo_b in combinations(equipos, 2):
-        # Determine Local/Visitor based on historical balance
-        if uso_roles[equipo_a.id]["local"] <= uso_roles[equipo_b.id]["local"]:
+    all_matches = list(combinations(equipos, 2))
+    
+    # Shuffle to randomize which teams play first (but keep combinations complete)
+    random.shuffle(all_matches)
+    
+    for equipo_a, equipo_b in all_matches:
+        # Determine Local/Visitor based on jornada balance (prefer even distribution)
+        if uso_jornada[equipo_a.id]["local"] <= uso_jornada[equipo_b.id]["local"]:
             equipo_local, equipo_visitante = equipo_a, equipo_b
         else:
             equipo_local, equipo_visitante = equipo_b, equipo_a
         
-        # Select support roles
+        # Get teams NOT playing in this match for support roles
         en_juego = {equipo_local.id, equipo_visitante.id}
-        arbitro, grada_local, grada_visitante = _select_support_roles(
-            equipos, uso_roles, en_juego
-        )
+        disponibles = [e for e in equipos if e.id not in en_juego]
+        
+        # Select referee: team with LEAST referee assignments in this jornada
+        arbitro = None
+        if disponibles:
+            disponibles.sort(key=lambda e: (uso_jornada[e.id]["arbitro"], uso_jornada[e.id]["grada"], random.random()))
+            arbitro = disponibles[0]
+        
+        # Select spectators from remaining teams
+        grada_local = None
+        grada_visitante = None
+        
+        if len(disponibles) >= 2:
+            # Remove referee from pool
+            restantes = [e for e in disponibles if e.id != arbitro.id]
+            restantes.sort(key=lambda e: (uso_jornada[e.id]["grada"], random.random()))
+            grada_local = restantes[0]
+            if len(restantes) >= 2:
+                grada_visitante = restantes[1]
+        elif len(disponibles) == 1 and arbitro:
+            # With 3 teams: only 1 team available = referee (no spectators)
+            # Referee also acts as the neutral spectator implicitly
+            pass
         
         # Generate random PIN
         pin = f"{random.randint(0, 999999):06d}"
@@ -167,15 +185,15 @@ async def generar_calendario_all_vs_all(
         db.add(partido)
         partidos_creados.append(partido)
         
-        # Update usage for next iteration
-        uso_roles[equipo_local.id]["local"] += 1
-        uso_roles[equipo_visitante.id]["visitante"] += 1
+        # Update jornada-local usage for next iteration (greedy balancing)
+        uso_jornada[equipo_local.id]["local"] += 1
+        uso_jornada[equipo_visitante.id]["visitante"] += 1
         if arbitro:
-            uso_roles[arbitro.id]["arbitro"] += 1
+            uso_jornada[arbitro.id]["arbitro"] += 1
         if grada_local:
-            uso_roles[grada_local.id]["grada"] += 1
+            uso_jornada[grada_local.id]["grada"] += 1
         if grada_visitante:
-            uso_roles[grada_visitante.id]["grada"] += 1
+            uso_jornada[grada_visitante.id]["grada"] += 1
     
     # Commit all changes
     await db.flush()

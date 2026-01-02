@@ -50,7 +50,7 @@ export class ApiClient {
     async register(codigo: string, email: string, password: string, aceptaPrivacidad: boolean) {
         const response = await this.client.post('/auth/register', {
             codigo,
-            email,
+            email: email.trim() || null, // Enviar null si está vacío para que el backend lo acepte
             password,
             acepta_privacidad: aceptaPrivacidad,
         });

@@ -123,6 +123,11 @@ export default function EDUmindFooter({
                     transition: 'color 0.2s'
                 }}>Privacidad</a>
                 <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://edumind.es/es/legal" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none'
+                }}>Aviso Legal</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
                 <a href="https://edumind.es/es/cookies" target="_blank" rel="noopener noreferrer" style={{
                     color: 'inherit',
                     textDecoration: 'none'
@@ -137,6 +142,17 @@ export default function EDUmindFooter({
                     color: 'inherit',
                     textDecoration: 'none'
                 }}>ARCO</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://edumind.es/es/nosotros" target="_blank" rel="noopener noreferrer" style={{
+                    color: 'inherit',
+                    textDecoration: 'none'
+                }}>Contacto</a>
+                <span style={{ margin: '0 0.5rem' }}>·</span>
+                <a href="https://donar.losmundosedufis.com" target="_blank" rel="noopener noreferrer" style={{
+                    color: '#10b981',
+                    textDecoration: 'none',
+                    fontWeight: '500'
+                }}>💚 Apoyar</a>
             </div>
 
             <div className="footer-meta">

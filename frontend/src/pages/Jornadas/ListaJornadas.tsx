@@ -276,8 +276,8 @@ export default function ListaJornadas() {
                     <DialogHeader>
                         <DialogTitle>Generar Partidos Automáticamente</DialogTitle>
                         <DialogDescription>
-                            Se generarán partidos usando Round Robin con rotación de roles.
-                            Cada partido asignará 5 equipos diferentes: Local, Visitante, Árbitro, Grada Local y Grada Visitante.
+                            Para ligas multideporte: se generan todas las combinaciones posibles con rotación equitativa de roles.
+                            Para ligas de un solo deporte: se usa Round Robin tradicional.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -296,7 +296,7 @@ export default function ListaJornadas() {
                                 </SelectContent>
                             </Select>
                             <p className="text-sm text-sub">
-                                Se requieren mínimo 5 equipos en la liga para generar partidos.
+                                Se requieren mínimo 3 equipos para ligas multideporte o 4 para ligas de un solo deporte.
                             </p>
                         </div>
                     </div>

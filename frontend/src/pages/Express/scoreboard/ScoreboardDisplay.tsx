@@ -1,17 +1,37 @@
 import * as React from 'react';
 import { TimerControls } from '@/components/TimerControls';
 import { WhistleButton } from '@/components/WhistleButton';
+import type { DeporteConfig, TipoMarcador } from '@/types/marcador';
+
+// Extended window type for webkit audio context
+declare global {
+    interface Window {
+        webkitAudioContext?: typeof AudioContext;
+    }
+}
+
+/**
+ * Marcador type uses 'any' intentionally because:
+ * 1. Sport scoreboards have dynamic keys (goles_local, puntos_visitante, etc.)
+ * 2. TypeScript cannot perform arithmetic on 'unknown' type
+ * 3. Keys are computed at runtime (e.g., `goles_${team}`)
+ * 
+ * The typed interfaces in @/types/marcador.ts provide documentation
+ * for the expected structure of each sport type.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MarcadorRecord = Record<string, any>;
 
 interface ScoreboardDisplayProps {
-    tipo: string;
-    marcador: Record<string, any>;
-    config?: Record<string, any>;
-    onUpdate: (updates: Record<string, any>) => void;
+    tipo: TipoMarcador | string;
+    marcador: MarcadorRecord;
+    config?: DeporteConfig;
+    onUpdate: (updates: MarcadorRecord) => void;
 }
 
 // Sound effect utility
 function playGoalSound() {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext!)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 
@@ -49,8 +69,8 @@ export default function ScoreboardDisplay({ tipo, marcador, onUpdate }: Scoreboa
 
 // Component helpers
 interface SubScoreboardProps {
-    marcador: Record<string, any>;
-    onUpdate: (updates: Record<string, any>) => void;
+    marcador: MarcadorRecord;
+    onUpdate: (updates: MarcadorRecord) => void;
 }
 
 function GolesScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
@@ -136,10 +156,73 @@ function PuntosScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 }
 
 function SetsScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
+    // Check for set win condition: 25 points minimum with 2 point lead (or 15 for tiebreak set 5)
+    const checkSetWin = (puntosLocal: number, puntosVisitante: number, setActual: number) => {
+        const minPoints = setActual >= 5 ? 15 : 25; // Set 5 is a tiebreak to 15
+        const diff = Math.abs(puntosLocal - puntosVisitante);
+
+        if (puntosLocal >= minPoints && diff >= 2 && puntosLocal > puntosVisitante) {
+            return 'local';
+        }
+        if (puntosVisitante >= minPoints && diff >= 2 && puntosVisitante > puntosLocal) {
+            return 'visitante';
+        }
+        return null;
+    };
+
     const adjustPuntos = (team: 'local' | 'visitante', amount: number) => {
         const key = `puntos_set_actual_${team}`;
-        onUpdate({ [key]: Math.max(0, (marcador[key] || 0) + amount) });
-        if (amount > 0) playGoalSound();
+        const newPuntos = Math.max(0, (marcador[key] || 0) + amount);
+
+        // Get current scores
+        const puntosLocal = team === 'local' ? newPuntos : (marcador.puntos_set_actual_local || 0);
+        const puntosVisitante = team === 'visitante' ? newPuntos : (marcador.puntos_set_actual_visitante || 0);
+        const setActual = marcador.set_actual || 1;
+
+        // Check for automatic set win
+        const winner = checkSetWin(puntosLocal, puntosVisitante, setActual);
+
+        if (winner && amount > 0) {
+            // Set won! Update sets and reset points
+            const newSetsWinner = (marcador[`sets_${winner}`] || 0) + 1;
+            onUpdate({
+                [key]: newPuntos,
+                [`sets_${winner}`]: newSetsWinner,
+                // Store set history before resetting
+                [`set_${setActual}_local`]: puntosLocal,
+                [`set_${setActual}_visitante`]: puntosVisitante,
+            });
+
+            // Slight delay, then reset for next set
+            setTimeout(() => {
+                onUpdate({
+                    puntos_set_actual_local: 0,
+                    puntos_set_actual_visitante: 0,
+                    set_actual: setActual + 1
+                });
+            }, 500);
+
+            playGoalSound();
+        } else {
+            onUpdate({ [key]: newPuntos });
+            if (amount > 0) playGoalSound();
+        }
+    };
+
+    const cambiarSetManual = (winner: 'local' | 'visitante') => {
+        const setActual = marcador.set_actual || 1;
+        const puntosLocal = marcador.puntos_set_actual_local || 0;
+        const puntosVisitante = marcador.puntos_set_actual_visitante || 0;
+
+        onUpdate({
+            [`sets_${winner}`]: (marcador[`sets_${winner}`] || 0) + 1,
+            [`set_${setActual}_local`]: puntosLocal,
+            [`set_${setActual}_visitante`]: puntosVisitante,
+            puntos_set_actual_local: 0,
+            puntos_set_actual_visitante: 0,
+            set_actual: setActual + 1
+        });
+        playGoalSound();
     };
 
     return (
@@ -180,10 +263,33 @@ function SetsScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
                         </div>
                     </div>
                 </div>
+
+                {/* Manual Set Control */}
+                <div className="mt-6 border-t border-paper/20 pt-4">
+                    <div className="text-center text-sub text-xs mb-3">Control Manual de Set (Árbitro)</div>
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            onClick={() => cambiarSetManual('local')}
+                            className="px-4 py-2 rounded-lg bg-mint/10 border border-mint/30 text-mint text-sm hover:bg-mint/20 transition-colors"
+                        >
+                            🏆 Set para Local
+                        </button>
+                        <button
+                            onClick={() => cambiarSetManual('visitante')}
+                            className="px-4 py-2 rounded-lg bg-sky/10 border border-sky/30 text-sky text-sm hover:bg-sky/20 transition-colors"
+                        >
+                            🏆 Set para Visitante
+                        </button>
+                    </div>
+                    <div className="text-center text-sub/60 text-xs mt-2">
+                        Auto: 25pts con 2 de diferencia (15 en set 5)
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
+
 
 function TriesScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
     const incrementTry = (team: 'local' | 'visitante') => {
@@ -292,7 +398,41 @@ function CarrerasScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
 
 function TowerTouchballScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
     const [isRunning, setIsRunning] = React.useState(false);
-    const [lastTick, setLastTick] = React.useState<number>(Date.now());
+    const initialTick = React.useRef(Date.now());
+    const [lastTick, setLastTick] = React.useState<number>(() => initialTick.current);
+
+    // Sound helper function - must be declared before use in effects
+    const playSound = React.useCallback((type: 'whistle' | 'goal') => {
+        // Create audio context for sound generation
+        const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        if (type === 'whistle') {
+            // High pitched whistle
+            oscillator.frequency.value = 2000;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        } else if (type === 'goal') {
+            // Goal celebration sound
+            oscillator.frequency.value = 440;
+            oscillator.type = 'square';
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+
+            // Rising pitch
+            oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+    }, []);
 
     // Timer effect
     React.useEffect(() => {
@@ -361,37 +501,7 @@ function TowerTouchballScoreboard({ marcador, onUpdate }: SubScoreboardProps) {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const playSound = (type: 'whistle' | 'goal') => {
-        // Create audio context for sound generation
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        if (type === 'whistle') {
-            // High pitched whistle
-            oscillator.frequency.value = 2000;
-            oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } else if (type === 'goal') {
-            // Goal celebration sound
-            oscillator.frequency.value = 440;
-            oscillator.type = 'square';
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-
-            // Rising pitch
-            oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
-        }
-    };
 
     const timeRemaining = marcador.tiempo_restante || 900;
     const timeColor = timeRemaining < 60 ? 'text-red-400' : timeRemaining < 180 ? 'text-yellow-400' : 'text-ink';

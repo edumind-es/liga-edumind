@@ -13,9 +13,11 @@ export interface ExpressMatch {
         codigo: string;
         tipo_marcador: string;
         icono: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config?: Record<string, any>;
     };
     equipos: ExpressTeam[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     marcador: Record<string, any>;
     evaluaciones: {
         juego_limpio?: { local: number; visitante: number };

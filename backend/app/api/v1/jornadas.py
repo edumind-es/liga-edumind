@@ -7,7 +7,7 @@ from sqlalchemy import select, func
 from typing import List
 
 from app.database import get_db
-from app.models import Jornada, Liga, User, Partido
+from app.models import Jornada, Liga, User, Partido, Equipo
 from app.schemas import JornadaCreate, JornadaUpdate, JornadaResponse, JornadaWithStats
 from app.api.deps import get_current_user
 
@@ -243,7 +243,15 @@ async def generar_calendario(
     
     # Generate calendar based on league mode
     try:
-        if liga.modo_competicion == 'multi_deporte':
+        # Count teams to decide algorithm for small leagues
+        result_equipos = await db.execute(
+            select(func.count()).select_from(Equipo).where(Equipo.liga_id == jornada.liga_id)
+        )
+        num_equipos = result_equipos.scalar() or 0
+
+        # FIX: Small leagues (<= 4 teams) MUST use All-vs-All to generate enough matches
+        # (Round Robin generates too few matches for small groups: 2 for 4 teams, fails for 3)
+        if liga.modo_competicion == 'multi_deporte' or num_equipos <= 4:
             # All-vs-all mode: generate all possible combinations
             partidos = await generar_calendario_all_vs_all(
                 db=db,
@@ -251,7 +259,7 @@ async def generar_calendario(
                 liga_id=jornada.liga_id,
                 tipo_deporte_id=tipo_deporte_id
             )
-            modo_usado = "Todas las combinaciones (multi-deporte)"
+            modo_usado = "Todas las combinaciones (Automatico para <= 4 equipos)"
         else:
             # Traditional Round-Robin mode
             partidos = await generar_calendario_jornada(

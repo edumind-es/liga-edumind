@@ -1,0 +1,84 @@
+# Liga EDUmind - Production Docker Compose
+# Enterprise Grade Configuration - 2026
+
+services:
+  # ==========================================
+  # Database Layer (PostgreSQL)
+  # ==========================================
+  db:
+    image: postgres:15-alpine
+    container_name: liga-edumind-db-prod
+    environment:
+      - POSTGRES_DB=liga_edumind
+      - POSTGRES_USER=liga_edumind
+      - POSTGRES_PASSWORD=4YLKeD0HXUrco-dF62xVosEsvXSgSZt- # TODO: Move to .env in CI/CD
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - liga_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U liga_edumind -d liga_edumind" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always # Robust restart policy
+    # Security: No ports mapping to host (internal only)
+
+    # ==========================================
+    # Cache Layer (Redis)
+    # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: liga-edumind-redis-prod
+    volumes:
+      - redis_data_prod:/data
+    networks:
+      - liga_net
+    restart: always
+
+  # ==========================================
+  # Application Layer (FastAPI)
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: liga-edumind-backend-prod
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://liga_edumind:4YLKeD0HXUrco-dF62xVosEsvXSgSZt-@db:5432/liga_edumind
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=False
+      - ENVIRONMENT=production
+    volumes:
+      - backend_uploads_prod:/app/static/uploads
+      - logs_data:/app/logs
+    networks:
+      - liga_net
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: always
+    ports:
+      - "127.0.0.1:8001:8001" # Exposed only to localhost for Nginx proxy
+    # Production Command: multiple workers, no reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4 --log-config /app/logging.conf
+
+networks:
+  liga_net:
+    driver: bridge
+
+volumes:
+  postgres_data_prod:
+    external: true
+    name: liga_edumind_postgres_data
+  redis_data_prod:
+    # Redis data is less critical, but we can reuse if it exists or keep new
+    name: liga_edumind_redis_data_prod
+  backend_uploads_prod:
+    external: true
+    name: liga_edumind_backend_uploads
+  logs_data:
+
+

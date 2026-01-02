@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { EvaluationRadarChart } from '@/components/charts/EvaluationRadarChart';
 export default function VerPartido() {
     const { ligaId, partidoId } = useParams<{ ligaId: string; partidoId: string }>();
     const [partido, setPartido] = useState<PartidoDetailed | null>(null);
@@ -121,7 +122,7 @@ export default function VerPartido() {
                     variant="outline"
                     onClick={async () => {
                         try {
-                            const token = localStorage.getItem('token');
+                            const token = localStorage.getItem('auth_token');
                             const response = await fetch(
                                 `${import.meta.env.VITE_API_URL || '/api/v1'}/partidos/${partido.id}/export/acta`,
                                 {
@@ -155,6 +156,55 @@ export default function VerPartido() {
                     <FileText className="h-4 w-4 mr-2" />
                     Descargar Acta
                 </Button>
+                {!partido.finalizado && (
+                    <Button
+                        onClick={async () => {
+                            // Check for missing evaluations
+                            const hasValues =
+                                evaluacion.puntos_juego_limpio_local > 0 ||
+                                evaluacion.puntos_juego_limpio_visitante > 0 ||
+                                evaluacion.arbitro_conocimiento > 0 ||
+                                evaluacion.grada_animar_local > 0 ||
+                                evaluacion.grada_animar_visitante > 0;
+
+                            if (!hasValues) {
+                                const shouldReview = window.confirm(
+                                    'Parece que NO has introducido la Evaluación de Valores (Juego Limpio, Árbitro, Grada).\n\n' +
+                                    '¿Deseas ir a la pestaña de Evaluación para completarla antes de finalizar?\n\n' +
+                                    'Cancelar = Ir a Evaluar\nAceptar = Finalizar sin evaluar (0 puntos)'
+                                );
+
+                                if (!shouldReview) {
+                                    setActiveTab('evaluacion');
+                                    toast.info('Por favor, completa la evaluación de valores.');
+                                    return;
+                                }
+                            }
+
+                            if (!window.confirm('¿Estás seguro de finalizar este partido? Esta acción calculará los puntos finales y actualizará la clasificación.')) {
+                                return;
+                            }
+                            try {
+                                await partidosApi.finalizar(partido.id);
+                                toast.success('Partido finalizado correctamente');
+                                loadPartido(partido.id);
+                            } catch (error) {
+                                console.error('Error finalizing match:', error);
+                                toast.error('Error al finalizar el partido');
+                            }
+                        }}
+                        className="bg-gradient-to-r from-mint to-sky shadow-sm hover:shadow-md transition-all"
+                    >
+                        <Trophy className="h-4 w-4 mr-2" />
+                        Finalizar Partido
+                    </Button>
+                )}
+                {partido.finalizado && (
+                    <div className="px-4 py-2 rounded-lg bg-mint/20 text-mint font-semibold flex items-center gap-2">
+                        <Trophy className="h-4 w-4" />
+                        Partido Finalizado
+                    </div>
+                )}
             </div>
 
             {/* Sport-Specific Scoreboard with Timer */}
@@ -278,41 +328,53 @@ export default function VerPartido() {
                                         Evaluado: {partido.arbitro?.nombre || 'Sin árbitro'}
                                     </span>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Conocimiento</Label>
-                                            <span className="text-lg font-bold text-mint">{evaluacion.arbitro_conocimiento}</span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                    <div className="space-y-8">
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <Label>Conocimiento</Label>
+                                                <span className="text-lg font-bold text-mint">{evaluacion.arbitro_conocimiento}</span>
+                                            </div>
+                                            <Slider
+                                                value={[evaluacion.arbitro_conocimiento]}
+                                                max={10}
+                                                step={1}
+                                                onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_conocimiento: v[0] })}
+                                            />
                                         </div>
-                                        <Slider
-                                            value={[evaluacion.arbitro_conocimiento]}
-                                            max={10}
-                                            step={1}
-                                            onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_conocimiento: v[0] })}
-                                        />
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <Label>Gestión</Label>
+                                                <span className="text-lg font-bold text-mint">{evaluacion.arbitro_gestion}</span>
+                                            </div>
+                                            <Slider
+                                                value={[evaluacion.arbitro_gestion]}
+                                                max={10}
+                                                step={1}
+                                                onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_gestion: v[0] })}
+                                            />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <Label>Apoyo Educativo</Label>
+                                                <span className="text-lg font-bold text-mint">{evaluacion.arbitro_apoyo}</span>
+                                            </div>
+                                            <Slider
+                                                value={[evaluacion.arbitro_apoyo]}
+                                                max={10}
+                                                step={1}
+                                                onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_apoyo: v[0] })}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Gestión</Label>
-                                            <span className="text-lg font-bold text-mint">{evaluacion.arbitro_gestion}</span>
-                                        </div>
-                                        <Slider
-                                            value={[evaluacion.arbitro_gestion]}
-                                            max={10}
-                                            step={1}
-                                            onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_gestion: v[0] })}
-                                        />
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Apoyo Educativo</Label>
-                                            <span className="text-lg font-bold text-mint">{evaluacion.arbitro_apoyo}</span>
-                                        </div>
-                                        <Slider
-                                            value={[evaluacion.arbitro_apoyo]}
-                                            max={10}
-                                            step={1}
-                                            onValueChange={(v: number[]) => setEvaluacion({ ...evaluacion, arbitro_apoyo: v[0] })}
+                                    <div className="flex justify-center items-center">
+                                        <EvaluationRadarChart
+                                            data={[
+                                                { subject: 'Conocimiento', A: evaluacion.arbitro_conocimiento, fullMark: 10 },
+                                                { subject: 'Gestión', A: evaluacion.arbitro_gestion, fullMark: 10 },
+                                                { subject: 'Apoyo', A: evaluacion.arbitro_apoyo, fullMark: 10 },
+                                            ]}
+                                            color="#3b82f6" // blue-500
                                         />
                                     </div>
                                 </div>
@@ -332,6 +394,16 @@ export default function VerPartido() {
                                                 (Evalúa: {partido.tutor_grada_local?.nombre || 'Sin asignar'})
                                             </span>
                                         </div>
+
+                                        <EvaluationRadarChart
+                                            data={[
+                                                { subject: 'Animación', A: evaluacion.grada_animar_local, fullMark: 4 },
+                                                { subject: 'Respeto', A: evaluacion.grada_respeto_local, fullMark: 4 },
+                                                { subject: 'Participación', A: evaluacion.grada_participacion_local, fullMark: 4 },
+                                            ]}
+                                            color="#10b981" // emerald-500
+                                        />
+
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center">
                                                 <Label className="text-xs text-lme-muted">Animación</Label>
@@ -378,6 +450,16 @@ export default function VerPartido() {
                                                 (Evalúa: {partido.tutor_grada_visitante?.nombre || 'Sin asignar'})
                                             </span>
                                         </div>
+
+                                        <EvaluationRadarChart
+                                            data={[
+                                                { subject: 'Animación', A: evaluacion.grada_animar_visitante, fullMark: 4 },
+                                                { subject: 'Respeto', A: evaluacion.grada_respeto_visitante, fullMark: 4 },
+                                                { subject: 'Participación', A: evaluacion.grada_participacion_visitante, fullMark: 4 },
+                                            ]}
+                                            color="#f59e0b" // amber-500
+                                        />
+
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center">
                                                 <Label className="text-xs text-lme-muted">Animación</Label>

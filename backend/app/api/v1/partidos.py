@@ -152,7 +152,7 @@ async def update_marcador(
         
     # Actualizar marcador
     partido.marcador = marcador_update.marcador
-    partido.finalizado = True # Marcar como finalizado al poner marcador
+    # NO marcar como finalizado automáticamente - el usuario debe usar /finalizar
     
     # Calcular puntos
     partido.calcular_puntos_desde_marcador()
@@ -250,6 +250,54 @@ async def update_evaluacion(
     await db.refresh(partido)
     
     # Actualizar estadísticas de equipos (Including Arbitro and Grada teams)
+    await ClasificacionService.actualizar_stats_equipo(partido.equipo_local_id, db)
+    await ClasificacionService.actualizar_stats_equipo(partido.equipo_visitante_id, db)
+    
+    if partido.arbitro_id:
+        await ClasificacionService.actualizar_stats_equipo(partido.arbitro_id, db)
+    if partido.tutor_grada_local_id:
+        await ClasificacionService.actualizar_stats_equipo(partido.tutor_grada_local_id, db)
+    if partido.tutor_grada_visitante_id:
+        await ClasificacionService.actualizar_stats_equipo(partido.tutor_grada_visitante_id, db)
+    
+    return partido
+
+@router.put("/{partido_id}/finalizar", response_model=PartidoResponse)
+async def finalizar_partido(
+    partido_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Finalizar un partido explícitamente.
+    Calcula puntos finales y actualiza clasificación.
+    """
+    query = select(Partido).filter(Partido.id == partido_id).options(
+        selectinload(Partido.liga),
+        selectinload(Partido.tipo_deporte)
+    )
+    result = await db.execute(query)
+    partido = result.scalar_one_or_none()
+    
+    if not partido:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+        
+    if partido.liga.usuario_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes permisos para finalizar este partido")
+    
+    if partido.finalizado:
+        raise HTTPException(status_code=400, detail="El partido ya está finalizado")
+        
+    # Marcar como finalizado
+    partido.finalizado = True
+    
+    # Calcular puntos finales
+    partido.calcular_puntos_desde_marcador()
+    
+    await db.commit()
+    await db.refresh(partido)
+    
+    # Actualizar estadísticas de equipos
     await ClasificacionService.actualizar_stats_equipo(partido.equipo_local_id, db)
     await ClasificacionService.actualizar_stats_equipo(partido.equipo_visitante_id, db)
     

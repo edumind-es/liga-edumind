@@ -39,7 +39,7 @@ export default function CrearLiga() {
             const newLiga = await ligasApi.create(formData);
             toast.success('Liga creada correctamente');
             navigate(`/ligas/${newLiga.id}`);
-        } catch (err) {
+        } catch (_err) {
             const errorMsg = 'Error al crear la liga. Inténtalo de nuevo.';
             setError(errorMsg);
             toast.error(errorMsg);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Upload, Image as ImageIcon, Edit2, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Trash2, X } from 'lucide-react';
 import { equiposApi } from '@/api/equipos';
 import { ligasApi } from '@/api/ligas';
 import { Liga, Equipo } from '@/types/liga';

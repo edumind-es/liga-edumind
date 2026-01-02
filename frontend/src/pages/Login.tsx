@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { User, Lock, Sparkles } from 'lucide-react';
+import EDUmindFooter from '@/components/EDUmindFooter';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -147,16 +148,15 @@ export default function Login() {
             </main>
 
             {/* Footer */}
-            <footer className="lme-footer">
-                <div className="container-xl">
-                    <p className="mb-1">© 2025 Liga EDUmind · Recurso Educativo Abierto (REA)</p>
-                    <p className="mb-0">
-                        <Link to="/pin" className="me-3">Acceso por PIN</Link>
-                        <Link to="/faq" className="me-3">Guía y FAQ</Link>
-                        <Link to="/privacidad">Política de privacidad</Link>
-                    </p>
-                </div>
-            </footer>
+            <EDUmindFooter
+                appName="Liga EDUmind"
+                version="1.5.2"
+                versionStage="Beta"
+                feedbackUrl="https://github.com/edumind-es/liga-valores/issues"
+                locale="es"
+                hideNavigation={true}
+                showVersion={false}
+            />
         </div>
     );
 }

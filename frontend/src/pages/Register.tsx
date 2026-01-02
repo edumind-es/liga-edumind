@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { User, Mail, Lock, UserPlus, ShieldCheck } from 'lucide-react';
+import EDUmindFooter from '@/components/EDUmindFooter';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -107,6 +108,10 @@ export default function Register() {
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                             />
+                                            <p className="text-warning text-xs mt-1.5 flex items-center gap-1">
+                                                <span className="text-amber-500">⚠️</span>
+                                                Sin email configurado, no será posible recuperar tu cuenta si olvidas tu usuario o contraseña.
+                                            </p>
                                         </div>
 
                                         <div className="mb-4">
@@ -142,9 +147,9 @@ export default function Register() {
                                                         <ShieldCheck className="h-4 w-4 text-edufis-mental mt-0.5 flex-shrink-0" />
                                                         <span>
                                                             He leído y acepto la{' '}
-                                                            <Link to="/privacidad" target="_blank" className="link-primary fw-semibold">
+                                                            <a href="https://edumind.es/es/privacidad" target="_blank" rel="noopener noreferrer" className="link-primary fw-semibold">
                                                                 Política de Privacidad
-                                                            </Link>
+                                                            </a>
                                                             {' '}(obligatorio para cumplimiento RGPD)
                                                         </span>
                                                     </div>
@@ -194,16 +199,15 @@ export default function Register() {
             </main>
 
             {/* Footer */}
-            <footer className="lme-footer">
-                <div className="container-xl">
-                    <p className="mb-1">© 2025 Liga EDUmind · Recurso Educativo Abierto (REA)</p>
-                    <p className="mb-0">
-                        <Link to="/pin" className="me-3">Acceso por PIN</Link>
-                        <Link to="/faq" className="me-3">Guía y FAQ</Link>
-                        <Link to="/privacidad">Política de privacidad</Link>
-                    </p>
-                </div>
-            </footer>
+            <EDUmindFooter
+                appName="Liga EDUmind"
+                version="1.5.2"
+                versionStage="Beta"
+                feedbackUrl="https://github.com/edumind-es/liga-valores/issues"
+                locale="es"
+                hideNavigation={true}
+                showVersion={false}
+            />
         </div>
     );
 }

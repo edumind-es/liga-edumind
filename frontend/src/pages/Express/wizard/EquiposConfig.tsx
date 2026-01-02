@@ -18,7 +18,7 @@ const ROLES = [
 ] as const;
 
 export default function EquiposConfig({ equipos, onChange }: EquiposConfigProps) {
-    const updateEquipo = (id: string, field: keyof ExpressTeam, value: any) => {
+    const updateEquipo = (id: string, field: keyof ExpressTeam, value: ExpressTeam[keyof ExpressTeam]) => {
         onChange(equipos.map(eq =>
             eq.id === id ? { ...eq, [field]: value } : eq
         ));
@@ -33,7 +33,7 @@ export default function EquiposConfig({ equipos, onChange }: EquiposConfigProps)
             onChange([...equipos, {
                 id: Date.now().toString(),
                 nombre: '',
-                rol: (availableRoles[0] || 'arbitro') as any
+                rol: (availableRoles[0] || 'arbitro') as ExpressTeam['rol']
             }]);
         }
     };

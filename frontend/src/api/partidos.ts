@@ -32,6 +32,11 @@ class PartidosApi extends ApiClient {
         return response.data;
     }
 
+    async finalizar(id: number) {
+        const response = await this.client.put<PartidoResponse>(`/partidos/${id}/finalizar`);
+        return response.data;
+    }
+
     async delete(id: number) {
         await this.client.delete(`/partidos/${id}`);
     }

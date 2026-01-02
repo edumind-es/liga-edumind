@@ -99,6 +99,7 @@ export interface TipoDeporte {
     tipo_marcador: string;
     permite_empate?: boolean;
     icono?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config?: Record<string, any>;
     descripcion?: string;
 }

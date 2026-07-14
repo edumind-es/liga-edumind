@@ -534,7 +534,7 @@ export default function CrearPartido() {
                     </div>
                 </FormSectionCard>
 
-                <Card className="sticky bottom-4 z-10 border-lme-border/90 bg-[rgba(10,20,38,0.92)] shadow-[0_24px_48px_rgba(3,10,28,0.3)] backdrop-blur-xl">
+                <Card className="sticky bottom-4 z-10 border-lme-border/90 bg-[rgba(30,27,22,0.92)] shadow-[0_24px_48px_rgba(10,9,7,0.3)] backdrop-blur-xl">
                     <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="space-y-1">
                             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-sub">Listo para crear</p>

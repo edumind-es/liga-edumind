@@ -188,7 +188,7 @@ export default function EquipoAnalytics() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                     <CardHeader className="border-b border-lme-border/70">
                         <CardTitle>Perfil de valores</CardTitle>
                         <CardDescription>Distribucion de puntos educativos por area.</CardDescription>
@@ -198,7 +198,7 @@ export default function EquipoAnalytics() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                     <CardHeader className="border-b border-lme-border/70">
                         <CardTitle>Composicion de puntos</CardTitle>
                         <CardDescription>Comparativa entre bloque deportivo y bloque educativo.</CardDescription>
@@ -209,7 +209,7 @@ export default function EquipoAnalytics() {
                 </Card>
             </div>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Evolucion por jornadas</CardTitle>
                     <CardDescription>Tendencia educativa del equipo a lo largo del calendario.</CardDescription>
@@ -228,30 +228,30 @@ export default function EquipoAnalytics() {
                                     <XAxis
                                         dataKey="jornada"
                                         stroke="rgba(150,170,199,0.55)"
-                                        tick={{ fill: '#d8e6ff', fontSize: 12 }}
+                                        tick={{ fill: '#b8b1a3', fontSize: 12 }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
                                     <YAxis
                                         stroke="rgba(150,170,199,0.55)"
-                                        tick={{ fill: '#d8e6ff', fontSize: 12 }}
+                                        tick={{ fill: '#b8b1a3', fontSize: 12 }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
                                     <Tooltip
                                         contentStyle={{
-                                            backgroundColor: 'rgba(11,24,44,0.94)',
-                                            border: '1px solid rgba(90,126,181,0.38)',
-                                            borderRadius: '14px',
-                                            color: '#f5fbff',
+                                            backgroundColor: 'rgba(30,27,22,0.94)',
+                                            border: '1px solid rgba(125,118,106,0.4)',
+                                            borderRadius: '3px',
+                                            color: '#ece8dd',
                                         }}
-                                        labelStyle={{ color: '#f5fbff', fontWeight: 600 }}
-                                        itemStyle={{ color: '#d8e6ff' }}
+                                        labelStyle={{ color: '#ece8dd', fontWeight: 600 }}
+                                        itemStyle={{ color: '#b8b1a3' }}
                                     />
-                                    <Legend wrapperStyle={{ color: '#d8e6ff', paddingTop: '8px' }} />
-                                    <Line type="monotone" dataKey="juego_limpio" stroke="#21d1b1" strokeWidth={2.5} name="Juego limpio" dot={{ r: 3 }} />
-                                    <Line type="monotone" dataKey="grada" stroke="#fbbf24" strokeWidth={2.5} name="Grada" dot={{ r: 3 }} />
-                                    <Line type="monotone" dataKey="arbitraje" stroke="#3c7dff" strokeWidth={2.5} name="Arbitraje" dot={{ r: 3 }} />
+                                    <Legend wrapperStyle={{ color: '#b8b1a3', paddingTop: '8px' }} />
+                                    <Line type="monotone" dataKey="juego_limpio" stroke="#6ea94a" strokeWidth={2.5} name="Juego limpio" dot={{ r: 3 }} />
+                                    <Line type="monotone" dataKey="grada" stroke="#e8a92e" strokeWidth={2.5} name="Grada" dot={{ r: 3 }} />
+                                    <Line type="monotone" dataKey="arbitraje" stroke="#3f7d99" strokeWidth={2.5} name="Arbitraje" dot={{ r: 3 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -259,28 +259,28 @@ export default function EquipoAnalytics() {
                 </CardContent>
             </Card>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Desglose rapido</CardTitle>
                     <CardDescription>Lectura directa de resultados deportivos y educativos del equipo.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 pt-6 md:grid-cols-3">
-                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(11,24,44,0.58)] p-4">
+                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(30,27,22,0.58)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.1em] text-sub">Juego limpio</p>
                         <p className="mt-3 text-3xl font-bold text-mint">{equipo.puntos_juego_limpio}</p>
                     </div>
-                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(11,24,44,0.58)] p-4">
+                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(30,27,22,0.58)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.1em] text-sub">Arbitro</p>
                         <p className="mt-3 text-3xl font-bold text-sky">{equipo.puntos_arbitro}</p>
                     </div>
-                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(11,24,44,0.58)] p-4">
+                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(30,27,22,0.58)] p-4">
                         <p className="text-xs font-semibold uppercase tracking-[0.1em] text-sub">Grada</p>
                         <p className="mt-3 text-3xl font-bold text-amber-200">{equipo.puntos_grada}</p>
                     </div>
                 </CardContent>
             </Card>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Medallero del equipo</CardTitle>
                     <CardDescription>Reconocimientos obtenidos por rendimiento y valores.</CardDescription>
@@ -300,7 +300,7 @@ export default function EquipoAnalytics() {
                                 return (
                                     <div
                                         key={badge.id}
-                                        className="flex flex-col items-center rounded-2xl border border-lme-border/80 bg-[rgba(11,24,44,0.58)] p-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                                        className="flex flex-col items-center rounded-2xl border border-lme-border/80 bg-[rgba(30,27,22,0.58)] p-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
                                     >
                                         <div className={`mb-3 rounded-full border border-white/10 bg-white/5 p-3 ${badge.color || ''}`}>
                                             <IconComponent className="h-7 w-7" />

@@ -212,7 +212,7 @@ export default function FichaJuegoDetalle() {
                                     </Badge>
                                 )}
                             </div>
-                            <CardTitle className="font-display text-3xl text-[#213452]">
+                            <CardTitle className="font-display text-3xl text-[#1c1a16]">
                                 {game.title}
                             </CardTitle>
                             <div className="flex flex-wrap gap-4 text-sm text-[#5d6f8f]">
@@ -256,7 +256,7 @@ export default function FichaJuegoDetalle() {
                     icon={Package}
                     accentClassName="text-amber-600"
                 >
-                    <p className="whitespace-pre-wrap leading-relaxed text-[#324766]">
+                    <p className="whitespace-pre-wrap leading-relaxed text-[#4f4a41]">
                         {game.materiales}
                     </p>
 
@@ -286,7 +286,7 @@ export default function FichaJuegoDetalle() {
                     icon={Scroll}
                     accentClassName="text-blue-600"
                 >
-                    <p className="whitespace-pre-wrap leading-relaxed text-[#324766]">
+                    <p className="whitespace-pre-wrap leading-relaxed text-[#4f4a41]">
                         {game.reglas}
                     </p>
 
@@ -338,7 +338,7 @@ export default function FichaJuegoDetalle() {
                             <Badge
                                 key={taxonomia.id}
                                 variant="secondary"
-                                className="bg-[#e0ebff] px-3 py-1 text-sm text-[#264777]"
+                                className="bg-[#e0ebff] px-3 py-1 text-sm text-[#2f6076]"
                                 title={taxonomia.descripcion || ''}
                             >
                                 {taxonomia.nombre}
@@ -367,7 +367,7 @@ function SectionCard({
     return (
         <Card variant="editorial" className="editorial-card">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl text-[#25426e]">
+                <CardTitle className="flex items-center gap-2 text-xl text-[#2f6076]">
                     <Icon className={`h-5 w-5 ${accentClassName || ''}`} />
                     {title}
                 </CardTitle>

@@ -21,7 +21,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky focus:ring-offset-2",
+  // Sello de lámina: monospace en versalitas con borde, nada de píldoras
+  "inline-flex items-center rounded-[2px] border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.07em] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-sky focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -42,7 +43,7 @@ const badgeVariants = cva(
         fisico:
           "border-transparent bg-gradient-to-r from-edufis-fisico-start to-edufis-fisico-end text-white shadow-sm",
         interior:
-          "border-transparent bg-gradient-to-r from-edufis-interior-start to-edufis-interior-end text-[#040614] shadow-sm",
+          "border-transparent bg-gradient-to-r from-edufis-interior-start to-edufis-interior-end text-[#1b1916] shadow-sm",
         emocional:
           "border-transparent bg-gradient-to-r from-vio to-edufis-mental-end text-white shadow-sm",
         accent:

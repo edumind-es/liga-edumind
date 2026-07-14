@@ -19,8 +19,11 @@
 """
 Servicio de clasificación para ligas.
 Acumula puntos deportivos + puntos educativos (MRPS, arbitraje, grada).
+La clasificación calculada se cachea en Redis (TTL corto + invalidación
+al actualizar estadísticas) para no recalcularla en cada petición.
 """
 import asyncio
+import json
 import os
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +31,13 @@ from sqlalchemy import select
 from typing import List, Dict, Any, Iterable
 from app.models import Liga, Equipo, Partido
 from app.database import AsyncSessionLocal, redis_pool
+from app.core.mundos import (
+    MUNDOS,
+    MUNDO_DEPORTIVO,
+    MUNDO_ARBITRO,
+    MUNDO_GRADA,
+    MUNDO_JUEGO_LIMPIO,
+)
 import redis.asyncio as aioredis
 
 logger = logging.getLogger(__name__)
@@ -37,19 +47,53 @@ class ClasificacionService:
     _stats_update_semaphore = asyncio.Semaphore(
         max(1, int(os.getenv("STATS_UPDATE_MAX_CONCURRENCY", "8")))
     )
-    
+
+    # TTL corto: la caché se invalida además explícitamente al actualizar stats
+    CACHE_TTL_SEGUNDOS = 60
+
     @staticmethod
-    async def calcular_clasificacion(liga_id: int, db: AsyncSession) -> List[Dict[str, Any]]:
+    def _cache_key(liga_id: int) -> str:
+        return f"clasificacion:liga:{liga_id}"
+
+    @staticmethod
+    async def invalidar_cache(liga_id: int) -> None:
+        """Borra la clasificación cacheada de una liga (fallo de Redis = no-op)."""
+        try:
+            redis = aioredis.Redis(connection_pool=redis_pool)
+            try:
+                await redis.delete(ClasificacionService._cache_key(liga_id))
+            finally:
+                await redis.close()
+        except Exception:
+            logger.debug("Redis no disponible al invalidar clasificacion", exc_info=True)
+
+    @staticmethod
+    async def calcular_clasificacion(
+        liga_id: int, db: AsyncSession, use_cache: bool = True
+    ) -> List[Dict[str, Any]]:
         """
         Calcula la clasificación completa de una liga.
-        
+
         Incluye:
         - Puntos deportivos (3-2-1 sistema EDUmind)
         - Puntos educativos: MRPS + Arbitraje + Grada
-        
+
         Returns:
             Lista de equipos ordenados por puntos totales
         """
+        # Intentar servir desde caché (fallo de Redis = calcular normal)
+        if use_cache:
+            try:
+                redis = aioredis.Redis(connection_pool=redis_pool)
+                try:
+                    cacheada = await redis.get(ClasificacionService._cache_key(liga_id))
+                finally:
+                    await redis.close()
+                if cacheada:
+                    return json.loads(cacheada)
+            except Exception:
+                logger.debug("Redis no disponible al leer clasificacion", exc_info=True)
+
         # Obtener todos los equipos de la liga
         result = await db.execute(
             select(Equipo).where(Equipo.liga_id == liga_id)
@@ -127,7 +171,7 @@ class ClasificacionService:
             if partido.tutor_grada_visitante_id and partido.tutor_grada_visitante_id in clasificacion:
                 clasificacion[partido.tutor_grada_visitante_id]["puntos_grada"] += partido.puntos_grada_visitante or 0
         
-        # Calcular totales
+        # Calcular totales y perfil por mundos (Los Cinco Mundos EDUfis)
         for equipo_id, datos in clasificacion.items():
             datos["puntos_educativos_total"] = (
                 datos["puntos_juego_limpio"] +
@@ -138,6 +182,13 @@ class ClasificacionService:
                 datos["puntos_deportivos"] +
                 datos["puntos_educativos_total"]
             )
+            # Mapeo pedagógico definido en app/core/mundos.py
+            mundos = {m: 0.0 for m in MUNDOS}
+            mundos[MUNDO_DEPORTIVO] += datos["puntos_deportivos"]
+            mundos[MUNDO_ARBITRO] += datos["puntos_arbitro"]
+            mundos[MUNDO_GRADA] += datos["puntos_grada"]
+            mundos[MUNDO_JUEGO_LIMPIO] += datos["puntos_juego_limpio"]
+            datos["mundos"] = mundos
         
         # Ordenar por:
         # 1. Puntos totales (desc)
@@ -158,7 +209,22 @@ class ClasificacionService:
         # Añadir posición
         for i, equipo in enumerate(clasificacion_ordenada, start=1):
             equipo["posicion"] = i
-        
+
+        # Guardar en caché (fallo de Redis = no-op)
+        if use_cache:
+            try:
+                redis = aioredis.Redis(connection_pool=redis_pool)
+                try:
+                    await redis.set(
+                        ClasificacionService._cache_key(liga_id),
+                        json.dumps(clasificacion_ordenada),
+                        ex=ClasificacionService.CACHE_TTL_SEGUNDOS,
+                    )
+                finally:
+                    await redis.close()
+            except Exception:
+                logger.debug("Redis no disponible al guardar clasificacion", exc_info=True)
+
         return clasificacion_ordenada
     
     @staticmethod
@@ -239,8 +305,11 @@ class ClasificacionService:
             equipo.puntos_arbitro +
             equipo.puntos_grada
         )
-        
+
         await db.commit()
+
+        # La clasificación cacheada de la liga queda obsoleta
+        await ClasificacionService.invalidar_cache(equipo.liga_id)
 
     @staticmethod
     async def _run_update(equipo_id: int) -> None:

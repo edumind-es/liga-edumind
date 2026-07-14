@@ -633,7 +633,7 @@ export default function GeneradorFichas() {
                         </Button>
                         <Button
                             size={buttonSize}
-                            className={`flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 ${highVisibilityMode ? 'text-xl py-6' : ''}`}
+                            className={`flex-1 bg-ink text-[color:var(--bg0)] hover:bg-vio ${highVisibilityMode ? 'text-xl py-6' : ''}`}
                             onClick={handleSend}
                             disabled={isSending || !policyNoticeAccepted || !communityGuidelinesAccepted}
                         >

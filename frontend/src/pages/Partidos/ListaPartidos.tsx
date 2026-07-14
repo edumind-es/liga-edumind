@@ -241,7 +241,7 @@ export default function ListaPartidos() {
                 />
             </div>
 
-            <Card className="border-sky/35 bg-[rgba(13,35,63,0.44)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-sky/35 bg-[rgba(30,27,22,0.44)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm font-semibold text-ink">
@@ -301,7 +301,7 @@ export default function ListaPartidos() {
             </ListToolbar>
 
             {filteredPartidos.length === 0 ? (
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)]">
                     <CardContent className="py-12 text-center">
                         {partidosLista.length === 0 ? (
                             <>
@@ -332,7 +332,7 @@ export default function ListaPartidos() {
                         return (
                             <Card
                                 key={partido.id}
-                                className="overflow-hidden border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_38px_rgba(3,10,28,0.18)] transition-transform duration-200 hover:-translate-y-1"
+                                className="overflow-hidden border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_38px_rgba(10,9,7,0.18)] transition-transform duration-200 hover:-translate-y-1"
                             >
                                 <CardContent className="p-6">
                                     <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -357,7 +357,7 @@ export default function ListaPartidos() {
                                             </div>
 
                                             <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
-                                                <div className="flex items-center justify-between gap-4 rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.52)] px-4 py-4">
+                                                <div className="flex items-center justify-between gap-4 rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.52)] px-4 py-4">
                                                     <span className="min-w-0 text-sm font-semibold text-ink lg:text-lg">
                                                         {partido.equipo_local.nombre}
                                                     </span>
@@ -370,7 +370,7 @@ export default function ListaPartidos() {
                                                     vs
                                                 </div>
 
-                                                <div className="flex items-center justify-between gap-4 rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.52)] px-4 py-4">
+                                                <div className="flex items-center justify-between gap-4 rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.52)] px-4 py-4">
                                                     <span className="rounded-xl border border-lme-border bg-[rgba(255,255,255,0.06)] px-3 py-2 text-xl font-bold text-ink">
                                                         {score ? score.visitante : '-'}
                                                     </span>

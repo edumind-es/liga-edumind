@@ -20,9 +20,16 @@ from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.sport_proposal import SportProposal
-from app.schemas.sport_proposal import SportProposalCreate, SportProposalUpdate, SportProposal as SportProposalSchema
+from app.schemas.sport_proposal import (
+    SportProposalCreate,
+    SportProposalUpdate,
+    SportProposalIntegrate,
+    SportProposal as SportProposalSchema,
+)
+from app.schemas.tipo_deporte import TipoDeporteResponse
 from app.api.deps import get_current_superuser, get_current_user
 from app.models.user import User
+from app.services.sport_integration import integrar_propuesta
 from app.config import settings
 from app.core.rate_limit import limiter
 import httpx
@@ -238,7 +245,42 @@ async def update_sport_proposal_status(
     
     if proposal_update.status:
         proposal.status = proposal_update.status
-    
+
     await db.commit()
     await db.refresh(proposal)
     return proposal
+
+
+@router.post("/{proposal_id}/integrate", response_model=TipoDeporteResponse, status_code=status.HTTP_201_CREATED)
+async def integrate_sport_proposal(
+    proposal_id: int,
+    overrides: SportProposalIntegrate | None = None,
+    current_user: User = Depends(get_current_superuser),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Integra la propuesta en el catálogo: crea el deporte (con sus reglas,
+    tipo de marcador, puntuación y logo) y marca la propuesta como aprobada,
+    en una sola operación. Solo administradores.
+    """
+    from sqlalchemy import select
+
+    result = await db.execute(select(SportProposal).where(SportProposal.id == proposal_id))
+    proposal = result.scalar_one_or_none()
+    if not proposal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
+
+    ov = overrides or SportProposalIntegrate()
+    try:
+        deporte = await integrar_propuesta(
+            proposal,
+            db,
+            codigo=ov.codigo,
+            tipo_marcador=ov.tipo_marcador,
+            icono=ov.icono,
+            permite_empate=ov.permite_empate,
+            config=ov.config,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+    return deporte

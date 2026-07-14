@@ -201,7 +201,7 @@ export default function ExpressWizard() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#040614] via-[#0a0f24] to-[#040614] p-4 py-8">
+        <div className="min-h-screen bg-gradient-to-br from-[#1b1916] via-[#242019] to-[#1b1916] p-4 py-8">
             <div className="max-w-4xl mx-auto">
                 {/* Progress indicator */}
                 <div className="mb-8">
@@ -210,9 +210,9 @@ export default function ExpressWizard() {
                             <div key={s} className="flex items-center">
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${s < step
-                                        ? 'bg-mint text-[#040614]'
+                                        ? 'bg-mint text-[#1b1916]'
                                         : s === step
-                                            ? 'bg-sky text-[#040614]'
+                                            ? 'bg-sky text-[#1b1916]'
                                             : 'bg-paper/20 text-sub'
                                         }`}
                                 >

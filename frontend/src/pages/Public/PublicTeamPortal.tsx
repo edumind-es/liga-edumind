@@ -210,7 +210,7 @@ export default function PublicTeamPortal() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex flex-wrap gap-2">
-                                        <Badge variant="outline" className="border-[#a8bfdf] bg-[#edf4ff] text-[#254372]">
+                                        <Badge variant="outline" className="border-[#a8bfdf] bg-[#edf4ff] text-[#2f6076]">
                                             {teamInfo?.liga_nombre}
                                         </Badge>
                                         {teamInfo?.allow_logo_editing && (

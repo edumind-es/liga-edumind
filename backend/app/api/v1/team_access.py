@@ -11,7 +11,7 @@
 """
 API endpoints for Team Portal (public access via team token).
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Form, BackgroundTasks, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Form, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ from app.database import get_db
 from app.models import Equipo, Liga
 from app.models.pending_action import PendingAction
 from app.services.image_service import ImageService
-from app.services.email_service import send_email_with_attachments
+from app.services.email_service import send_email
 from app.services.team_contract_pdf import generate_team_contract_pdf
 from app.core.rate_limit import limiter
 
@@ -173,7 +173,6 @@ async def get_team_by_token(
 async def join_team(
     request: Request,
     token: str,
-    background_tasks: BackgroundTasks,
     nombre_estudiante: str = Form(...),
     rol: str = Form(...),
     compromisos_aceptados: str = Form(...),  # JSON string of accepted commitments
@@ -291,13 +290,12 @@ async def join_team(
     if logo_content and logo_filename:
         attachments.append((logo_content, logo_filename))
     
-    # Send email in background with multiple attachments
-    background_tasks.add_task(
-        send_email_with_attachments,
+    # Encolar email con adjuntos (worker arq, con reintentos)
+    await send_email(
         to_email=liga.email_fichas,
         subject=subject,
         body=body,
-        attachments=attachments
+        attachments=attachments,
     )
     
     return {

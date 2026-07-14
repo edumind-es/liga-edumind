@@ -206,14 +206,10 @@ async def register(
     await db.commit()
     await db.refresh(new_user)
 
-    # Enviar email de verificación en background
+    # Encola el email de verificación (arq, no bloquea)
     if user_data.email and verification_token:
-        from fastapi import BackgroundTasks
-        from app.services.email_service import send_email
         verify_url = f"{settings.FRONTEND_URL}/verificar-email?token={verification_token}"
-        background_tasks = BackgroundTasks()
-        background_tasks.add_task(
-            send_email,
+        await send_email(
             to_email=user_data.email,
             subject="Liga EDUmind — Verifica tu email",
             body=(

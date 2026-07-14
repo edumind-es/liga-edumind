@@ -190,7 +190,7 @@ export default function ListaEquipos() {
                     />
 
                     {filteredEquipos.length === 0 ? (
-                        <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)]">
+                        <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)]">
                             <CardContent className="py-12 text-center">
                                 <p className="text-lg font-semibold text-ink">No hay equipos que coincidan con la búsqueda</p>
                                 <p className="mt-2 text-sm text-sub">Ajusta el texto introducido para localizar otra plantilla.</p>
@@ -201,7 +201,7 @@ export default function ListaEquipos() {
                             {filteredEquipos.map((equipo) => (
                                 <Card
                                     key={equipo.id}
-                                    className="flex h-full flex-col overflow-hidden border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_38px_rgba(3,10,28,0.18)] transition-transform duration-200 hover:-translate-y-1"
+                                    className="flex h-full flex-col overflow-hidden border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_38px_rgba(10,9,7,0.18)] transition-transform duration-200 hover:-translate-y-1"
                                 >
                                     <CardContent className="flex h-full flex-col gap-5 p-5">
                                         <div className="flex items-start justify-between gap-4">
@@ -216,7 +216,7 @@ export default function ListaEquipos() {
                                                     ) : (
                                                         <AvatarFallback
                                                             className="text-lg font-bold text-white"
-                                                            style={{ backgroundColor: equipo.color_principal || '#3c7dff' }}
+                                                            style={{ backgroundColor: equipo.color_principal || '#3f7d99' }}
                                                         >
                                                             {equipo.nombre.substring(0, 2).toUpperCase()}
                                                         </AvatarFallback>
@@ -231,7 +231,7 @@ export default function ListaEquipos() {
                                         </div>
 
                                         <div className="grid grid-cols-3 gap-3 text-center text-sm">
-                                            <div className="rounded-2xl border border-lme-border bg-[rgba(11,24,44,0.7)] p-3">
+                                            <div className="rounded-2xl border border-lme-border bg-[rgba(30,27,22,0.7)] p-3">
                                                 <div className="text-2xl font-bold text-ink">{equipo.puntos_totales}</div>
                                                 <div className="text-[10px] font-semibold uppercase tracking-wider text-sub">Puntos</div>
                                             </div>
@@ -245,7 +245,7 @@ export default function ListaEquipos() {
                                             </div>
                                         </div>
 
-                                        <div className="rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.46)] p-3">
+                                        <div className="rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.46)] p-3">
                                             <div className="flex items-center justify-between text-xs text-sub">
                                                 <span>Árbitro</span>
                                                 <span className="font-semibold text-ink">{equipo.puntos_arbitro}</span>

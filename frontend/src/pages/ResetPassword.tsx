@@ -101,7 +101,7 @@ export default function ResetPassword() {
                                 </span>
                                 <div className="auth-login-title-row">
                                     <div className="auth-login-title-icon" aria-hidden="true">
-                                        <KeyRound className="h-5 w-5 text-[#040614]" />
+                                        <KeyRound className="h-5 w-5 text-[#1b1916]" />
                                     </div>
                                     <h1 id="reset-title" className="auth-login-title">
                                         {t('auth.newPasswordTitle', 'Nueva contraseña')}
@@ -111,7 +111,7 @@ export default function ResetPassword() {
 
                             {success ? (
                                 <div className="auth-login-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                                    <div className="p-4 rounded-xl border border-lme-border bg-[rgba(11,20,37,0.5)] text-center">
+                                    <div className="p-4 rounded-xl border border-lme-border bg-[rgba(30,27,22,0.5)] text-center">
                                         <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-3" />
                                         <p className="text-ink text-sm font-semibold mb-2">
                                             {t('auth.passwordResetSuccess', 'Contraseña actualizada')}

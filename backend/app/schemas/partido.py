@@ -81,6 +81,13 @@ class PartidoUpdateEvaluacion(BaseModel):
     grada_participacion_visitante: int | None = Field(None, ge=0, le=10)
     expected_version: str | None = None
 
+# Acta completa en un solo paso (modo clásico):
+# marcador + evaluación educativa + finalización en una única llamada.
+# expected_version (heredado) versiona la evaluación; el marcador tiene el suyo.
+class PartidoActaCompleta(PartidoUpdateEvaluacion):
+    marcador: Dict[str, Any] = Field(..., description="Marcador específico del deporte")
+    expected_marcador_version: str | None = None
+
 # Response schema
 class PartidoResponse(PartidoBase):
     id: int

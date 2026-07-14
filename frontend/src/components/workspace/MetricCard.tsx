@@ -23,32 +23,32 @@ type MetricTone = 'mint' | 'sky' | 'vio' | 'amber' | 'rose' | 'slate';
 
 const toneMap: Record<MetricTone, { panel: string; icon: string; value: string }> = {
     mint: {
-        panel: 'from-mint/14 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-mint/14 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-mint/30 bg-mint/12 text-mint',
         value: 'text-mint',
     },
     sky: {
-        panel: 'from-sky/16 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-sky/16 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-sky/30 bg-sky/12 text-sky',
         value: 'text-sky',
     },
     vio: {
-        panel: 'from-vio/16 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-vio/16 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-vio/30 bg-vio/12 text-vio',
         value: 'text-vio',
     },
     amber: {
-        panel: 'from-amber-400/14 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-amber-400/14 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-amber-300/30 bg-amber-300/12 text-amber-300',
         value: 'text-amber-200',
     },
     rose: {
-        panel: 'from-red-400/14 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-red-400/14 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-red-300/30 bg-red-300/12 text-red-300',
         value: 'text-red-200',
     },
     slate: {
-        panel: 'from-white/6 via-[rgba(11,24,44,0.92)] to-[rgba(11,24,44,0.98)]',
+        panel: 'from-white/6 via-[rgba(30,27,22,0.92)] to-[rgba(30,27,22,0.98)]',
         icon: 'border-lme-border bg-white/6 text-sub',
         value: 'text-ink',
     },
@@ -76,7 +76,7 @@ export function MetricCard({
     return (
         <div
             className={cn(
-                'rounded-2xl border border-lme-border/90 bg-gradient-to-br p-4 shadow-[0_18px_40px_rgba(3,10,28,0.18)]',
+                'rounded-2xl border border-lme-border/90 bg-gradient-to-br p-4 shadow-[0_18px_40px_rgba(10,9,7,0.18)]',
                 styles.panel,
                 className,
             )}

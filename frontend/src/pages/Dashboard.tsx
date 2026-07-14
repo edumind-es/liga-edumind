@@ -130,10 +130,10 @@ export default function Dashboard() {
                 <button
                     type="button"
                     onClick={install}
-                    className="flex w-full items-center gap-4 rounded-2xl border border-[#2a4060] bg-[rgba(61,218,215,0.06)] px-5 py-3.5 text-left transition-colors hover:bg-[rgba(61,218,215,0.1)]"
+                    className="flex w-full items-center gap-4 rounded-2xl border border-[#4f4a41] bg-[rgba(140,194,106,0.06)] px-5 py-3.5 text-left transition-colors hover:bg-[rgba(140,194,106,0.1)]"
                     aria-label="Instalar Liga EDUmind como aplicación en este dispositivo"
                 >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(61,218,215,0.15)]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(140,194,106,0.15)]">
                         <Download className="h-5 w-5 text-[#3ddad7]" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -180,7 +180,7 @@ export default function Dashboard() {
             </div>
 
             {ligas && ligas.length > 0 ? (
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_20px_44px_rgba(3,10,28,0.2)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_20px_44px_rgba(10,9,7,0.2)]">
                     <CardHeader className="border-b border-lme-border/70">
                         <CardTitle>{t('dashboard.myLeagues')}</CardTitle>
                         <CardDescription>{t('dashboard.recentActivity')}</CardDescription>
@@ -189,7 +189,7 @@ export default function Dashboard() {
                         {ligas.map((liga) => (
                             <Card
                                 key={liga.id}
-                                className="group overflow-hidden border-lme-border/90 bg-[rgba(8,18,34,0.78)] shadow-[0_18px_38px_rgba(3,10,28,0.18)] transition-transform duration-200 hover:-translate-y-1"
+                                className="group overflow-hidden border-lme-border/90 bg-[rgba(24,22,18,0.78)] shadow-[0_18px_38px_rgba(10,9,7,0.18)] transition-transform duration-200 hover:-translate-y-1"
                             >
                                 <CardContent className="flex h-full flex-col gap-4 p-5">
                                     <div className="flex items-start justify-between gap-3">
@@ -289,7 +289,7 @@ export default function Dashboard() {
                 </Card>
             )}
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_38px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_38px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>{t('dashboard.quickActions')}</CardTitle>
                     <CardDescription>{t('dashboard.pendingActionsDesc')}</CardDescription>
@@ -299,7 +299,7 @@ export default function Dashboard() {
                 </CardContent>
             </Card>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_38px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_38px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>{t('dashboard.quickHelpTitle')}</CardTitle>
                     <CardDescription>{t('dashboard.quickHelpDesc')}</CardDescription>

@@ -25,7 +25,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { type ClasificacionItem } from '@/types/liga';
+import { MUNDOS, type ClasificacionItem } from '@/types/liga';
+import { MundosPentagono } from '@/components/charts/MundosPentagono';
+import { MUNDO_COLOR, MUNDO_LABEL } from '@/lib/mundos';
 import EmptyState from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/layout/PageHeader';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -66,6 +68,15 @@ export default function Clasificacion() {
     const lider = clasificacion[0];
     const mejorJuegoLimpio = [...clasificacion].sort((a, b) => b.puntos_juego_limpio - a.puntos_juego_limpio)[0];
     const mejorEducativo = [...clasificacion].sort((a, b) => b.puntos_educativos_total - a.puntos_educativos_total)[0];
+
+    // Escala común del pentágono: el máximo de cualquier mundo en la liga
+    const hayMundos = clasificacion.some((e: ClasificacionItem) => e.mundos);
+    const maxMundo = Math.max(
+        1,
+        ...clasificacion.flatMap((e: ClasificacionItem) =>
+            e.mundos ? MUNDOS.map((m) => e.mundos?.[m] ?? 0) : [],
+        ),
+    );
 
     return (
         <div className="space-y-6">
@@ -130,7 +141,7 @@ export default function Clasificacion() {
                 <Badge variant="accent">Árbitro y grada</Badge>
             </ListToolbar>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Tabla general</CardTitle>
                     <CardDescription>Sistema de puntuación EDUmind con lectura deportiva y educativa.</CardDescription>
@@ -168,6 +179,9 @@ export default function Clasificacion() {
                                         <TableHead className="hidden text-center md:table-cell">Grd</TableHead>
                                         <TableHead className="bg-mint/10 text-center text-mint">Pts Edu</TableHead>
                                         <TableHead className="bg-vio/10 text-center text-vio">Total</TableHead>
+                                        {hayMundos && (
+                                            <TableHead className="hidden text-center lg:table-cell">Mundos</TableHead>
+                                        )}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -213,6 +227,15 @@ export default function Clasificacion() {
                                             <TableCell className="bg-vio/5 text-center font-black text-vio">
                                                 {equipo.puntos_totales}
                                             </TableCell>
+                                            {hayMundos && (
+                                                <TableCell className="hidden text-center lg:table-cell">
+                                                    {equipo.mundos ? (
+                                                        <div className="flex justify-center">
+                                                            <MundosPentagono mundos={equipo.mundos} max={maxMundo} />
+                                                        </div>
+                                                    ) : null}
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -221,6 +244,21 @@ export default function Clasificacion() {
                     )}
                 </CardContent>
             </Card>
+
+            {hayMundos && (
+                <div className="flex flex-wrap items-center gap-4 text-xs text-sub">
+                    <span className="font-semibold uppercase tracking-wide">Los Cinco Mundos</span>
+                    {MUNDOS.map((mundo) => (
+                        <span key={mundo} className="inline-flex items-center gap-1.5">
+                            <span
+                                className="inline-block h-2.5 w-2.5 rounded-full"
+                                style={{ backgroundColor: MUNDO_COLOR[mundo] }}
+                            />
+                            {MUNDO_LABEL[mundo]}
+                        </span>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

@@ -63,7 +63,7 @@ function MapaRolesPartido({ partido }: { partido: PartidoPublico }) {
                         <ShieldCheck className="h-4 w-4" />
                         Equipo arbitral
                     </div>
-                    <p className="text-base font-bold text-[#1f3555]">{partido.arbitro_nombre || 'No asignado'}</p>
+                    <p className="text-base font-bold text-[#1c1a16]">{partido.arbitro_nombre || 'No asignado'}</p>
                     <p className="mt-1 text-xs text-[#5c6f88]">El docente valida su evaluación educativa.</p>
                 </div>
                 <div className="rounded-xl border border-[#b9c9df] bg-[#f5f8fc] p-3">
@@ -71,7 +71,7 @@ function MapaRolesPartido({ partido }: { partido: PartidoPublico }) {
                         <Users className="h-4 w-4" />
                         Tutoría grada local
                     </div>
-                    <p className="text-base font-bold text-[#1f3555]">{partido.tutor_grada_local_nombre || 'No asignada'}</p>
+                    <p className="text-base font-bold text-[#1c1a16]">{partido.tutor_grada_local_nombre || 'No asignada'}</p>
                     <p className="mt-1 text-xs text-[#5c6f88]">Observa la grada de {partido.equipo_local}.</p>
                 </div>
                 <div className="rounded-xl border border-[#b9c9df] bg-[#f5f8fc] p-3">
@@ -79,7 +79,7 @@ function MapaRolesPartido({ partido }: { partido: PartidoPublico }) {
                         <Users className="h-4 w-4" />
                         Tutoría grada visitante
                     </div>
-                    <p className="text-base font-bold text-[#1f3555]">{partido.tutor_grada_visitante_nombre || 'No asignada'}</p>
+                    <p className="text-base font-bold text-[#1c1a16]">{partido.tutor_grada_visitante_nombre || 'No asignada'}</p>
                     <p className="mt-1 text-xs text-[#5c6f88]">Observa la grada de {partido.equipo_visitante}.</p>
                 </div>
             </CardContent>
@@ -101,8 +101,8 @@ function ControlEscala({
     return (
         <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-                <Label className="text-[#284563]">{label}</Label>
-                <span className="min-w-10 rounded-md bg-[#dce9f8] px-2 py-1 text-center text-sm font-bold text-[#1f3555]">
+                <Label className="text-[#4f4a41]">{label}</Label>
+                <span className="min-w-10 rounded-md bg-[#dce9f8] px-2 py-1 text-center text-sm font-bold text-[#1c1a16]">
                     {value}/{max}
                 </span>
             </div>
@@ -129,7 +129,7 @@ function EvaluacionEducativaPublica({
     return (
         <Card variant="editorial" className="editorial-card">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#1f3555]">
+                <CardTitle className="flex items-center gap-2 text-[#1c1a16]">
                     <Medal className="h-5 w-5 text-[#bf7a14]" />
                     Evaluación educativa
                 </CardTitle>
@@ -149,16 +149,16 @@ function EvaluacionEducativaPublica({
                         minimosKey: 'cumple_minimos_visitante' as const,
                     }].map((item) => (
                         <div key={item.team} className="rounded-xl border border-[#b9c9df] bg-[#f5f8fc] p-4">
-                            <p className="mb-3 font-bold text-[#1f3555]">{item.team}</p>
+                            <p className="mb-3 font-bold text-[#1c1a16]">{item.team}</p>
                             <div className="space-y-3">
-                                <label className="flex items-start gap-3 text-sm text-[#284563]">
+                                <label className="flex items-start gap-3 text-sm text-[#4f4a41]">
                                     <Checkbox
                                         checked={checked(evaluacion[item.limpioKey])}
                                         onCheckedChange={(value) => onChange({ [item.limpioKey]: value ? 1 : 0 })}
                                     />
                                     <span>Juego limpio: respeta normas, rivales, material y decisiones arbitrales.</span>
                                 </label>
-                                <label className="flex items-start gap-3 text-sm text-[#284563]">
+                                <label className="flex items-start gap-3 text-sm text-[#4f4a41]">
                                     <Checkbox
                                         checked={checked(evaluacion[item.minimosKey])}
                                         onCheckedChange={(value) => onChange({ [item.minimosKey]: value ? 1 : 0 })}
@@ -173,7 +173,7 @@ function EvaluacionEducativaPublica({
                 <div className="rounded-xl border border-[#b9c9df] bg-white p-4">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                         <div>
-                            <p className="font-bold text-[#1f3555]">Equipo arbitral</p>
+                            <p className="font-bold text-[#1c1a16]">Equipo arbitral</p>
                             <p className="text-sm text-[#5c6f88]">{partido.arbitro_nombre || 'No asignado'}</p>
                         </div>
                         <Badge variant="outline">0-10</Badge>
@@ -187,7 +187,7 @@ function EvaluacionEducativaPublica({
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-xl border border-[#b9c9df] bg-white p-4">
-                        <p className="font-bold text-[#1f3555]">Grada local</p>
+                        <p className="font-bold text-[#1c1a16]">Grada local</p>
                         <p className="mb-4 text-sm text-[#5c6f88]">
                             Evalúa {partido.tutor_grada_local_nombre || 'equipo no asignado'} sobre la grada de {partido.equipo_local}.
                         </p>
@@ -198,7 +198,7 @@ function EvaluacionEducativaPublica({
                         </div>
                     </div>
                     <div className="rounded-xl border border-[#b9c9df] bg-white p-4">
-                        <p className="font-bold text-[#1f3555]">Grada visitante</p>
+                        <p className="font-bold text-[#1c1a16]">Grada visitante</p>
                         <p className="mb-4 text-sm text-[#5c6f88]">
                             Evalúa {partido.tutor_grada_visitante_nombre || 'equipo no asignado'} sobre la grada de {partido.equipo_visitante}.
                         </p>
@@ -211,7 +211,7 @@ function EvaluacionEducativaPublica({
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-[#284563]">
+                    <Label className="flex items-center gap-2 text-[#4f4a41]">
                         <MessageSquare className="h-4 w-4" />
                         Observaciones para el docente
                     </Label>
@@ -220,7 +220,7 @@ function EvaluacionEducativaPublica({
                         maxLength={500}
                         onChange={(event) => onObservacionesChange(event.target.value)}
                         placeholder="Ej.: hubo dudas con una norma, faltó tiempo, un equipo ayudó a resolver un conflicto..."
-                        className="border-[#b9c9df] bg-white text-[#1f3555] placeholder:text-[#7b8fa8]"
+                        className="border-[#b9c9df] bg-white text-[#1c1a16] placeholder:text-[#7b8fa8]"
                     />
                 </div>
             </CardContent>
@@ -459,7 +459,7 @@ export default function PartidoPublico() {
                     <button
                         type="button"
                         onClick={install}
-                        className="flex w-full max-w-md items-center gap-3 rounded-xl border border-[#a9c0e2] bg-[#edf4ff] px-4 py-3 text-left text-sm text-[#2b4f80] hover:bg-[#dce9ff] transition-colors"
+                        className="flex w-full max-w-md items-center gap-3 rounded-xl border border-[#a9c0e2] bg-[#edf4ff] px-4 py-3 text-left text-sm text-[#2f6076] hover:bg-[#dce9ff] transition-colors"
                         aria-label="Instalar la app de partidos en este dispositivo"
                     >
                         <Download className="h-5 w-5 shrink-0" aria-hidden="true" />
@@ -486,7 +486,7 @@ export default function PartidoPublico() {
                         {partido.liga_nombre}
                     </p>
                     <h1 className="text-2xl font-bold text-[var(--editorial-ink)]">Marcador del partido</h1>
-                    <Badge variant="outline" className="border-[#a9bfdc] bg-[#edf4ff] text-[#2f4f7f]">
+                    <Badge variant="outline" className="border-[#a9bfdc] bg-[#edf4ff] text-[#2f6076]">
                         {partido.tipo_deporte.nombre}
                     </Badge>
                 </div>
@@ -551,7 +551,7 @@ export default function PartidoPublico() {
                         <div className="rounded-lg border border-[#a9bfdc]/40 bg-[#edf4ff] p-3">
                             <div className="flex items-start gap-2">
                                 <ShieldCheck className="h-4 w-4 text-[#3a6aad] flex-shrink-0 mt-0.5" />
-                                <div className="text-xs text-[#2f4f7f] space-y-1">
+                                <div className="text-xs text-[#2f6076] space-y-1">
                                     <p className="font-semibold">Privacidad — LOPD/RGPD</p>
                                     <p>
                                         Esta anotación es completamente <strong>anónima</strong>: no se almacena ningún dato personal
@@ -587,7 +587,7 @@ export default function PartidoPublico() {
                                             onClick={() => setNotaTipo(tipo)}
                                             className={`rounded-lg border px-3 py-2 text-xs font-medium capitalize transition-colors ${
                                                 notaTipo === tipo
-                                                    ? 'border-[#3a6aad] bg-[#edf4ff] text-[#2f4f7f]'
+                                                    ? 'border-[#3a6aad] bg-[#edf4ff] text-[#2f6076]'
                                                     : 'border-[#a9bfdc]/40 bg-white text-[#5c6f88] hover:border-[#a9bfdc]'
                                             }`}
                                         >

@@ -20,6 +20,11 @@ export interface AccessibilityState {
     highVisibilityMode: boolean;
     strokeWidth: 'normal' | 'thick' | 'extra';
 
+    // Modo tinta electrónica (EDUmind e-ink): papel monocromo cálido,
+    // Atkinson Hyperlegible, menos luz azul. Pensado para alumnado,
+    // lectura prolongada y tablets e-ink.
+    einkMode: boolean;
+
     // Auditory accessibility
     visualAlerts: boolean;
 
@@ -34,6 +39,7 @@ export interface AccessibilityState {
     toggleReduceMotion: () => void;
     toggleHighVisibilityMode: () => void;
     setStrokeWidth: (width: 'normal' | 'thick' | 'extra') => void;
+    toggleEinkMode: () => void;
     resetAccessibility: () => void;
 }
 
@@ -58,6 +64,7 @@ const defaultVisualAccessibilityState = {
     strokeWidth: 'normal' as const,
     visualAlerts: false,
     reduceMotion: false,
+    einkMode: false,
 };
 
 export const useAccessibilityStore = create<AccessibilityState>()(
@@ -103,6 +110,8 @@ export const useAccessibilityStore = create<AccessibilityState>()(
             }),
 
             setStrokeWidth: (width) => set({ strokeWidth: width }),
+
+            toggleEinkMode: () => set((state) => ({ einkMode: !state.einkMode })),
 
             resetAccessibility: () => set((state) => ({
                 ...state,

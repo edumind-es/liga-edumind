@@ -3,7 +3,7 @@
  * Author: Luis Vilela Acuña
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { apiClient } from '@/api/client';
@@ -37,14 +37,16 @@ export default function NextcloudIntegration() {
         }
     });
 
-    // Update form when data loads (only url and user)
-    if (config && formData.nextcloud_url === '' && !isLoading) {
-        setFormData({
-            nextcloud_url: config.nextcloud_url || '',
-            nextcloud_user: config.nextcloud_user || '',
-            nextcloud_password: '',
+    // Sincroniza el formulario cuando llega la config (solo url y usuario)
+    useEffect(() => {
+        if (!config || isLoading) return;
+        setFormData((prev) => {
+            const url = config.nextcloud_url || '';
+            const user = config.nextcloud_user || '';
+            if (prev.nextcloud_url === url && prev.nextcloud_user === user) return prev;
+            return { nextcloud_url: url, nextcloud_user: user, nextcloud_password: '' };
         });
-    }
+    }, [config, isLoading]);
 
     const updateMutation = useMutation({
         mutationFn: async (data: typeof formData) => {

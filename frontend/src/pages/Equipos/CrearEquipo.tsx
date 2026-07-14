@@ -183,7 +183,7 @@ export default function CrearEquipo() {
                 >
                     <div className="space-y-2">
                         <Label htmlFor="color">Color principal</Label>
-                        <div className="flex flex-col gap-3 rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.5)] p-4 sm:flex-row sm:items-center">
+                        <div className="flex flex-col gap-3 rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.5)] p-4 sm:flex-row sm:items-center">
                             <Input
                                 type="color"
                                 id="color"
@@ -208,7 +208,7 @@ export default function CrearEquipo() {
                     <div className="space-y-2">
                         <Label htmlFor="logo">Logo del equipo (opcional)</Label>
                         {logoPreview ? (
-                            <div className="inline-flex rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.5)] p-4">
+                            <div className="inline-flex rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.5)] p-4">
                                 <div className="relative">
                                     <img
                                         src={logoPreview}
@@ -226,7 +226,7 @@ export default function CrearEquipo() {
                             </div>
                         ) : (
                             <label htmlFor="logo" className="block cursor-pointer">
-                                <div className="rounded-2xl border-2 border-dashed border-lme-border bg-[rgba(11,24,44,0.35)] p-5 transition-colors hover:border-sky hover:bg-sky/5">
+                                <div className="rounded-2xl border-2 border-dashed border-lme-border bg-[rgba(30,27,22,0.35)] p-5 transition-colors hover:border-sky hover:bg-sky/5">
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                                         <div className="rounded-2xl border border-lme-border/70 bg-white/5 p-3">
                                             <Upload className="h-5 w-5 text-sub" />

@@ -301,16 +301,18 @@ export default function AdminSportProposals() {
             let parsedConfig = {};
             try { parsedConfig = JSON.parse(integrationForm.config); } catch { parsedConfig = {}; }
 
-            await apiClient.createSportType({
-                nombre: integrationProposal.nombre,
+            // Un solo paso: crea el deporte (con logo y reglas) y aprueba la propuesta
+            await apiClient.integrateSportProposal(integrationProposal.id, {
                 codigo: integrationForm.codigo,
                 tipo_marcador: integrationForm.tipo_marcador,
                 permite_empate: integrationForm.permite_empate,
                 config: parsedConfig,
-                descripcion: integrationProposal.descripcion,
-                icono: integrationForm.icono
+                icono: integrationForm.icono,
             });
-            alert(`¡Deporte "${integrationProposal.nombre}" añadido al catálogo!`);
+            setProposals((prev) =>
+                prev.map((p) => (p.id === integrationProposal.id ? { ...p, status: 'approved' } : p)),
+            );
+            alert(`¡Deporte "${integrationProposal.nombre}" integrado en el catálogo y propuesta aprobada!`);
             setIntegrationProposal(null);
         } catch (err: unknown) {
             console.error("Error integrating sport:", err);
@@ -450,7 +452,7 @@ export default function AdminSportProposals() {
                     </Button>
                 </ListToolbar>
 
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                     <CardHeader className="border-b border-lme-border/70">
                         <CardTitle>Pipeline de revisión</CardTitle>
                         <CardDescription>

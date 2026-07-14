@@ -2,6 +2,12 @@ import path from 'path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  // JSX runtime automático (como en la app): sin esto, los tests .tsx
+  // compilan a React.createElement sin importar React y fallan con
+  // "React is not defined"
+  esbuild: {
+    jsx: 'automatic',
+  },
   define: {
     __APP_VERSION__: JSON.stringify('test'),
     __APP_STAGE__: JSON.stringify('Stable'),

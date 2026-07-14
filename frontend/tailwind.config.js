@@ -27,8 +27,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["var(--font-body)", "Space Grotesk", "system-ui", "sans-serif"],
-                display: ["var(--font-display)", "Fraunces", "Georgia", "serif"],
+                sans: ["var(--font-body)", "Outfit", "system-ui", "sans-serif"],
+                display: ["var(--font-display)", "Outfit", "Helvetica Neue", "sans-serif"],
+                mono: ["var(--font-mono)", "IBM Plex Mono", "ui-monospace", "monospace"],
             },
             colors: {
                 // EDUmind Brand Colors — usa canales RGB para que /opacity funcione
@@ -98,6 +99,8 @@ export default {
                 },
             },
             borderRadius: {
+                "3xl": "8px",
+                "2xl": "6px",
                 xl: "var(--lme-radius-xl)",
                 lg: "var(--lme-radius-lg)",
                 md: "var(--lme-radius-md)",

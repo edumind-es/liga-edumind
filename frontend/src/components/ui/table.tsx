@@ -22,13 +22,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const tableVariants = cva(
-  "relative w-full overflow-auto rounded-lg border [--table-border:var(--lme-border)] [--table-head-bg:rgba(74,132,255,0.16)] [--table-head-text:var(--ink)] [--table-cell-text:var(--sub)] [--table-row-hover:rgba(90,177,255,0.08)] [--table-footer-bg:rgba(90,177,255,0.05)]",
+  "relative w-full overflow-auto rounded-lg border [--table-border:var(--lme-border)] [--table-head-bg:rgba(106,163,191,0.16)] [--table-head-text:var(--ink)] [--table-cell-text:var(--sub)] [--table-row-hover:rgba(90,177,255,0.08)] [--table-footer-bg:rgba(90,177,255,0.05)]",
   {
     variants: {
       variant: {
-        default: "border-lme-border bg-[rgba(14,24,44,0.55)]",
+        default: "border-lme-border bg-[rgba(30,27,22,0.55)]",
         editorial:
-          "surface-public-table border-[var(--editorial-border)] bg-[var(--editorial-card)] shadow-[0_1px_2px_rgba(24,39,75,0.06)] [--table-border:var(--editorial-border)] [--table-head-bg:rgba(74,132,255,0.08)] [--table-head-text:#294b7c] [--table-cell-text:var(--editorial-muted)] [--table-row-hover:rgba(74,132,255,0.06)] [--table-footer-bg:rgba(74,132,255,0.08)]",
+          "surface-public-table border-[var(--editorial-border)] bg-[var(--editorial-card)] shadow-[0_1px_2px_rgba(28,26,22,0.06)] [--table-border:var(--editorial-border)] [--table-head-bg:rgba(106,163,191,0.08)] [--table-head-text:#2f6076] [--table-cell-text:var(--editorial-muted)] [--table-row-hover:rgba(106,163,191,0.06)] [--table-footer-bg:rgba(106,163,191,0.08)]",
       },
     },
     defaultVariants: {

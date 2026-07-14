@@ -55,7 +55,7 @@ function CruceCard({
     const isGanadorB = cruce.ganador_id === cruce.equipo_b.id;
 
     return (
-        <div className="rounded-xl border border-lme-border/70 bg-[rgba(10,20,38,0.60)] p-4 space-y-3">
+        <div className="rounded-xl border border-lme-border/70 bg-[rgba(30,27,22,0.60)] p-4 space-y-3">
             <div className="flex items-center gap-3">
                 <div className={`flex-1 rounded-lg border px-3 py-2.5 text-center text-sm font-semibold transition-colors
                     ${isGanadorA ? 'border-mint/60 bg-mint/12 text-mint' : 'border-lme-border/50 text-ink'}`}>
@@ -201,7 +201,7 @@ export default function FaseFinalPage() {
 
             {/* Configuración y creación */}
             {fases.length === 0 && (
-                <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)]">
+                <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)]">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-amber-300" />
@@ -261,7 +261,7 @@ export default function FaseFinalPage() {
                 </div>
             ) : (
                 fases.map((fase) => (
-                    <Card key={fase.id} className="border-t-2 border-lme-border/90 bg-[rgba(10,20,38,0.72)]" style={{ borderTopColor: 'var(--amber-300, #fbbf24)' }}>
+                    <Card key={fase.id} className="border-t-2 border-lme-border/90 bg-[rgba(30,27,22,0.72)]" style={{ borderTopColor: 'var(--amber-300, #fbbf24)' }}>
                         <CardHeader>
                             <div className="flex items-start justify-between gap-3">
                                 <div>
@@ -292,7 +292,7 @@ export default function FaseFinalPage() {
                         <CardContent className="space-y-4">
                             {fase.cruces.length === 0 ? (
                                 <div className="space-y-3">
-                                    <div className="rounded-lg border border-lme-border/50 bg-[rgba(9,18,36,0.52)] p-3 text-xs text-sub">
+                                    <div className="rounded-lg border border-lme-border/50 bg-[rgba(28,25,21,0.52)] p-3 text-xs text-sub">
                                         <p className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-sub/60" />
                                             Aún no hay cruces. Genera los emparejamientos desde la clasificación actual.

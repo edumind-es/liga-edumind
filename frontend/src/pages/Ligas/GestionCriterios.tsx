@@ -47,9 +47,19 @@ const EMPTY_NEW_CRITERIO = {
     nombre: '',
     codigo: '',
     categoria: 'general' as CriterioEvaluacion['categoria'],
+    mundo: '' as '' | NonNullable<CriterioEvaluacion['mundo']>,
     escala_max: 10,
     icono: '',
 };
+
+// Etiquetas y colores de Los Cinco Mundos (sistema Lámina EDUmind)
+const MUNDO_OPTIONS: { value: NonNullable<CriterioEvaluacion['mundo']>; label: string; color: string }[] = [
+    { value: 'fisico', label: 'Físico', color: '#e8613f' },
+    { value: 'mental', label: 'Mental', color: '#3f7d99' },
+    { value: 'emocional', label: 'Emocional', color: '#6ea94a' },
+    { value: 'social', label: 'Social', color: '#e8a92e' },
+    { value: 'interior', label: 'Interior', color: '#2c5c66' },
+];
 
 export default function GestionCriterios() {
     const { id } = useParams<{ id: string }>();
@@ -128,6 +138,7 @@ export default function GestionCriterios() {
                 nombre: newCriterio.nombre.trim(),
                 codigo: newCriterio.codigo.trim().toLowerCase().replace(/\s+/g, '_'),
                 categoria: newCriterio.categoria,
+                mundo: newCriterio.mundo || undefined,
                 escala_max: newCriterio.escala_max,
                 icono: newCriterio.icono.trim() || undefined,
             });
@@ -227,17 +238,17 @@ export default function GestionCriterios() {
                 <Badge variant="secondary">{plantillas.length} plantillas disponibles</Badge>
             </PageHeader>
 
-            <Card className="border-lme-border/90 bg-[rgba(16,30,53,0.56)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.56)]">
                 <CardContent className="pt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="rounded-lg border border-lme-border bg-[rgba(9,18,36,0.52)] p-4">
+                    <div className="rounded-lg border border-lme-border bg-[rgba(28,25,21,0.52)] p-4">
                         <p className="text-xs uppercase tracking-[0.08em] text-sub">Plantillas</p>
                         <p className="mt-2 text-sm text-ink">Carga una base rapida para no empezar desde cero.</p>
                     </div>
-                    <div className="rounded-lg border border-lme-border bg-[rgba(9,18,36,0.52)] p-4">
+                    <div className="rounded-lg border border-lme-border bg-[rgba(28,25,21,0.52)] p-4">
                         <p className="text-xs uppercase tracking-[0.08em] text-sub">Criterios activos</p>
                         <p className="mt-2 text-sm text-ink">Gestiona nombre, categoria e icono en un solo listado.</p>
                     </div>
-                    <div className="rounded-lg border border-lme-border bg-[rgba(9,18,36,0.52)] p-4">
+                    <div className="rounded-lg border border-lme-border bg-[rgba(28,25,21,0.52)] p-4">
                         <p className="text-xs uppercase tracking-[0.08em] text-sub">Limite</p>
                         <p className="mt-2 text-sm text-ink">Hasta {MAX_CRITERIOS} criterios para mantener evaluacion usable.</p>
                     </div>
@@ -256,7 +267,7 @@ export default function GestionCriterios() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     {plantillas.map((plantilla) => (
-                        <div key={plantilla.nombre} className="rounded-lg border border-lme-border bg-[rgba(10,20,38,0.52)] p-4 space-y-3">
+                        <div key={plantilla.nombre} className="rounded-lg border border-lme-border bg-[rgba(30,27,22,0.52)] p-4 space-y-3">
                             <div>
                                 <h3 className="font-semibold text-ink">{plantilla.nombre}</h3>
                                 <p className="text-sm text-sub mt-1">{plantilla.descripcion}</p>
@@ -298,7 +309,7 @@ export default function GestionCriterios() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {showAddForm && (
-                        <div className="rounded-lg border border-lme-border bg-[rgba(9,18,36,0.58)] p-4 space-y-4">
+                        <div className="rounded-lg border border-lme-border bg-[rgba(28,25,21,0.58)] p-4 space-y-4">
                             <h3 className="text-sm font-semibold text-ink">Alta de criterio</h3>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
@@ -343,6 +354,36 @@ export default function GestionCriterios() {
                                             <SelectItem value="grada_local">{categoryLabels.grada_local}</SelectItem>
                                             <SelectItem value="grada_visitante">{categoryLabels.grada_visitante}</SelectItem>
                                             <SelectItem value="jugador">{categoryLabels.jugador}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="criterio-mundo">Mundo EDUfis (opcional)</Label>
+                                    <Select
+                                        value={newCriterio.mundo || 'ninguno'}
+                                        onValueChange={(value) =>
+                                            setNewCriterio((prev) => ({
+                                                ...prev,
+                                                mundo: value === 'ninguno' ? '' : (value as NonNullable<CriterioEvaluacion['mundo']>),
+                                            }))
+                                        }
+                                    >
+                                        <SelectTrigger id="criterio-mundo">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ninguno">Sin mundo</SelectItem>
+                                            {MUNDO_OPTIONS.map((opcion) => (
+                                                <SelectItem key={opcion.value} value={opcion.value}>
+                                                    <span className="inline-flex items-center gap-2">
+                                                        <span
+                                                            className="inline-block h-2.5 w-2.5 rounded-full"
+                                                            style={{ backgroundColor: opcion.color }}
+                                                        />
+                                                        {opcion.label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -392,7 +433,7 @@ export default function GestionCriterios() {
                     )}
 
                     {criterios.length === 0 ? (
-                        <div className="rounded-lg border border-lme-border bg-[rgba(9,18,36,0.52)] p-6 text-center">
+                        <div className="rounded-lg border border-lme-border bg-[rgba(28,25,21,0.52)] p-6 text-center">
                             <p className="text-sm text-sub">
                                 Todavia no hay criterios activos. Aplica una plantilla o crea criterios manualmente.
                             </p>
@@ -402,7 +443,7 @@ export default function GestionCriterios() {
                             {criterios.map((criterio) => (
                                 <div
                                     key={criterio.id}
-                                    className="rounded-lg border border-lme-border bg-[rgba(10,20,38,0.52)] p-4 flex flex-wrap items-start justify-between gap-3"
+                                    className="rounded-lg border border-lme-border bg-[rgba(30,27,22,0.52)] p-4 flex flex-wrap items-start justify-between gap-3"
                                 >
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
@@ -411,6 +452,17 @@ export default function GestionCriterios() {
                                             <Badge variant={CATEGORY_BADGE_VARIANT[criterio.categoria]}>
                                                 {categoryLabels[criterio.categoria]}
                                             </Badge>
+                                            {criterio.mundo && (
+                                                <span className="inline-flex items-center gap-1.5 text-xs text-sub">
+                                                    <span
+                                                        className="inline-block h-2.5 w-2.5 rounded-full"
+                                                        style={{
+                                                            backgroundColor: MUNDO_OPTIONS.find((m) => m.value === criterio.mundo)?.color,
+                                                        }}
+                                                    />
+                                                    {MUNDO_OPTIONS.find((m) => m.value === criterio.mundo)?.label}
+                                                </span>
+                                            )}
                                         </div>
                                         <p className="text-xs text-sub">
                                             Codigo: {criterio.codigo} · Escala: 0-{criterio.escala_max}
@@ -433,7 +485,7 @@ export default function GestionCriterios() {
                 </CardContent>
             </Card>
 
-            <Card className="border-lme-border bg-[rgba(9,18,36,0.52)]">
+            <Card className="border-lme-border bg-[rgba(28,25,21,0.52)]">
                 <CardContent className="pt-5 flex items-start gap-3">
                     <Info className="h-5 w-5 text-sky mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-sub">

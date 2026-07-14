@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2024-2025 EDUmind - Los Mundos Edufis
- * Author: Luis Vilela Acuna
+ * Author: Luis Vilela Acuña
  */
 
 import { useState } from 'react';
@@ -64,7 +64,7 @@ export default function PinAccess() {
                     <CardHeader className="space-y-4">
                         <div className="flex items-start gap-3">
                             <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#a9c0e2] bg-[#e8f2ff]">
-                                <Lock className="h-5 w-5 text-[#2b4f80]" aria-hidden="true" />
+                                <Lock className="h-5 w-5 text-[#2f6076]" aria-hidden="true" />
                             </div>
                             <div className="space-y-1">
                                 <CardTitle className="text-2xl text-[var(--editorial-ink)]">Identificacion de liga</CardTitle>
@@ -85,7 +85,7 @@ export default function PinAccess() {
                                     id="public-pin"
                                     type="password"
                                     placeholder="••••••"
-                                    className="h-14 rounded-xl border-[#9bb4dc] bg-[#f5f8ff] text-center text-3xl tracking-[0.5em] text-[#173760] placeholder:text-[#7e93b7]"
+                                    className="h-14 rounded-xl border-[#9bb4dc] bg-[#f5f8ff] text-center text-3xl tracking-[0.5em] text-[#2f6076] placeholder:text-[#7e93b7]"
                                     maxLength={6}
                                     value={pin}
                                     autoComplete="one-time-code"
@@ -119,7 +119,7 @@ export default function PinAccess() {
                                 )}
                             </Button>
 
-                            <div className="rounded-lg border border-[#bfd0ea] bg-[#eef4ff] px-3 py-2 text-sm text-[#2d4f7f]">
+                            <div className="rounded-lg border border-[#bfd0ea] bg-[#eef4ff] px-3 py-2 text-sm text-[#2f6076]">
                                 Si el PIN es valido, accedes al tablero de clasificacion y calendario en modo solo lectura.
                             </div>
                         </form>
@@ -142,13 +142,13 @@ export default function PinAccess() {
                             <Users className="mt-0.5 h-4 w-4 text-[#2b5f99]" aria-hidden="true" />
                             <span>Acceso publico de alumnado y familias sin editar datos.</span>
                         </div>
-                        <div className="rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2b4f80]">
+                        <div className="rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2f6076]">
                             Si no recuerdas el PIN, solicita asistencia al docente o al centro.
                         </div>
                         <Button
                             asChild
                             variant="ghost"
-                            className="w-full justify-center text-[#315b95] hover:bg-[#dce9ff] hover:text-[#1e3f6c]"
+                            className="w-full justify-center text-[#315b95] hover:bg-[#dce9ff] hover:text-[#2f6076]"
                         >
                             <Link to="/faq">Necesitas ayuda de acceso?</Link>
                         </Button>

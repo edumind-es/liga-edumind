@@ -23,9 +23,9 @@ import { cn } from '@/lib/utils';
 type ActionTileTone = 'mint' | 'sky' | 'vio' | 'amber' | 'slate';
 
 const toneMap: Record<ActionTileTone, { icon: string; color: string; glow: string }> = {
-    mint:  { icon: 'border-mint/40 bg-mint/15 text-mint',               color: 'var(--mint)',        glow: 'rgba(82,217,199,0.18)'  },
-    sky:   { icon: 'border-sky/40 bg-sky/15 text-sky',                  color: 'var(--sky)',         glow: 'rgba(74,132,255,0.18)'  },
-    vio:   { icon: 'border-vio/40 bg-vio/15 text-vio',                  color: 'var(--vio)',         glow: 'rgba(142,121,255,0.18)' },
+    mint:  { icon: 'border-mint/40 bg-mint/15 text-mint',               color: 'var(--mint)',        glow: 'rgba(140,194,106,0.18)'  },
+    sky:   { icon: 'border-sky/40 bg-sky/15 text-sky',                  color: 'var(--sky)',         glow: 'rgba(106,163,191,0.18)'  },
+    vio:   { icon: 'border-vio/40 bg-vio/15 text-vio',                  color: 'var(--vio)',         glow: 'rgba(240,121,90,0.18)' },
     amber: { icon: 'border-amber-300/40 bg-amber-300/15 text-amber-300', color: 'var(--lme-warning)', glow: 'rgba(242,185,73,0.18)'  },
     slate: { icon: 'border-lme-border bg-white/8 text-sub',             color: '',                   glow: 'rgba(255,255,255,0.04)' },
 };
@@ -55,7 +55,7 @@ export function ActionTile({
         <Card
             style={styles.color ? { borderTopColor: styles.color } : undefined}
             className={cn(
-                'h-full overflow-hidden border-t-[3px] border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_20px_42px_rgba(3,10,28,0.2)]',
+                'h-full overflow-hidden border-t-[3px] border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_20px_42px_rgba(10,9,7,0.2)]',
                 className,
             )}
         >

@@ -67,6 +67,10 @@ class Settings(BaseSettings):
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
+
+    # Cola de emails (arq). DB /2 para no chocar con el rate limit (/1)
+    # ni con el pool general (/0)
+    EMAIL_QUEUE_REDIS_URL: str = "redis://localhost:6379/2"
     
     # Frontend
     FRONTEND_URL: str = "https://liga.edumind.es"

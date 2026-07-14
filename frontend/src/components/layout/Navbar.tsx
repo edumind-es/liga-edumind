@@ -149,12 +149,12 @@ export function Navbar() {
                     gap-4 lg:gap-3
                     absolute lg:static
                     top-[calc(100%+0.5rem)] left-3 right-3
-                    rounded-3xl border border-lme-border bg-[rgba(9,16,34,0.98)] lg:bg-transparent
+                    rounded-3xl border border-lme-border bg-[rgba(24,22,18,0.98)] lg:bg-transparent
                     p-4 lg:p-0
                     w-auto lg:w-auto
                     max-h-[calc(100vh-6.5rem)] lg:max-h-none
                     overflow-y-auto
-                    shadow-[0_24px_48px_rgba(4,10,28,0.45)] backdrop-blur-xl
+                    shadow-[0_24px_48px_rgba(10,9,7,0.45)] backdrop-blur-xl
                 `}>
                     <div id="mobile-primary-nav" className="flex flex-col gap-3 w-full">
                         {isAuthenticated ? (

@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, Eye, Type, Bell, Zap, RotateCcw } from 'lucide-react';
+import { Globe, Eye, Type, Bell, Zap, RotateCcw, BookOpen } from 'lucide-react';
 import { useAccessibilityStore, fontSizeMultipliers } from '@/store/accessibilityStore';
 import { languages, type LanguageCode } from '@/i18n';
 import {
@@ -36,6 +36,8 @@ export default function AccessibilityMenu() {
         toggleVisualAlerts,
         reduceMotion,
         toggleReduceMotion,
+        einkMode,
+        toggleEinkMode,
         resetAccessibility,
     } = useAccessibilityStore();
 
@@ -44,6 +46,7 @@ export default function AccessibilityMenu() {
         !highVisibilityMode &&
         !visualAlerts &&
         !reduceMotion &&
+        !einkMode &&
         fontSize === 'normal';
 
     // Sync language with i18n when store changes
@@ -79,7 +82,14 @@ export default function AccessibilityMenu() {
         } else {
             root.classList.remove('reduce-motion');
         }
-    }, [fontSize, highContrast, highVisibilityMode, reduceMotion]);
+
+        // Modo tinta electrónica
+        if (einkMode) {
+            root.classList.add('eink');
+        } else {
+            root.classList.remove('eink');
+        }
+    }, [fontSize, highContrast, highVisibilityMode, reduceMotion, einkMode]);
 
     const handleLanguageChange = (lang: LanguageCode) => {
         setLanguage(lang);
@@ -104,7 +114,7 @@ export default function AccessibilityMenu() {
 
             <DropdownMenuContent
                 align="end"
-                className="w-56 bg-[rgba(11,20,37,0.98)] border-lme-border backdrop-blur-xl"
+                className="w-56 bg-[rgba(30,27,22,0.98)] border-lme-border backdrop-blur-xl"
             >
                 {/* Language Selection */}
                 <DropdownMenuLabel className="text-sub text-xs uppercase tracking-wider">
@@ -195,6 +205,16 @@ export default function AccessibilityMenu() {
                 >
                     <Zap className="h-4 w-4 mr-2" aria-hidden="true" />
                     {t('accessibility.reduceMotion')}
+                </DropdownMenuCheckboxItem>
+
+                {/* Modo tinta electrónica (EDUmind e-ink): papel monocromo, menos luz azul */}
+                <DropdownMenuCheckboxItem
+                    checked={einkMode}
+                    onCheckedChange={toggleEinkMode}
+                    className="text-ink cursor-pointer"
+                >
+                    <BookOpen className="h-4 w-4 mr-2" aria-hidden="true" />
+                    {t('accessibility.einkMode')}
                 </DropdownMenuCheckboxItem>
 
                 <DropdownMenuSeparator className="bg-lme-border" />

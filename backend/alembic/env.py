@@ -18,7 +18,7 @@
 
 import asyncio
 from logging.config import fileConfig
-from sqlalchemy import pool
+from sqlalchemy import pool, text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
@@ -63,6 +63,19 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
+    # Pre-crear alembic_version con columna ancha: el default de Alembic es
+    # VARCHAR(32) y hay ids de revisión más largos (p. ej.
+    # '028_add_league_teacher_memberships', 34 chars), lo que rompe las
+    # instalaciones desde cero. En bases existentes es un no-op.
+    connection.execute(
+        text(
+            "CREATE TABLE IF NOT EXISTS alembic_version ("
+            "version_num VARCHAR(64) NOT NULL, "
+            "CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num))"
+        )
+    )
+    connection.commit()
+
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():

@@ -32,7 +32,7 @@ export default function PublicLayout() {
                     <div className="flex flex-wrap justify-between items-center gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="bg-[var(--editorial-highlight)] p-1.5 rounded-lg shadow-sm border border-[var(--editorial-border)]">
-                                <Shield className="h-6 w-6 text-[#27456f]" />
+                                <Shield className="h-6 w-6 text-[#2f6076]" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-lg font-semibold text-[var(--editorial-ink)] leading-tight font-display">

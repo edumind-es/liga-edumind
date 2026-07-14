@@ -34,6 +34,10 @@ class CriterioEvaluacionBase(BaseModel):
         default='general',
         description="Categoría del criterio para agrupación visual"
     )
+    mundo: Literal['fisico', 'mental', 'emocional', 'social', 'interior'] | None = Field(
+        default=None,
+        description="Mundo EDUfis al que contribuye el criterio (Los Cinco Mundos)"
+    )
     escala_min: int = Field(default=0, ge=0, le=100, description="Valor mínimo de la escala")
     escala_max: int = Field(default=10, ge=1, le=100, description="Valor máximo de la escala")
     umbral_alto: float = Field(default=7.0, ge=0, description="Umbral para puntuación alta")
@@ -72,6 +76,7 @@ class CriterioEvaluacionUpdate(BaseModel):
     codigo: str | None = Field(None, min_length=1, max_length=30)
     descripcion: str | None = None
     categoria: Literal['arbitro', 'grada_local', 'grada_visitante', 'jugador', 'general'] | None = None
+    mundo: Literal['fisico', 'mental', 'emocional', 'social', 'interior'] | None = None
     escala_min: int | None = Field(None, ge=0, le=100)
     escala_max: int | None = Field(None, ge=1, le=100)
     umbral_alto: float | None = Field(None, ge=0)
@@ -143,6 +148,8 @@ class PlantillaCriterio(BaseModel):
     escala_min: int = 0
     escala_max: int = 10
     icono: str | None = None
+    # Mundo EDUfis sugerido (el docente puede cambiarlo al crear el criterio)
+    mundo: str | None = None
 
 
 class PlantillaEvaluacion(BaseModel):
@@ -158,46 +165,46 @@ PLANTILLAS_EVALUACION: list[PlantillaEvaluacion] = [
         nombre="EDUmind Clásico",
         descripcion="Los mismos criterios del sistema clásico pero configurables",
         criterios=[
-            PlantillaCriterio(nombre="Conocimiento", codigo="conocimiento", categoria="arbitro", icono="📚"),
-            PlantillaCriterio(nombre="Gestión", codigo="gestion", categoria="arbitro", icono="⚙️"),
-            PlantillaCriterio(nombre="Apoyo Educativo", codigo="apoyo", categoria="arbitro", icono="🤝"),
-            PlantillaCriterio(nombre="Animación Local", codigo="animacion_local", categoria="grada_local", escala_max=4, icono="📣"),
-            PlantillaCriterio(nombre="Respeto Local", codigo="respeto_local", categoria="grada_local", escala_max=4, icono="🙏"),
-            PlantillaCriterio(nombre="Participación Local", codigo="participacion_local", categoria="grada_local", escala_max=4, icono="👥"),
-            PlantillaCriterio(nombre="Animación Visitante", codigo="animacion_visitante", categoria="grada_visitante", escala_max=4, icono="📣"),
-            PlantillaCriterio(nombre="Respeto Visitante", codigo="respeto_visitante", categoria="grada_visitante", escala_max=4, icono="🙏"),
-            PlantillaCriterio(nombre="Participación Visitante", codigo="participacion_visitante", categoria="grada_visitante", escala_max=4, icono="👥"),
+            PlantillaCriterio(nombre="Conocimiento", codigo="conocimiento", categoria="arbitro", icono="📚", mundo="mental"),
+            PlantillaCriterio(nombre="Gestión", codigo="gestion", categoria="arbitro", icono="⚙️", mundo="mental"),
+            PlantillaCriterio(nombre="Apoyo Educativo", codigo="apoyo", categoria="arbitro", icono="🤝", mundo="mental"),
+            PlantillaCriterio(nombre="Animación Local", codigo="animacion_local", categoria="grada_local", escala_max=4, icono="📣", mundo="social"),
+            PlantillaCriterio(nombre="Respeto Local", codigo="respeto_local", categoria="grada_local", escala_max=4, icono="🙏", mundo="social"),
+            PlantillaCriterio(nombre="Participación Local", codigo="participacion_local", categoria="grada_local", escala_max=4, icono="👥", mundo="social"),
+            PlantillaCriterio(nombre="Animación Visitante", codigo="animacion_visitante", categoria="grada_visitante", escala_max=4, icono="📣", mundo="social"),
+            PlantillaCriterio(nombre="Respeto Visitante", codigo="respeto_visitante", categoria="grada_visitante", escala_max=4, icono="🙏", mundo="social"),
+            PlantillaCriterio(nombre="Participación Visitante", codigo="participacion_visitante", categoria="grada_visitante", escala_max=4, icono="👥", mundo="social"),
         ]
     ),
     PlantillaEvaluacion(
         nombre="Respeto Ampliado",
         descripcion="Enfocado en diferentes dimensiones del respeto",
         criterios=[
-            PlantillaCriterio(nombre="Respeto al Árbitro", codigo="respeto_arbitro", categoria="general", icono="👨‍⚖️"),
-            PlantillaCriterio(nombre="Respeto a Rivales", codigo="respeto_rivales", categoria="general", icono="🤝"),
-            PlantillaCriterio(nombre="Respeto al Material", codigo="respeto_material", categoria="general", icono="🏀"),
-            PlantillaCriterio(nombre="Respeto a las Gradas", codigo="respeto_gradas", categoria="general", icono="👥"),
-            PlantillaCriterio(nombre="Respeto a las Normas", codigo="respeto_normas", categoria="general", icono="📋"),
+            PlantillaCriterio(nombre="Respeto al Árbitro", codigo="respeto_arbitro", categoria="general", icono="👨‍⚖️", mundo="social"),
+            PlantillaCriterio(nombre="Respeto a Rivales", codigo="respeto_rivales", categoria="general", icono="🤝", mundo="social"),
+            PlantillaCriterio(nombre="Respeto al Material", codigo="respeto_material", categoria="general", icono="🏀", mundo="interior"),
+            PlantillaCriterio(nombre="Respeto a las Gradas", codigo="respeto_gradas", categoria="general", icono="👥", mundo="social"),
+            PlantillaCriterio(nombre="Respeto a las Normas", codigo="respeto_normas", categoria="general", icono="📋", mundo="interior"),
         ]
     ),
     PlantillaEvaluacion(
         nombre="Competencias Sociales",
         descripcion="Evaluación de habilidades socioemocionales",
         criterios=[
-            PlantillaCriterio(nombre="Comunicación", codigo="comunicacion", categoria="general", icono="💬"),
-            PlantillaCriterio(nombre="Trabajo en Equipo", codigo="trabajo_equipo", categoria="general", icono="🤝"),
-            PlantillaCriterio(nombre="Liderazgo", codigo="liderazgo", categoria="general", icono="⭐"),
-            PlantillaCriterio(nombre="Empatía", codigo="empatia", categoria="general", icono="❤️"),
-            PlantillaCriterio(nombre="Resolución de Conflictos", codigo="conflictos", categoria="general", icono="🕊️"),
+            PlantillaCriterio(nombre="Comunicación", codigo="comunicacion", categoria="general", icono="💬", mundo="social"),
+            PlantillaCriterio(nombre="Trabajo en Equipo", codigo="trabajo_equipo", categoria="general", icono="🤝", mundo="social"),
+            PlantillaCriterio(nombre="Liderazgo", codigo="liderazgo", categoria="general", icono="⭐", mundo="social"),
+            PlantillaCriterio(nombre="Empatía", codigo="empatia", categoria="general", icono="❤️", mundo="emocional"),
+            PlantillaCriterio(nombre="Resolución de Conflictos", codigo="conflictos", categoria="general", icono="🕊️", mundo="emocional"),
         ]
     ),
     PlantillaEvaluacion(
         nombre="Mini-Deportes",
         descripcion="Criterios simplificados para edades tempranas",
         criterios=[
-            PlantillaCriterio(nombre="Juego Limpio", codigo="fair_play", categoria="general", escala_max=5, icono="✨"),
-            PlantillaCriterio(nombre="Esfuerzo", codigo="esfuerzo", categoria="general", escala_max=5, icono="💪"),
-            PlantillaCriterio(nombre="Deportividad", codigo="deportividad", categoria="general", escala_max=5, icono="🏆"),
+            PlantillaCriterio(nombre="Juego Limpio", codigo="fair_play", categoria="general", escala_max=5, icono="✨", mundo="interior"),
+            PlantillaCriterio(nombre="Esfuerzo", codigo="esfuerzo", categoria="general", escala_max=5, icono="💪", mundo="fisico"),
+            PlantillaCriterio(nombre="Deportividad", codigo="deportividad", categoria="general", escala_max=5, icono="🏆", mundo="social"),
         ]
     ),
 ]

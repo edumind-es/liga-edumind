@@ -26,9 +26,9 @@ const inputVariants = cva(
     variants: {
       variant: {
         default:
-          "border-lme-border bg-[rgba(14,24,44,0.78)] text-ink focus-visible:border-sky file:mr-4 file:rounded-md file:border file:border-lme-border file:bg-slate-700 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:cursor-pointer file:transition-colors file:hover:bg-slate-600",
+          "border-lme-border bg-[var(--lme-surface-soft)] text-ink focus-visible:border-sky file:mr-4 file:rounded-md file:border file:border-lme-border file:bg-slate-700 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:cursor-pointer file:transition-colors file:hover:bg-slate-600",
         editorial:
-          "surface-public-input border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] placeholder:text-[var(--editorial-muted)] focus-visible:border-[#4f76b6] focus-visible:ring-[#4f76b6] shadow-[0_1px_2px_rgba(24,39,75,0.08)] file:mr-4 file:rounded-md file:border file:border-[#b6c9e5] file:bg-[#eaf2ff] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#234470] file:cursor-pointer file:transition-colors file:hover:bg-[#dce9ff]",
+          "surface-public-input border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] placeholder:text-[var(--editorial-muted)] focus-visible:border-[#4f76b6] focus-visible:ring-[#4f76b6] shadow-[0_1px_2px_rgba(28,26,22,0.08)] file:mr-4 file:rounded-md file:border file:border-[#b6c9e5] file:bg-[#eaf2ff] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#2f6076] file:cursor-pointer file:transition-colors file:hover:bg-[#dce9ff]",
       },
     },
     defaultVariants: {

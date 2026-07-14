@@ -41,7 +41,11 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
-    isLoading: false,
+    // true inicial: la comprobación de sesión (fetchCurrentUser en el arranque)
+    // está pendiente. Con false, ProtectedRoute redirigía a /login en el primer
+    // render de cualquier carga dura ANTES de que /auth/me respondiera 200,
+    // expulsando la sesión válida (incluida la apertura de la PWA instalada).
+    isLoading: true,
     error: null,
 
     login: async (codigo, password) => {

@@ -66,9 +66,12 @@ async def readiness_check_v1():
 # Include all route modules
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users_integration.router, prefix="/auth", tags=["users-integration"])
+# criterios ANTES que ligas: su ruta estática GET /ligas/plantillas quedaba
+# sombreada por GET /ligas/{liga_id} (Starlette resuelve por orden de registro
+# y el tipo int no participa en el matching) y devolvía 422 en producción.
+api_router.include_router(criterios.router, prefix="/ligas", tags=["criterios-evaluacion"])
 api_router.include_router(ligas.router, prefix="/ligas", tags=["ligas"])
 api_router.include_router(fases_finales.router, prefix="/ligas", tags=["fases-finales"])
-api_router.include_router(criterios.router, prefix="/ligas", tags=["criterios-evaluacion"])
 api_router.include_router(equipos.router, prefix="/equipos", tags=["equipos"])
 api_router.include_router(tipos_deporte.router, prefix="/tipos-deporte", tags=["tipos-deporte"])
 api_router.include_router(jornadas.router, prefix="/jornadas", tags=["jornadas"])

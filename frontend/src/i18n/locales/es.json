@@ -180,6 +180,7 @@
         "fontSizeExtraLarge": "Muy grande",
         "visualAlerts": "Alertas visuales",
         "reduceMotion": "Reducir animaciones",
+        "einkMode": "Modo tinta electrónica",
         "screenReaderMode": "Modo lector de pantalla",
         "resetView": "Volver a vista normal"
     },

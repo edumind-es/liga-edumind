@@ -137,7 +137,7 @@ export function SearchableSelect({
                     });
                 }}
                 className={cn(
-                    'flex h-11 w-full items-center justify-between gap-3 rounded-lg border border-lme-border bg-[rgba(14,24,44,0.78)] px-4 py-2.5 text-left text-sm text-ink shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky disabled:cursor-not-allowed disabled:opacity-50',
+                    'flex h-11 w-full items-center justify-between gap-3 rounded-lg border border-lme-border bg-[var(--lme-surface-soft)] px-4 py-2.5 text-left text-sm text-ink shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky disabled:cursor-not-allowed disabled:opacity-50',
                     triggerClassName,
                 )}
             >
@@ -150,7 +150,7 @@ export function SearchableSelect({
             {isOpen && (
                 <div
                     className={cn(
-                        'absolute z-50 mt-2 w-full rounded-xl border border-lme-border bg-[rgba(11,20,37,0.98)] p-2 shadow-glass backdrop-blur-xl',
+                        'absolute z-50 mt-2 w-full rounded-xl border border-lme-border bg-[var(--lme-surface)] p-2 shadow-glass backdrop-blur-xl',
                         panelClassName,
                     )}
                 >

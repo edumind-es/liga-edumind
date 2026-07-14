@@ -240,7 +240,7 @@ export default function EditarEquipo() {
 
                     <div className="space-y-2">
                         <Label htmlFor="color">Color principal</Label>
-                        <div className="flex flex-col gap-3 rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.5)] p-4 sm:flex-row sm:items-center">
+                        <div className="flex flex-col gap-3 rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.5)] p-4 sm:flex-row sm:items-center">
                             <Input
                                 type="color"
                                 id="color"
@@ -265,7 +265,7 @@ export default function EditarEquipo() {
                         <Label htmlFor="logo">Logo del equipo (opcional)</Label>
                         {previewUrl ? (
                             <div className="space-y-3">
-                                <div className="inline-flex rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.5)] p-4">
+                                <div className="inline-flex rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.5)] p-4">
                                     <div className="relative">
                                         <img
                                             src={previewUrl}
@@ -287,7 +287,7 @@ export default function EditarEquipo() {
 
                                 <div className="flex flex-wrap items-center gap-2">
                                     <label htmlFor="logo" className="cursor-pointer">
-                                        <div className="flex items-center gap-2 rounded-full border border-lme-border bg-[rgba(11,24,44,0.42)] px-4 py-2 transition-colors hover:border-sky hover:bg-sky/10">
+                                        <div className="flex items-center gap-2 rounded-full border border-lme-border bg-[rgba(30,27,22,0.42)] px-4 py-2 transition-colors hover:border-sky hover:bg-sky/10">
                                             <Upload className="h-4 w-4 text-sub" />
                                             <span className="text-sm text-sub">Cambiar logo</span>
                                         </div>
@@ -320,7 +320,7 @@ export default function EditarEquipo() {
                             </div>
                         ) : (
                             <label htmlFor="logo" className="block cursor-pointer">
-                                <div className="rounded-2xl border-2 border-dashed border-lme-border bg-[rgba(11,24,44,0.35)] p-5 transition-colors hover:border-sky hover:bg-sky/5">
+                                <div className="rounded-2xl border-2 border-dashed border-lme-border bg-[rgba(30,27,22,0.35)] p-5 transition-colors hover:border-sky hover:bg-sky/5">
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                                         <div className="rounded-2xl border border-lme-border/70 bg-white/5 p-3">
                                             <Upload className="h-5 w-5 text-sub" />
@@ -343,7 +343,7 @@ export default function EditarEquipo() {
                     </div>
                 </FormSectionCard>
 
-                <Card className="border-red-500/25 bg-[rgba(74,12,18,0.24)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+                <Card className="border-red-500/25 bg-[rgba(74,12,18,0.24)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                     <CardContent className="space-y-6 p-6">
                         <div className="flex items-start gap-3">
                             <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-3">
@@ -382,12 +382,12 @@ export default function EditarEquipo() {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="rounded-2xl border border-lme-border/70 bg-[rgba(11,24,44,0.5)] p-4">
+                                <div className="rounded-2xl border border-lme-border/70 bg-[rgba(30,27,22,0.5)] p-4">
                                     <div className="flex items-center gap-2">
                                         <Key className="h-4 w-4 text-red-200" />
                                         <p className="text-sm font-semibold text-ink">Enlace del equipo</p>
                                     </div>
-                                    <code className="mt-3 block overflow-x-auto rounded-xl border border-lme-border/70 bg-[rgba(8,14,30,0.78)] px-3 py-3 text-xs text-ink">
+                                    <code className="mt-3 block overflow-x-auto rounded-xl border border-lme-border/70 bg-[rgba(24,22,18,0.78)] px-3 py-3 text-xs text-ink">
                                         {teamAccessUrl || 'Sin enlace disponible'}
                                     </code>
                                     <div className="mt-3 flex flex-wrap gap-2">

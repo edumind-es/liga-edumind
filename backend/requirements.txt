@@ -1,6 +1,7 @@
 fastapi==0.120.4
 starlette==0.49.1
 uvicorn[standard]==0.35.0
+gunicorn==23.0.0       # gestor de workers en producción (graceful restart)
 sqlalchemy[asyncio]==2.0.25
 alembic==1.13.1
 asyncpg==0.29.0
@@ -18,9 +19,13 @@ reportlab==4.0.9
 openpyxl==3.1.2
 pillow==12.1.1
 faker==22.0.0
+arq==0.26.3            # cola de trabajos sobre Redis (emails en background)
+aiosmtplib==3.0.2      # SMTP asíncrono (no bloquea el event loop)
 
 # Development dependencies
 pytest==8.3.5
 pytest-asyncio==0.25.3
+pytest-cov==6.0.0      # cobertura de la suite en CI
+aiosqlite==0.20.0      # BD SQLite en memoria para los tests (conftest.py)
 httpx==0.28.1
 slowapi==0.1.9

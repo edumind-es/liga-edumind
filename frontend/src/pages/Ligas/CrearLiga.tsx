@@ -102,8 +102,8 @@ function OptionCard({
             className={`
                 block cursor-pointer rounded-2xl border p-4 transition-all
                 ${checked
-                    ? 'border-mint/40 bg-mint/10 shadow-[0_12px_28px_rgba(61,218,215,0.12)]'
-                    : 'border-lme-border/80 bg-[rgba(10,20,38,0.62)] hover:border-[#8eb2eb] hover:bg-[rgba(12,24,44,0.72)]'
+                    ? 'border-mint/40 bg-mint/10 shadow-[0_12px_28px_rgba(140,194,106,0.12)]'
+                    : 'border-lme-border/80 bg-[rgba(30,27,22,0.62)] hover:border-[#8eb2eb] hover:bg-[rgba(30,27,22,0.72)]'
                 }
             `}
         >
@@ -339,7 +339,7 @@ export default function CrearLiga() {
                 />
             </div>
 
-            <Card className={isCapacityBlocked ? 'border-red-500/35 bg-red-500/10' : 'border-lme-border/90 bg-[rgba(10,20,38,0.72)]'}>
+            <Card className={isCapacityBlocked ? 'border-red-500/35 bg-red-500/10' : 'border-lme-border/90 bg-[rgba(30,27,22,0.72)]'}>
                 <CardContent className="flex flex-col gap-3 pt-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
@@ -521,7 +521,7 @@ export default function CrearLiga() {
                         />
                     </div>
 
-                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(10,20,38,0.62)] p-4">
+                    <div className="rounded-2xl border border-lme-border/80 bg-[rgba(30,27,22,0.62)] p-4">
                         <p className="text-sm font-semibold text-ink">Sustitución de slots auxiliares</p>
                         <p className="mt-1 text-xs text-sub">
                             Puedes sustituir roles auxiliares antes del bloqueo. No se permite repetir el mismo rol dentro del mismo formato.

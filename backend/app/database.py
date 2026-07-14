@@ -25,11 +25,29 @@ import redis.asyncio as aioredis
 class Base(DeclarativeBase):
     pass
 
-# Database engine
+# Motor de BD con pool dimensionado para 4 workers uvicorn + worker arq.
+# Presupuesto de conexiones (Postgres max_connections=100):
+#   4 procesos uvicorn × (pool 5 + overflow 5) = 40 máx.
+#   worker arq (pool propio pequeño)           ≈  5
+#   cron de limpieza + alembic                 ≈  5
+#   margen para psql/backups                   = resto
+# Los parámetros de pool solo aplican a Postgres: SQLite (tests) usa
+# StaticPool y no los admite.
+_pool_opts = {}
+if settings.DATABASE_URL.startswith("postgresql"):
+    _pool_opts = dict(
+        pool_size=5,           # conexiones persistentes por proceso
+        max_overflow=5,        # picos puntuales por proceso
+        pool_pre_ping=True,    # detecta conexiones muertas tras reinicios de Postgres
+        pool_recycle=1800,     # recicla conexiones cada 30 min (evita cierres por idle)
+        pool_timeout=30,
+    )
+
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    future=True
+    future=True,
+    **_pool_opts,
 )
 
 # Session maker
@@ -40,9 +58,13 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 # Redis connection pool
+# Timeouts cortos: si Redis cae, los usos (caché, throttle) degradan
+# rápido a su camino sin caché en lugar de colgar la petición
 redis_pool = aioredis.ConnectionPool.from_url(
     settings.REDIS_URL,
-    decode_responses=True
+    decode_responses=True,
+    socket_connect_timeout=2,
+    socket_timeout=2,
 )
 
 async def get_db() -> AsyncSession:

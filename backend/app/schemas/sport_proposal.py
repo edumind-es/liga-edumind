@@ -36,6 +36,14 @@ class SportProposalUpdate(BaseModel):
     status: Optional[str] = None
     # We could allow updating other fields if needed, but for now status is key.
 
+class SportProposalIntegrate(BaseModel):
+    """Ajustes opcionales del admin al integrar; si se omiten, se toman de la propuesta."""
+    codigo: Optional[str] = None
+    tipo_marcador: Optional[str] = None
+    icono: Optional[str] = None
+    permite_empate: Optional[bool] = None
+    config: Optional[Dict[str, Any]] = None
+
 class SportProposal(SportProposalBase):
     id: int
     created_at: datetime

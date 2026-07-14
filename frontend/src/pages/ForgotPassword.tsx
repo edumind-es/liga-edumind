@@ -67,7 +67,7 @@ export default function ForgotPassword() {
                                 </span>
                                 <div className="auth-login-title-row">
                                     <div className="auth-login-title-icon" aria-hidden="true">
-                                        <ShieldQuestion className="h-5 w-5 text-[#040614]" />
+                                        <ShieldQuestion className="h-5 w-5 text-[#1b1916]" />
                                     </div>
                                     <h1 id="forgot-title" className="auth-login-title">
                                         {t('auth.forgotPasswordTitle', '¿Olvidaste tu contraseña?')}
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
 
                             {sent ? (
                                 <div className="auth-login-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                                    <div className="p-4 rounded-xl border border-lme-border bg-[rgba(11,20,37,0.5)] text-center">
+                                    <div className="p-4 rounded-xl border border-lme-border bg-[rgba(30,27,22,0.5)] text-center">
                                         <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-3" />
                                         <p className="text-ink text-sm font-semibold mb-2">
                                             {t('auth.resetEmailSent', 'Correo enviado')}

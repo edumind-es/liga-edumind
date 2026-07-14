@@ -119,6 +119,9 @@ export default function VerLiga() {
     useEffect(() => {
         if (!ligaId) return;
 
+        let intervalId: number | undefined;
+        let eventSource: EventSource | null = null;
+
         const loadTeacherPendingCount = async () => {
             try {
                 const response = await apiClient.client.get('/pending-actions/count', {
@@ -130,12 +133,43 @@ export default function VerLiga() {
             }
         };
 
-        void loadTeacherPendingCount();
-        const intervalId = window.setInterval(() => {
+        const iniciarPolling = () => {
+            if (intervalId) return;
             void loadTeacherPendingCount();
-        }, 15000);
+            intervalId = window.setInterval(() => {
+                void loadTeacherPendingCount();
+            }, 15000);
+        };
 
-        return () => window.clearInterval(intervalId);
+        // SSE: una conexión persistente en lugar de una petición cada 15s.
+        // Si el stream no está disponible, degradamos al polling clásico.
+        if (typeof EventSource !== 'undefined') {
+            const baseURL = apiClient.client.defaults.baseURL ?? '/api/v1';
+            eventSource = new EventSource(
+                `${baseURL}/pending-actions/stream?liga_id=${ligaId}`,
+                { withCredentials: true },
+            );
+            eventSource.addEventListener('pendientes', (event) => {
+                try {
+                    const data = JSON.parse((event as MessageEvent).data);
+                    setTeacherPendingCount(Number(data?.count ?? 0));
+                } catch {
+                    // dato malformado: se ignora y el siguiente evento corrige
+                }
+            });
+            eventSource.onerror = () => {
+                eventSource?.close();
+                eventSource = null;
+                iniciarPolling();
+            };
+        } else {
+            iniciarPolling();
+        }
+
+        return () => {
+            eventSource?.close();
+            if (intervalId) window.clearInterval(intervalId);
+        };
     }, [ligaId]);
 
     const copyToClipboard = async (value: string, label: string) => {
@@ -335,7 +369,7 @@ export default function VerLiga() {
             </PageHeader>
 
             {/* ══ Hub unificado de liga ══ */}
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardContent className="space-y-6 p-6">
 
                     {/* Sección operativa */}
@@ -500,7 +534,7 @@ export default function VerLiga() {
                 </CardContent>
             </Card>
 
-            <Card id="gestiones-pendientes-liga" className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_38px_rgba(3,10,28,0.18)]">
+            <Card id="gestiones-pendientes-liga" className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_38px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Gestiones pendientes de esta liga</CardTitle>
                     <CardDescription>

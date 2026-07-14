@@ -13,6 +13,7 @@ services:
       - /var/www/.secrets/liga_edumind.env
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - EMAIL_QUEUE_REDIS_URL=redis://redis:6379/2
       - DEBUG=False
     volumes:
       - ./backend:/app
@@ -29,6 +30,34 @@ services:
       timeout: 5s
       retries: 3
     command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+
+  # Worker de emails (cola arq); --watch recarga al editar el código
+  worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: liga-edumind-worker-dev
+    env_file:
+      - /var/www/.secrets/liga_edumind.env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - EMAIL_QUEUE_REDIS_URL=redis://redis:6379/2
+      - DEBUG=False
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "arq", "--check", "app.workers.email_worker.WorkerSettings" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    command: arq app.workers.email_worker.WorkerSettings --watch /app/app
 
   db:
     image: postgres:15-alpine@sha256:aa7b1ef595e165f0b780162e3a41edd0a7ed3ea672eb8a0f81615ba725e62bc5

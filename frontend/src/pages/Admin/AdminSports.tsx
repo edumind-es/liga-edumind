@@ -213,7 +213,7 @@ export default function AdminSports() {
                 <Badge variant="accent">Edición directa</Badge>
             </ListToolbar>
 
-            <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]">
+            <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]">
                 <CardHeader className="border-b border-lme-border/70">
                     <CardTitle>Catálogo editable</CardTitle>
                     <CardDescription>

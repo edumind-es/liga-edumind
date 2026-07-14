@@ -212,7 +212,7 @@ export default function ExpressMatch() {
         : 'Cuando acabes el marcador, pasa directamente al acta para valorar juego limpio, arbitraje y grada.';
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#040614] via-[#0a0f24] to-[#040614] p-4 pb-32 lg:pb-6">
+        <div className="min-h-screen bg-gradient-to-br from-[#1b1916] via-[#242019] to-[#1b1916] p-4 pb-32 lg:pb-6">
             <div className="mx-auto max-w-6xl space-y-6 py-6 sm:py-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <Link to="/express" className="inline-flex items-center text-sm text-sub transition-colors hover:text-mint">
@@ -377,7 +377,7 @@ export default function ExpressMatch() {
             </div>
 
             <div className="fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 px-4 lg:hidden">
-                <div className="mx-auto max-w-3xl rounded-3xl border border-lme-border bg-[rgba(8,14,30,0.92)] p-3 shadow-[0_22px_40px_rgba(3,10,28,0.35)] backdrop-blur-xl">
+                <div className="mx-auto max-w-3xl rounded-3xl border border-lme-border bg-[rgba(24,22,18,0.92)] p-3 shadow-[0_22px_40px_rgba(10,9,7,0.35)] backdrop-blur-xl">
                     <div className="mb-3 flex items-center justify-between gap-3">
                         <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-ink">

@@ -29,7 +29,7 @@ const LMEButton = forwardRef<HTMLButtonElement, LMEButtonProps>(
         const baseStyles = 'font-semibold transition-all duration-200 inline-flex items-center justify-center rounded-full';
 
         const variantStyles = {
-            primary: 'bg-gradient-to-r from-mint to-sky text-[#040614] shadow-[0_12px_28px_rgba(61,218,215,0.25)] hover:shadow-[0_18px_36px_rgba(61,218,215,0.35)] hover:-translate-y-0.5',
+            primary: 'bg-gradient-to-r from-mint to-sky text-[#1b1916] shadow-[0_12px_28px_rgba(140,194,106,0.25)] hover:shadow-[0_18px_36px_rgba(140,194,106,0.35)] hover:-translate-y-0.5',
             outline: 'border border-lme-border bg-transparent text-ink hover:bg-white/5 hover:border-sub',
             ghost: 'bg-transparent hover:bg-white/5 text-sub hover:text-ink border-0'
         };

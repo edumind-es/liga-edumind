@@ -51,9 +51,9 @@ import {
 type StatusFilter = 'all' | 'active' | 'draft';
 
 const LIGA_TONES = [
-    { color: 'var(--mint)',        glow: 'rgba(82,217,199,0.12)'  },
-    { color: 'var(--sky)',         glow: 'rgba(74,132,255,0.12)'  },
-    { color: 'var(--vio)',         glow: 'rgba(142,121,255,0.12)' },
+    { color: 'var(--mint)',        glow: 'rgba(140,194,106,0.12)'  },
+    { color: 'var(--sky)',         glow: 'rgba(106,163,191,0.12)'  },
+    { color: 'var(--vio)',         glow: 'rgba(240,121,90,0.12)' },
     { color: 'var(--lme-warning)', glow: 'rgba(242,185,73,0.12)'  },
 ] as const;
 
@@ -192,7 +192,7 @@ export default function MisLigas() {
                     </ListToolbar>
 
                     {filteredLigas.length === 0 ? (
-                        <Card className="border-lme-border/90 bg-[rgba(10,20,38,0.72)]">
+                        <Card className="border-lme-border/90 bg-[rgba(30,27,22,0.72)]">
                             <CardContent className="py-12 text-center">
                                 <p className="text-lg font-semibold text-ink">No hay ligas que coincidan con la búsqueda</p>
                                 <p className="mt-2 text-sm text-sub">Prueba con otro término o cambia el filtro activo.</p>
@@ -206,7 +206,7 @@ export default function MisLigas() {
                                 <Card
                                     key={liga.id}
                                     style={{ borderTopColor: tone.color }}
-                                    className="relative flex h-full flex-col overflow-hidden border-t-[3px] border-lme-border/90 bg-[rgba(10,20,38,0.74)] shadow-[0_18px_38px_rgba(3,10,28,0.18)] transition-transform duration-200 hover:-translate-y-1"
+                                    className="relative flex h-full flex-col overflow-hidden border-t-[3px] border-lme-border/90 bg-[rgba(30,27,22,0.74)] shadow-[0_18px_38px_rgba(10,9,7,0.18)] transition-transform duration-200 hover:-translate-y-1"
                                 >
                                     <div
                                         className="absolute inset-x-0 top-0 h-24 pointer-events-none"

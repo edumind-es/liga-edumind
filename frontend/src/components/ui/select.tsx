@@ -35,9 +35,9 @@ const selectTriggerVariants = cva(
     variants: {
       variant: {
         default:
-          "border-lme-border bg-[rgba(14,24,44,0.78)] text-ink focus:border-sky focus:ring-sky",
+          "border-lme-border bg-[var(--lme-surface-soft)] text-ink focus:border-sky focus:ring-sky",
         editorial:
-          "surface-public-select border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] data-[placeholder]:text-[var(--editorial-muted)] focus:border-[#4f76b6] focus:ring-[#4f76b6] shadow-[0_1px_2px_rgba(24,39,75,0.08)]",
+          "surface-public-select border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] data-[placeholder]:text-[var(--editorial-muted)] focus:border-[#4f76b6] focus:ring-[#4f76b6] shadow-[0_1px_2px_rgba(28,26,22,0.08)]",
       },
     },
     defaultVariants: {
@@ -51,7 +51,7 @@ const selectContentVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-lme-border bg-[rgba(14,24,44,0.96)] text-ink",
+        default: "border-lme-border bg-[var(--lme-surface)] text-ink",
         editorial:
           "surface-public-select-content border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] shadow-[0_20px_40px_rgba(55,86,138,0.16)] [--select-item-text:var(--editorial-muted)] [--select-item-focus-bg:rgba(79,118,182,0.12)] [--select-item-focus-text:var(--editorial-ink)] [--select-indicator:#315b9a]",
       },

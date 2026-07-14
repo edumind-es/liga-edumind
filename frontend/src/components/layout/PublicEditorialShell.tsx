@@ -47,7 +47,7 @@ export default function PublicEditorialShell({
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="flex items-center gap-3">
                             <div className="p-2 rounded-lg border border-[var(--editorial-border)] bg-[var(--editorial-highlight)]">
-                                <Shield className="h-5 w-5 text-[#23426f]" />
+                                <Shield className="h-5 w-5 text-[#2f6076]" />
                             </div>
                             <div>
                                 <p className="font-display text-xl leading-tight text-[var(--editorial-ink)]">Liga EDUmind</p>

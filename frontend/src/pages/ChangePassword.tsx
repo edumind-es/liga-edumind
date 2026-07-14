@@ -80,7 +80,7 @@ export default function ChangePassword() {
     return (
         <DashboardLayout>
             <div className="max-w-md mx-auto mt-10">
-                <div className="rounded-xl border border-lme-border bg-[rgba(13,22,38,0.82)] p-6 shadow-glass backdrop-blur-xl md:p-8">
+                <div className="rounded-xl border border-lme-border bg-[rgba(30,27,22,0.82)] p-6 shadow-glass backdrop-blur-xl md:p-8">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="rounded-lg bg-indigo-500/15 p-2 text-indigo-300">
                             <Lock className="h-6 w-6" />
@@ -112,7 +112,7 @@ export default function ChangePassword() {
                                 required
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full rounded-lg border border-lme-border bg-[rgba(14,24,44,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full rounded-lg border border-lme-border bg-[rgba(30,27,22,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -127,7 +127,7 @@ export default function ChangePassword() {
                                 minLength={6}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full rounded-lg border border-lme-border bg-[rgba(14,24,44,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full rounded-lg border border-lme-border bg-[rgba(30,27,22,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
                                 placeholder="••••••••"
                             />
                             <p className="mt-1 text-xs text-sub">Mínimo 6 caracteres.</p>
@@ -142,7 +142,7 @@ export default function ChangePassword() {
                                 required
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full rounded-lg border border-lme-border bg-[rgba(14,24,44,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full rounded-lg border border-lme-border bg-[rgba(30,27,22,0.78)] px-3 py-2 text-ink outline-none transition-all placeholder:text-sub/70 focus:ring-2 focus:ring-indigo-500"
                                 placeholder="••••••••"
                             />
                         </div>

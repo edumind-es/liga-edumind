@@ -109,7 +109,7 @@ createRoot(document.getElementById('root')!).render(
         className="z-[70]"
         toastOptions={{
           style: {
-            background: 'rgba(14, 24, 44, 0.95)',
+            background: 'rgba(30,27,22, 0.95)',
             border: '1px solid rgba(128, 161, 214, 0.4)',
             color: '#f2f7ff',
           },

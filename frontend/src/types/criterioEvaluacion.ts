@@ -27,6 +27,9 @@ export type CategoriaEvaluacion =
     | 'jugador'
     | 'general';
 
+// Mundo EDUfis al que contribuye un criterio (Los Cinco Mundos)
+export type MundoEvaluacion = 'fisico' | 'mental' | 'emocional' | 'social' | 'interior';
+
 export interface CriterioEvaluacion {
     id: number;
     liga_id: number;
@@ -34,6 +37,7 @@ export interface CriterioEvaluacion {
     codigo: string;
     descripcion?: string;
     categoria: CategoriaEvaluacion;
+    mundo?: MundoEvaluacion | null;
     escala_min: number;
     escala_max: number;
     umbral_alto: number;
@@ -52,6 +56,7 @@ export interface CriterioEvaluacionCreate {
     codigo: string;
     descripcion?: string;
     categoria?: CategoriaEvaluacion;
+    mundo?: MundoEvaluacion | null;
     escala_min?: number;
     escala_max?: number;
     umbral_alto?: number;
@@ -68,6 +73,7 @@ export interface CriterioEvaluacionUpdate {
     codigo?: string;
     descripcion?: string;
     categoria?: CategoriaEvaluacion;
+    mundo?: MundoEvaluacion | null;
     escala_min?: number;
     escala_max?: number;
     umbral_alto?: number;

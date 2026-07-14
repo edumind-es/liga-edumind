@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2024-2025 EDUmind - Los Mundos Edufis
- * Author: Luis Vilela Acuna
+ * Author: Luis Vilela Acuña
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -193,7 +193,7 @@ export default function PublicDashboard() {
                 {liga.temporada && (
                     <Badge
                         variant="outline"
-                        className="border-[#a8bfdf] bg-[#edf4ff] text-[#254372]"
+                        className="border-[#a8bfdf] bg-[#edf4ff] text-[#2f6076]"
                     >
                         Temporada {liga.temporada}
                     </Badge>
@@ -277,13 +277,13 @@ export default function PublicDashboard() {
                                 <div className="overflow-x-auto">
                                     <Table variant="editorial">
                                         <TableHeader>
-                                            <TableRow className="border-[var(--editorial-border)] bg-[rgba(74,132,255,0.08)]">
-                                                <TableHead className="w-[62px] text-center text-[#294b7c]">Pos</TableHead>
-                                                <TableHead className="text-[#294b7c]">Equipo</TableHead>
-                                                <TableHead className="text-center text-[#294b7c]">PJ</TableHead>
-                                                <TableHead className="text-center text-[#294b7c]">Dep</TableHead>
-                                                <TableHead className="text-center text-[#294b7c]">Edu</TableHead>
-                                                <TableHead className="text-center text-[#294b7c]">Total</TableHead>
+                                            <TableRow className="border-[var(--editorial-border)] bg-[rgba(106,163,191,0.08)]">
+                                                <TableHead className="w-[62px] text-center text-[#2f6076]">Pos</TableHead>
+                                                <TableHead className="text-[#2f6076]">Equipo</TableHead>
+                                                <TableHead className="text-center text-[#2f6076]">PJ</TableHead>
+                                                <TableHead className="text-center text-[#2f6076]">Dep</TableHead>
+                                                <TableHead className="text-center text-[#2f6076]">Edu</TableHead>
+                                                <TableHead className="text-center text-[#2f6076]">Total</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -338,7 +338,7 @@ export default function PublicDashboard() {
                                                 <span className="text-[var(--editorial-ink)]">{jornada.nombre}</span>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-[#a9bfdc] bg-[#edf4ff] text-[#2f4f7f]"
+                                                    className="border-[#a9bfdc] bg-[#edf4ff] text-[#2f6076]"
                                                 >
                                                     {formatPublicDate(jornada.fecha_inicio)}
                                                 </Badge>
@@ -373,7 +373,7 @@ export default function PublicDashboard() {
                                                             </Badge>
                                                         </div>
 
-                                                        <div className="flex items-center justify-between rounded-md border border-[var(--editorial-border)] bg-[rgba(74,132,255,0.08)] px-2 py-1.5">
+                                                        <div className="flex items-center justify-between rounded-md border border-[var(--editorial-border)] bg-[rgba(106,163,191,0.08)] px-2 py-1.5">
                                                             <span className="flex items-center gap-1 text-xs text-[var(--editorial-muted)]">
                                                                 <ListChecks className="h-3.5 w-3.5" />
                                                                 Marcador

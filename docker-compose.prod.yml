@@ -57,6 +57,7 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379/0
       - RATE_LIMIT_STORAGE_URL=redis://redis:6379/1
+      - EMAIL_QUEUE_REDIS_URL=redis://redis:6379/2
       - AUTHENTIK_CLIENT_SECRET_FILE=/run/secrets/liga_edumind_authentik_client_secret
       - DEBUG=False
       - ENVIRONMENT=production
@@ -82,8 +83,40 @@ services:
     restart: always
     ports:
       - "127.0.0.1:8001:8001" # Exposed only to localhost for Nginx proxy
-    # Production Command: multiple workers, no reload
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4 --log-config /app/logging.conf
+    # Producción: gunicorn gestiona los 4 workers uvicorn (reinicios
+    # graceful y supervisión de workers, a diferencia de uvicorn --workers)
+    command: gunicorn app.main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8001 --graceful-timeout 30 --log-config /app/logging.conf
+
+  # ==========================================
+  # Worker de emails (cola arq sobre Redis)
+  # ==========================================
+  worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: liga-edumind-worker-prod
+    env_file:
+      - /var/www/.secrets/liga_edumind.env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - EMAIL_QUEUE_REDIS_URL=redis://redis:6379/2
+      - DEBUG=False
+      - ENVIRONMENT=production
+    networks:
+      - liga_net
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "arq", "--check", "app.workers.email_worker.WorkerSettings" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: always
+    command: arq app.workers.email_worker.WorkerSettings
 
 networks:
   liga_net:

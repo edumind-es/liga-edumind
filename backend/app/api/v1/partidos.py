@@ -18,7 +18,7 @@
 
 import secrets
 from datetime import datetime, timezone
-from typing import List, Optional, Iterable
+from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from fastapi.responses import Response
@@ -34,15 +34,24 @@ from app.models.partido_nota import PartidoNota
 from app.models.evaluacion_personalizada import EvaluacionPersonalizada
 from app.models.criterio_evaluacion import CriterioEvaluacion
 from app.schemas.partido import (
-    PartidoCreate, 
-    PartidoResponse, 
-    PartidoDetailed, 
-    PartidoUpdateMarcador, 
-    PartidoUpdateEvaluacion
+    PartidoCreate,
+    PartidoResponse,
+    PartidoDetailed,
+    PartidoUpdateMarcador,
+    PartidoUpdateEvaluacion,
+    PartidoActaCompleta
 )
 from app.schemas.criterio_evaluacion import EvaluacionPersonalizadaCreate
 from app.api.v1.auth import get_current_user
 from app.services.clasificacion_service import ClasificacionService
+from app.services.evaluacion_clasica import aplicar_evaluacion_clasica, es_evaluacion_clasica_completa
+from app.services.evaluacion_personalizada import (
+    aplicar_puntos_personalizados,
+    build_criterios_con_valores,
+    es_personalizada_completa,
+    evaluacion_personalizada_version,
+    refresh_evaluacion_completa,
+)
 from app.services.league_teacher_access import (
     OPEN_MATCHES,
     VALIDATE_MATCHES,
@@ -55,135 +64,14 @@ from app.services.match_role_schema_service import force_lock_schema, get_or_cre
 from app.utils.versioning import stable_hash
 
 
-def _evaluacion_personalizada_version(evaluaciones: List[EvaluacionPersonalizada]) -> str:
-    payload = [
-        {
-            "criterio_id": e.criterio_id,
-            "equipo_id": e.equipo_id,
-            "valor": e.valor,
-        }
-        for e in evaluaciones
-    ]
-    payload.sort(key=lambda x: (x["criterio_id"], -1 if x["equipo_id"] is None else x["equipo_id"], x["valor"]))
-    return stable_hash(payload)
-
-
-def _is_classic_evaluacion_completa(partido: Partido) -> bool:
-    if partido.puntos_juego_limpio_local is None or partido.puntos_juego_limpio_visitante is None:
-        return False
-
-    if partido.arbitro_id:
-        if any(
-            value is None
-            for value in (
-                partido.arbitro_conocimiento,
-                partido.arbitro_gestion,
-                partido.arbitro_apoyo,
-            )
-        ):
-            return False
-
-    if partido.tutor_grada_local_id:
-        if any(
-            value is None
-            for value in (
-                partido.grada_animar_local,
-                partido.grada_respeto_local,
-                partido.grada_participacion_local,
-            )
-        ):
-            return False
-
-    if partido.tutor_grada_visitante_id:
-        if any(
-            value is None
-            for value in (
-                partido.grada_animar_visitante,
-                partido.grada_respeto_visitante,
-                partido.grada_participacion_visitante,
-            )
-        ):
-            return False
-
-    return True
-
-
-def _is_personalizada_completa(
-    partido: Partido,
-    criterios: Iterable[CriterioEvaluacion],
-    evaluaciones: Iterable[EvaluacionPersonalizada],
-) -> bool:
-    criterios_list = list(criterios)
-    if not criterios_list:
-        return True
-
-    evals = list(evaluaciones)
-    eval_pairs = {(e.criterio_id, e.equipo_id) for e in evals}
-
-    for criterio in criterios_list:
-        if criterio.categoria == 'grada_local':
-            if (criterio.id, partido.equipo_local_id) not in eval_pairs:
-                return False
-        elif criterio.categoria == 'grada_visitante':
-            if (criterio.id, partido.equipo_visitante_id) not in eval_pairs:
-                return False
-        else:
-            if not any(e.criterio_id == criterio.id for e in evals):
-                return False
-
-    return True
-
-
-async def _refresh_evaluacion_completa(partido: Partido, db: AsyncSession) -> bool:
-    if partido.liga.modo_evaluacion == 'personalizado':
-        criterios_result = await db.execute(
-            select(CriterioEvaluacion)
-            .where(CriterioEvaluacion.liga_id == partido.liga_id)
-            .where(CriterioEvaluacion.activo == True)
-        )
-        criterios = criterios_result.scalars().all()
-        evaluaciones = partido.evaluaciones_personalizadas or []
-        partido.evaluacion_completa = _is_personalizada_completa(partido, criterios, evaluaciones)
-    else:
-        partido.evaluacion_completa = _is_classic_evaluacion_completa(partido)
-
-    return partido.evaluacion_completa
-
-async def _build_criterios_con_valores(partido: Partido, db: AsyncSession):
-    criterios_result = await db.execute(
-        select(CriterioEvaluacion)
-        .where(CriterioEvaluacion.liga_id == partido.liga_id)
-        .where(CriterioEvaluacion.activo == True)
-        .order_by(CriterioEvaluacion.orden)
-    )
-    criterios = criterios_result.scalars().all()
-
-    evaluaciones_map = {
-        (e.criterio_id, e.equipo_id): e.valor
-        for e in partido.evaluaciones_personalizadas
-    }
-
-    criterios_con_valores = []
-    for c in criterios:
-        criterio_data = {
-            "id": c.id,
-            "nombre": c.nombre,
-            "codigo": c.codigo,
-            "categoria": c.categoria,
-            "escala_min": c.escala_min,
-            "escala_max": c.escala_max,
-            "icono": c.icono,
-            "valor": evaluaciones_map.get((c.id, None), None)
-        }
-
-        if c.categoria in ['grada_local', 'grada_visitante']:
-            equipo_id = partido.equipo_local_id if c.categoria == 'grada_local' else partido.equipo_visitante_id
-            criterio_data["valor"] = evaluaciones_map.get((c.id, equipo_id), None)
-            criterio_data["equipo_id"] = equipo_id
-
-        criterios_con_valores.append(criterio_data)
-
-    return criterios_con_valores
+# Lógica de evaluación en app/services/: clásica y personalizada.
+# Se conservan los nombres locales para no tocar los llamantes del router.
+_is_classic_evaluacion_completa = es_evaluacion_clasica_completa
+_aplicar_evaluacion_clasica = aplicar_evaluacion_clasica
+_evaluacion_personalizada_version = evaluacion_personalizada_version
+_is_personalizada_completa = es_personalizada_completa
+_refresh_evaluacion_completa = refresh_evaluacion_completa
+_build_criterios_con_valores = build_criterios_con_valores
 
 router = APIRouter()
 
@@ -511,72 +399,7 @@ async def update_evaluacion(
                 },
             },
         )
-    for key, value in update_data.items():
-        setattr(partido, key, value)
-        
-    # Calcular media árbitro si aplica
-    if any(k in update_data for k in ['arbitro_conocimiento', 'arbitro_gestion', 'arbitro_apoyo']):
-        vals = [
-            partido.arbitro_conocimiento,
-            partido.arbitro_gestion,
-            partido.arbitro_apoyo
-        ]
-        # Filter None values
-        valid_vals = [v for v in vals if v is not None]
-        
-        if valid_vals:
-            partido.arbitro_media = sum(valid_vals) / len(valid_vals)
-            # Sistema de puntuación: +2 puntos si logra evaluación positiva (>= 5)
-            # Configurable via liga.config
-            config = partido.liga.config or {}
-            arbitro_points = config.get("arbitro_points", 2)
-            partido.puntos_arbitro = arbitro_points if partido.arbitro_media >= 5 else 0
-        
-    # Calcular media grada local
-    if any(k in update_data for k in ['grada_animar_local', 'grada_respeto_local', 'grada_participacion_local']):
-        vals = [
-            partido.grada_animar_local,
-            partido.grada_respeto_local,
-            partido.grada_participacion_local
-        ]
-        valid_vals = [v for v in vals if v is not None]
-        if valid_vals:
-            media_local = sum(valid_vals) / len(valid_vals)
-            # Sistema de puntuación normalizado (escala 0-4):
-            # >75% (>3) → 1 punto | 50-75% (2-3) → 0.5 puntos | <50% (<2) → 0 puntos
-            config = partido.liga.config or {}
-            grada_max = config.get("grada_max_points", 1)
-            grada_mid = config.get("grada_mid_points", 0.5)
-            
-            if media_local > 3:
-                partido.puntos_grada_local = grada_max
-            elif media_local >= 2:
-                partido.puntos_grada_local = grada_mid
-            else:
-                partido.puntos_grada_local = 0
-            
-    # Calcular media grada visitante
-    if any(k in update_data for k in ['grada_animar_visitante', 'grada_respeto_visitante', 'grada_participacion_visitante']):
-        vals = [
-            partido.grada_animar_visitante,
-            partido.grada_respeto_visitante,
-            partido.grada_participacion_visitante
-        ]
-        valid_vals = [v for v in vals if v is not None]
-        if valid_vals:
-            media_visitante = sum(valid_vals) / len(valid_vals)
-            # Sistema de puntuación normalizado (escala 0-4):
-            # >75% (>3) → 1 punto | 50-75% (2-3) → 0.5 puntos | <50% (<2) → 0 puntos
-            config = partido.liga.config or {}
-            grada_max = config.get("grada_max_points", 1)
-            grada_mid = config.get("grada_mid_points", 0.5)
-            
-            if media_visitante > 3:
-                partido.puntos_grada_visitante = grada_max
-            elif media_visitante >= 2:
-                partido.puntos_grada_visitante = grada_mid
-            else:
-                partido.puntos_grada_visitante = 0
+    _aplicar_evaluacion_clasica(partido, update_data)
 
     partido.evaluacion_completa = _is_classic_evaluacion_completa(partido)
 
@@ -657,6 +480,107 @@ async def finalizar_partido(
     )
     
     return partido
+
+@router.put("/{partido_id}/acta", response_model=PartidoResponse)
+async def registrar_acta_completa(
+    partido_id: int,
+    acta: PartidoActaCompleta,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Registra el acta completa en UN solo paso: marcador + evaluación
+    educativa + finalización, en una única transacción. Sustituye para el
+    docente las 3 llamadas encadenadas (PUT /marcador, /evaluacion,
+    /finalizar), que siguen disponibles para flujos parciales.
+    Solo para ligas en modo de evaluación clásico.
+    """
+    query = select(Partido).filter(Partido.id == partido_id).options(
+        selectinload(Partido.liga),
+        selectinload(Partido.tipo_deporte),
+        selectinload(Partido.evaluaciones_personalizadas)
+    )
+    result = await db.execute(query)
+    partido = result.scalar_one_or_none()
+
+    if not partido:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+
+    # Finalizar exige el permiso de validación (superconjunto de abrir partidos)
+    await ensure_liga_permission(
+        db,
+        partido.liga,
+        current_user,
+        VALIDATE_MATCHES,
+        forbidden_detail="No tienes permisos para registrar el acta de este partido",
+    )
+
+    if partido.finalizado:
+        raise HTTPException(status_code=400, detail="El partido ya está finalizado")
+
+    if partido.liga.modo_evaluacion == 'personalizado':
+        raise HTTPException(
+            status_code=400,
+            detail="Esta liga usa evaluación personalizada: usa /marcador, /evaluacion-personalizada y /finalizar."
+        )
+
+    # Control de conflictos de ambas versiones en una sola respuesta
+    datos = acta.model_dump(exclude_unset=True)
+    expected_marcador = datos.pop("expected_marcador_version", None)
+    expected_evaluacion = datos.pop("expected_version", None)
+    marcador = datos.pop("marcador")
+    conflictos = []
+    if not expected_marcador or expected_marcador != partido.marcador_version:
+        conflictos.append("marcador")
+    if not expected_evaluacion or expected_evaluacion != partido.evaluacion_version:
+        conflictos.append("evaluacion")
+    if conflictos:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "message": f"Conflicto de acta ({', '.join(conflictos)}): el servidor tiene una versión más reciente o falta expected_version.",
+                "serverData": {
+                    "id": partido.id,
+                    "marcador": partido.marcador or {},
+                    "marcador_version": partido.marcador_version,
+                    "evaluacion_version": partido.evaluacion_version,
+                },
+            },
+        )
+
+    # 1. Marcador y puntos deportivos
+    partido.marcador = marcador
+    partido.calcular_puntos_desde_marcador()
+
+    # 2. Evaluación educativa (misma lógica que PUT /evaluacion)
+    _aplicar_evaluacion_clasica(partido, datos)
+    partido.evaluacion_completa = _is_classic_evaluacion_completa(partido)
+    if not partido.evaluacion_completa:
+        # get_db hace rollback al propagarse la excepción: no queda nada a medias
+        raise HTTPException(
+            status_code=400,
+            detail="El acta está incompleta: faltan campos de la evaluación educativa."
+        )
+
+    # 3. Finalización
+    partido.finalizado = True
+
+    await db.commit()
+    await db.refresh(partido)
+
+    await ClasificacionService.schedule_stats_updates(
+        [
+            partido.equipo_local_id,
+            partido.equipo_visitante_id,
+            partido.arbitro_id,
+            partido.tutor_grada_local_id,
+            partido.tutor_grada_visitante_id,
+        ],
+        force=True
+    )
+
+    return partido
+
 
 @router.delete("/{partido_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_partido(
@@ -949,71 +873,25 @@ async def update_evaluacion_personalizada(
             db.add(nueva_eval)
     
     
-    # Calcular puntos educativos basados en umbrales de criterios
-    # Acumuladores de puntos para cada equipo (local y visitante)
-    puntos_local = 0.0
-    puntos_visitante = 0.0
-    puntos_grada_local = 0.0
-    puntos_grada_visitante = 0.0
-    puntos_arbitro = 0.0
-    
-    # Obtener todas las evaluaciones actualizadas
+    # Obtener todas las evaluaciones actualizadas y repartir puntos por umbrales
     evaluaciones_actuales = await db.execute(
         select(EvaluacionPersonalizada, CriterioEvaluacion)
         .join(CriterioEvaluacion)
         .where(EvaluacionPersonalizada.partido_id == partido_id)
     )
     datos_evaluacion = evaluaciones_actuales.all()
-    
-    # Mapa de equipos del partido para saber cuál es local y visitante
-    id_local = partido.equipo_local_id
-    id_visitante = partido.equipo_visitante_id
-    
-    for evaluacion, criterio in datos_evaluacion:
-        puntos_obtenidos = 0.0
-        
-        # Calcular puntos según umbrales definidos en el criterio
-        if evaluacion.valor >= criterio.umbral_alto:
-            puntos_obtenidos = criterio.puntos_alto
-        elif evaluacion.valor >= criterio.umbral_medio:
-            puntos_obtenidos = criterio.puntos_medio
-            
-        # Determinar a qué apartado asignar los puntos
-        if criterio.categoria == 'grada_local':
-            puntos_grada_local += puntos_obtenidos
-            continue
-        if criterio.categoria == 'grada_visitante':
-            puntos_grada_visitante += puntos_obtenidos
-            continue
-        if criterio.categoria == 'arbitro':
-            puntos_arbitro += puntos_obtenidos
-            continue
 
-        # 1. Si el criterio es específico de equipo, usar equipo_id de la evaluación
-        if evaluacion.equipo_id:
-            if evaluacion.equipo_id == id_local:
-                puntos_local += puntos_obtenidos
-            elif evaluacion.equipo_id == id_visitante:
-                puntos_visitante += puntos_obtenidos
-        # 2. Si el criterio es general/jugador sin equipo_id, sumarlo a ambos
-        elif criterio.categoria in ('general', 'jugador'):
-            puntos_local += puntos_obtenidos
-            puntos_visitante += puntos_obtenidos
+    puntos = aplicar_puntos_personalizados(partido, datos_evaluacion)
+    puntos_local = puntos["local"]
+    puntos_visitante = puntos["visitante"]
 
-    # Guardar puntos calculados en los campos "contenedor" de puntos educativos
-    partido.puntos_juego_limpio_local = int(puntos_local) # Cast a int si el modelo lo requiere, o float si soporta
-    partido.puntos_juego_limpio_visitante = int(puntos_visitante)
-    partido.puntos_grada_local = puntos_grada_local
-    partido.puntos_grada_visitante = puntos_grada_visitante
-    partido.puntos_arbitro = int(puntos_arbitro)
-    
     criterios_activos_result = await db.execute(
         select(CriterioEvaluacion)
         .where(CriterioEvaluacion.liga_id == partido.liga_id)
         .where(CriterioEvaluacion.activo == True)
     )
     criterios_activos = criterios_activos_result.scalars().all()
-    partido.evaluacion_completa = _is_personalizada_completa(
+    partido.evaluacion_completa = es_personalizada_completa(
         partido,
         criterios_activos,
         [e for e, _ in datos_evaluacion],

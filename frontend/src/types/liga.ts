@@ -304,6 +304,10 @@ export interface Marcador {
     [key: string]: unknown;
 }
 
+// Los Cinco Mundos EDUfis (orden canónico del pentágono)
+export const MUNDOS = ['fisico', 'mental', 'emocional', 'social', 'interior'] as const;
+export type Mundo = (typeof MUNDOS)[number];
+
 export interface ClasificacionItem {
     equipo_id: number;
     equipo_nombre: string;
@@ -318,6 +322,8 @@ export interface ClasificacionItem {
     puntos_juego_limpio: number;
     puntos_arbitro: number;
     puntos_grada: number;
+    // Perfil por mundos (opcional: servidores antiguos no lo envían)
+    mundos?: Record<Mundo, number>;
 }
 
 export type PartidoNotaTipo = 'observacion' | 'incidencia' | 'evidencia';

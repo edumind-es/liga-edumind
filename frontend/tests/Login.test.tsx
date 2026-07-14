@@ -77,12 +77,13 @@ describe('Login', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Entrar en Liga EDUmind' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Acceder con EDUmind' })).toBeInTheDocument()
+    // La página actual ya no usa i18n para estos textos: son literales
+    expect(screen.getByRole('heading', { name: 'Liga EDUmind' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Acceder con EDUmind/ })).toBeInTheDocument()
 
-    await user.type(screen.getByLabelText('Codigo'), 'docente01')
-    await user.type(screen.getByLabelText('Contrasena'), 'Clave#123')
-    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+    await user.type(screen.getByLabelText(/Usuario o email/), 'docente01')
+    await user.type(screen.getByLabelText(/Contraseña/), 'Clave#123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
 
     expect(authMocks.clearError).toHaveBeenCalled()
     expect(authMocks.login).toHaveBeenCalledWith('docente01', 'Clave#123')

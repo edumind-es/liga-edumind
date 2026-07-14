@@ -13,7 +13,7 @@ interface VisualAlertProps {
 }
 
 const colorMap = {
-    info: 'rgba(61, 218, 215, 0.3)',     // mint
+    info: 'rgba(140,194,106, 0.3)',     // mint
     success: 'rgba(34, 197, 94, 0.3)',   // green
     warning: 'rgba(234, 179, 8, 0.3)',   // yellow
     error: 'rgba(239, 68, 68, 0.3)',     // red

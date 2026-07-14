@@ -56,6 +56,25 @@ from app.database import Base, get_db
 # Import all models to ensure they are registered in Base.metadata
 from app.models import User, Liga, Equipo, TipoDeporte, Jornada, Partido
 
+@pytest.fixture(autouse=True)
+def _email_sin_red(monkeypatch):
+    """
+    Evita accesos de red reales (Redis de la cola y SMTP) al enviar emails
+    durante los tests: la cola aparece como no disponible y el envío directo
+    degradado se simula con éxito inmediato.
+    """
+    from app.services import email_service
+
+    async def _pool_no_disponible():
+        raise ConnectionError("cola de email deshabilitada en tests")
+
+    async def _smtp_falso(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(email_service, "_get_arq_pool", _pool_no_disponible)
+    monkeypatch.setattr(email_service, "enviar_email_smtp", _smtp_falso)
+
+
 @pytest_asyncio.fixture
 async def db():
     """Create test database."""

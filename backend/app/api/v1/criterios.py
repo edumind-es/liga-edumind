@@ -201,6 +201,7 @@ async def create_criterios_from_plantilla(
             escala_min=crit_data.escala_min,
             escala_max=crit_data.escala_max,
             icono=crit_data.icono,
+            mundo=crit_data.mundo,
             orden=i,
             activo=True
         )

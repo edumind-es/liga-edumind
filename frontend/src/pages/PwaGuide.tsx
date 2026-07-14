@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge';
 function Paso({ numero, texto }: { numero: number; texto: string }) {
     return (
         <li className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#e8f0ff] text-xs font-bold text-[#2b4f80]">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#e8f0ff] text-xs font-bold text-[#2f6076]">
                 {numero}
             </span>
             <span className="text-[var(--editorial-muted)]">{texto}</span>
@@ -198,7 +198,7 @@ export default function PwaGuide() {
                                 <Paso numero={3} texto='Acepta el dialogo de instalacion.' />
                             </ol>
                         </div>
-                        <div className="md:col-span-2 rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2b4f80]">
+                        <div className="md:col-span-2 rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2f6076]">
                             Una vez instalada en el ordenador aparece como programa independiente en el buscador de aplicaciones y puedes fijarla a la barra de tareas o al Dock de Mac.
                         </div>
                     </CardContent>
@@ -237,7 +237,7 @@ export default function PwaGuide() {
                                 <Cruz>Datos recientes de partidos que otro docente modifico</Cruz>
                             </ul>
                         </div>
-                        <div className="md:col-span-2 rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2b4f80]">
+                        <div className="md:col-span-2 rounded-lg border border-[#bfd0ea] bg-[#edf4ff] px-3 py-2 text-[#2f6076]">
                             <strong>Como prepararse:</strong> Antes de entrar al gimnasio sin WiFi, abre la app con conexion y navega por las ligas y partidos de esa sesion. Se quedaran en cache para usarlos offline.
                         </div>
                     </CardContent>
@@ -359,7 +359,7 @@ export default function PwaGuide() {
                     </CardHeader>
                     <CardContent className="grid gap-4 text-sm md:grid-cols-2">
                         <div className="rounded-xl border border-[#a9c0e2] bg-[#edf4ff] p-4 space-y-3">
-                            <p className="font-semibold text-[#2b4f80]">Para el alumnado — "Partido"</p>
+                            <p className="font-semibold text-[#2f6076]">Para el alumnado — "Partido"</p>
                             <p className="text-[#3a6aad]">
                                 App ultra-ligera. Solo necesita el PIN del partido para entrar. Sin cuenta, sin contraseña. Se instala desde <strong>liga.edumind.es/partido</strong>.
                             </p>

@@ -49,7 +49,7 @@ export function FormSectionCard({
     children,
 }: FormSectionCardProps) {
     return (
-        <Card className={cn('border-lme-border/90 bg-[rgba(16,30,53,0.56)]', className)}>
+        <Card className={cn('border-lme-border/90 bg-[rgba(30,27,22,0.56)]', className)}>
             <CardHeader className="border-b border-lme-border/70 pb-4">
                 <div className="flex items-start gap-4">
                     <div className={cn('rounded-2xl border p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]', toneMap[tone])}>

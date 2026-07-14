@@ -116,7 +116,7 @@ export default function Login() {
                     <img
                         src="/edumind_logo.png"
                         alt="EDUmind"
-                        className="h-20 w-20 rounded-2xl object-cover shadow-[0_8px_24px_rgba(3,10,28,0.5)]"
+                        className="h-20 w-20 rounded-2xl object-cover shadow-[0_8px_24px_rgba(10,9,7,0.5)]"
                     />
                     <div className="text-center">
                         <p className="text-[0.65rem] uppercase tracking-[0.2em] text-sub">Los Mundos Edufis</p>
@@ -125,7 +125,7 @@ export default function Login() {
                     <img
                         src="/liga_logo_oficial.png"
                         alt="Logo Liga EDUmind"
-                        className="h-20 w-20 rounded-2xl object-cover shadow-[0_8px_24px_rgba(3,10,28,0.5)]"
+                        className="h-20 w-20 rounded-2xl object-cover shadow-[0_8px_24px_rgba(10,9,7,0.5)]"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                 </div>
@@ -133,7 +133,7 @@ export default function Login() {
                 <div className="w-full max-w-4xl grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
 
                     {/* ── Columna izquierda: Docente ── */}
-                    <Card className="border-t-2 border-lme-border/80 border-t-vio/50 bg-[rgba(10,20,38,0.80)] shadow-[0_20px_48px_rgba(3,10,28,0.28)]">
+                    <Card className="border-t-2 border-lme-border/80 border-t-vio/50 bg-[rgba(30,27,22,0.80)] shadow-[0_20px_48px_rgba(10,9,7,0.28)]">
                         <CardHeader className="pb-4">
                             <p className="text-[0.65rem] uppercase tracking-[0.16em] text-sub">Acceso docente</p>
                             <CardTitle className="flex items-center gap-2 text-lg">
@@ -153,7 +153,7 @@ export default function Login() {
                             {ssoEnabled && (
                                 <a
                                     href={getOidcStartUrl('/ligas')}
-                                    className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-vio px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(142,121,255,0.35)] transition-all hover:bg-vio/90 hover:shadow-[0_6px_20px_rgba(142,121,255,0.45)] active:scale-[0.98]"
+                                    className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-vio px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(240,121,90,0.35)] transition-all hover:bg-vio/90 hover:shadow-[0_6px_20px_rgba(240,121,90,0.45)] active:scale-[0.98]"
                                 >
                                     <ShieldCheck className="h-4 w-4" />
                                     Acceder con EDUmind
@@ -235,7 +235,7 @@ export default function Login() {
                                     key={tile.to}
                                     to={tile.to}
                                     className={cn(
-                                        'group relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border border-t-2 bg-[rgba(10,20,38,0.74)] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(3,10,28,0.28)]',
+                                        'group relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border border-t-2 bg-[rgba(30,27,22,0.74)] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(10,9,7,0.28)]',
                                         tile.toneBorder,
                                         tile.toneTopBorder,
                                     )}
@@ -265,7 +265,8 @@ export default function Login() {
             <footer className="py-5 text-center text-xs text-sub/50">
                 <span>Liga EDUmind {APP_BUILD_INFO.version}</span>
                 <span className="mx-2">·</span>
-                <Link to="/privacidad" className="hover:text-sub transition-colors">Privacidad</Link>
+                {/* Enlace externo: /privacidad no existe como ruta interna (el resto de la app enlaza a edumind.es) */}
+                <a href="https://edumind.es/es/privacidad" target="_blank" rel="noopener noreferrer" className="hover:text-sub transition-colors">Privacidad</a>
                 <span className="mx-2">·</span>
                 <a href="mailto:contacto@edumind.es" className="hover:text-sub transition-colors">Contacto</a>
             </footer>

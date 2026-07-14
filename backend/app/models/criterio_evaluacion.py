@@ -49,6 +49,10 @@ class CriterioEvaluacion(Base):
     # Categoría del criterio (para agrupación visual)
     categoria = Column(String(20), nullable=False, default='general')
     # Valores posibles: 'arbitro', 'grada_local', 'grada_visitante', 'jugador', 'general'
+
+    # Mundo EDUfis al que contribuye el criterio (Los Cinco Mundos)
+    # Valores posibles: 'fisico', 'mental', 'emocional', 'social', 'interior' o NULL
+    mundo = Column(String(12), nullable=True)
     
     # Configuración de escala
     escala_min = Column(Integer, default=0, nullable=False)

@@ -16,6 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import logging
 import secrets
 import os
 from contextlib import asynccontextmanager
@@ -190,7 +191,8 @@ app.add_middleware(
 )
 
 # Ensure upload directory exists
-print(f"DEBUG: UPLOAD_DIR is {settings.UPLOAD_DIR}")
+logger = logging.getLogger(__name__)
+logger.info("UPLOAD_DIR: %s", settings.UPLOAD_DIR)
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
 STATIC_DIR.mkdir(parents=True, exist_ok=True)

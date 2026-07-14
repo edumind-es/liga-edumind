@@ -21,11 +21,12 @@ import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 
 const cardVariants = cva(
-  "rounded-xl text-card-foreground transition-all duration-200 [--card-title:var(--ink)] [--card-description:var(--sub)]",
+  // Pieza de lámina: borde reglado, sin cristal ni sombras flotantes
+  "rounded-[3px] text-card-foreground transition-colors duration-150 [--card-title:var(--ink)] [--card-description:var(--sub)]",
   {
     variants: {
       variant: {
-        default: "bg-lme-surface border border-lme-border shadow-lme backdrop-blur-glass",
+        default: "bg-lme-surface border border-lme-border shadow-none",
         glass: "glass-card",
         outline: "border-2 border-lme-border bg-transparent shadow-none",
         ghost: "border-none shadow-none bg-transparent",

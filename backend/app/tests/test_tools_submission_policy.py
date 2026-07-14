@@ -83,11 +83,11 @@ async def test_send_game_sheet_persists_policy_metadata(
     async def fake_pdf(**kwargs) -> bytes:
         return b"%PDF-1.4 test"
 
-    def fake_email(**kwargs) -> None:
-        return None
+    async def fake_email(*args, **kwargs) -> bool:
+        return True
 
     monkeypatch.setattr(tools_api, "generate_game_sheet_pdf", fake_pdf)
-    monkeypatch.setattr(tools_api, "send_email_with_attachment", fake_email)
+    monkeypatch.setattr(tools_api, "send_email", fake_email)
     monkeypatch.setattr(
         tools_api.settings,
         "SUBMISSION_FINGERPRINT_SECRET",

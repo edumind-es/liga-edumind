@@ -12,7 +12,7 @@
 API de recursos de juegos - Wiki de Fichas de Juegos
 """
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
@@ -28,6 +28,7 @@ from app.models.liga import Liga
 from app.models.tipo_deporte import TipoDeporte
 from app.models.user import User
 from app.services.pdf_generator import generate_wiki_pdf, generate_game_sheet_pdf, fetch_pictograms_bulk
+from app.services.publish_pages import error_page as _error_page, success_page as _success_page
 
 router = APIRouter()
 
@@ -794,14 +795,13 @@ async def download_ficha_docente_pdf(
 async def resend_ficha_email(
     liga_id: int,
     ficha_id: int,
-    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Reenvía el email de una ficha al docente. Útil para fichas con email_enviado=False.
     """
-    from app.api.v1.tools import _send_email_and_log
+    from app.services.email_service import send_email
     from app.services.pdf_generator import generate_game_sheet_pdf as gen_pdf
 
     liga = await db.get(Liga, liga_id)
@@ -856,14 +856,13 @@ async def resend_ficha_email(
     submission.email_error = None
     await db.commit()
 
-    background_tasks.add_task(
-        _send_email_and_log,
-        submission_id=submission.id,
+    # Encolar reenvío (el worker arq registra el resultado en la ficha)
+    await send_email(
         to_email=liga.email_fichas,
         subject=subject,
         body=body,
-        file_content=pdf_content,
-        filename=filename,
+        attachments=[(pdf_content, filename)],
+        submission_id=submission.id,
     )
 
     return {"message": "Reenvío en proceso. El email llegará en breve."}
@@ -1076,107 +1075,3 @@ async def export_games_csv(
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ═══════════════════════════════════════════════════════════════════════════════
-
-def _error_page(title: str, message: str) -> str:
-    return f"""
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{title} - Liga EDUmind</title>
-        <style>
-            body {{
-                font-family: 'Segoe UI', system-ui, sans-serif;
-                background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-            }}
-            .card {{
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-                max-width: 400px;
-                width: 100%;
-                padding: 40px;
-                text-align: center;
-            }}
-            .icon {{ font-size: 48px; margin-bottom: 20px; }}
-            h1 {{ color: #dc2626; margin-bottom: 15px; }}
-            p {{ color: #64748b; line-height: 1.6; }}
-        </style>
-    </head>
-    <body>
-        <div class="card">
-            <div class="icon">❌</div>
-            <h1>{title}</h1>
-            <p>{message}</p>
-        </div>
-    </body>
-    </html>
-    """
-
-
-def _success_page(title: str, message: str, show_wiki_link: bool = False) -> str:
-    wiki_link = ""
-    if show_wiki_link:
-        wiki_link = '''
-        <a href="https://liga.edumind.es/wiki-juegos" class="btn">
-            🌐 Ver Wiki de Juegos
-        </a>
-        '''
-    
-    return f"""
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{title} - Liga EDUmind</title>
-        <style>
-            body {{
-                font-family: 'Segoe UI', system-ui, sans-serif;
-                background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-            }}
-            .card {{
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-                max-width: 400px;
-                width: 100%;
-                padding: 40px;
-                text-align: center;
-            }}
-            .icon {{ font-size: 48px; margin-bottom: 20px; }}
-            h1 {{ color: #059669; margin-bottom: 15px; }}
-            p {{ color: #64748b; line-height: 1.6; margin-bottom: 20px; }}
-            .btn {{
-                display: inline-block;
-                padding: 12px 24px;
-                background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-                color: white;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: 600;
-            }}
-            .btn:hover {{ transform: translateY(-2px); }}
-        </style>
-    </head>
-    <body>
-        <div class="card">
-            <div class="icon">✅</div>
-            <h1>{title}</h1>
-            <p>{message}</p>
-            {wiki_link}
-        </div>
-    </body>
-    </html>
-    """

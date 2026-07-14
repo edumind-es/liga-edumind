@@ -34,7 +34,7 @@ export function ValuesRadarChart({ data }: ValuesRadarChartProps) {
                     <PolarGrid stroke="rgba(150,170,199,0.18)" />
                     <PolarAngleAxis
                         dataKey="subject"
-                        tick={{ fill: '#d8e6ff', fontSize: 12, fontWeight: 500 }}
+                        tick={{ fill: '#b8b1a3', fontSize: 12, fontWeight: 500 }}
                     />
                     <PolarRadiusAxis
                         angle={30}
@@ -52,13 +52,13 @@ export function ValuesRadarChart({ data }: ValuesRadarChartProps) {
                     />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: 'rgba(11,24,44,0.94)',
-                            border: '1px solid rgba(90,126,181,0.38)',
-                            borderRadius: '14px',
-                            color: '#f5fbff',
+                            backgroundColor: 'rgba(30,27,22,0.94)',
+                            border: '1px solid rgba(125,118,106,0.4)',
+                            borderRadius: '3px',
+                            color: '#ece8dd',
                         }}
-                        labelStyle={{ color: '#f5fbff', fontWeight: 600 }}
-                        itemStyle={{ color: '#d8e6ff' }}
+                        labelStyle={{ color: '#ece8dd', fontWeight: 600 }}
+                        itemStyle={{ color: '#b8b1a3' }}
                     />
                 </RadarChart>
             </ResponsiveContainer>

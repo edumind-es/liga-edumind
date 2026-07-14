@@ -20,6 +20,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════
+   Fuentes de accesibilidad (vendorizadas, sin CDN)
+   Atkinson Hyperlegible: diseñada para baja visión (letras inconfundibles)
+   Literata: serif de lectura prolongada, poca fatiga
+   ═══════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/atkinson-hyperlegible-regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/atkinson-hyperlegible-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Literata';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/literata-regular.woff2') format('woff2');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MODO E-INK (EDUmind e-ink system, opt-in desde accesibilidad)
+   Papel monocromo cálido, tinta oscura, Atkinson Hyperlegible.
+   Remapea los tokens de la app: como todos los componentes pintan a
+   través de tokens, el modo se propaga sin reescribir nada.
+   ═══════════════════════════════════════════════════════════════════ */
+:root.eink {
+  --eink-paper: #d4cfc7;
+  --eink-paper-light: #ddd8d0;
+  --eink-ink: #252422;
+  --eink-ink-soft: #3d3a36;
+  --eink-ink-light: #5c5853;
+  --eink-border: #a8a49c;
+
+  --font-body: 'Atkinson Hyperlegible', 'Verdana', sans-serif;
+  --font-display: 'Atkinson Hyperlegible', 'Verdana', sans-serif;
+  --font-mono: 'Atkinson Hyperlegible', ui-monospace, monospace;
+
+  /* Superficies y texto → papel/tinta e-ink */
+  --bg0: var(--eink-paper);
+  --ink: var(--eink-ink);
+  --sub: var(--eink-ink-light);
+  --ink-ch: 37 36 34;
+  --sub-ch: 92 88 83;
+  --line: var(--eink-border);
+  --lme-bg-start: var(--eink-paper);
+  --lme-bg-end: var(--eink-paper-light);
+  --lme-surface: var(--eink-paper-light);
+  --lme-surface-soft: #dcd7cf;
+  --lme-border: var(--eink-border);
+  --lme-text: var(--eink-ink);
+  --lme-muted: var(--eink-ink-soft);
+
+  /* Acentos de marca → grises de tinta (monocromo por diseño e-ink) */
+  --mint-ch: 61 58 54;
+  --sky-ch: 37 36 34;
+  --vio-ch: 61 58 54;
+  --mint: var(--eink-ink-soft);
+  --sky: var(--eink-ink);
+  --vio: var(--eink-ink-soft);
+}
+
+/* Filtro e-ink global y textura de papel */
+:root.eink body {
+  filter: sepia(14%) saturate(72%) brightness(98%) contrast(90%);
+  background-color: var(--eink-paper);
+}
+/* En e-ink no hay gradientes/glows */
+:root.eink .lme-gradient,
+:root.eink body.lme-body { background: var(--eink-paper); }
+
 /* -----------------------------------------------------------------
    LIGA EDUMIND - DARK-FIRST BRANDING (Aligned with EDUmind Website)
    ----------------------------------------------------------------- */
@@ -29,68 +104,69 @@
    * - Gradientes EDUFIS (educativos)
    * - Tokens de compatibilidad shadcn/ui (formato HSL)
    * Las variables de color de marca (--mint, --sky, etc.) están en el bloque v2. */
-  --card: rgba(13, 22, 38, .78);
-  --line: rgba(90, 126, 181, .38);
-  --bg0: #040614;
-  --bgG1: rgba(77, 148, 255, .14);
-  --bgG2: rgba(164, 99, 255, .12);
-  --shadow: 0 24px 46px rgba(4, 10, 28, .55);
-  --accent-light: #5abdfd;
-  --accent-strong: #00c9a7;
-  --surface-solid: #0b1425;
-  --surface-soft: rgba(25, 40, 66, .72);
+  --card: rgba(30, 27, 22, .78);
+  --line: rgba(125, 118, 106, .38);
+  --bg0: #1b1916;
+  --bgG1: rgba(232, 169, 46, .07);
+  --bgG2: rgba(232, 97, 63, .05);
+  --shadow: 0 24px 46px rgba(10, 9, 7, .55);
+  --accent-light: #6aa3bf;
+  --accent-strong: #8cc26a;
+  --surface-solid: #242019;
+  --surface-soft: rgba(36, 32, 25, .72);
 
-  /* EDUFIS Gradients */
-  --edufis-mental-start: #8d83ff;
-  --edufis-mental-end: #5f6dff;
-  --edufis-fisico-start: #21d1b1;
-  --edufis-fisico-end: #2890ff;
-  --edufis-interior-start: #FBBF24;
-  --edufis-interior-end: #F97316;
-  --edufis-peligro-start: #ef4444;
-  --edufis-peligro-end: #dc2626;
+  /* EDUFIS: color plano canónico de Los Cinco Mundos (la Lámina no usa
+     gradientes: start == end deja los antiguos degradados en plano) */
+  --edufis-mental-start: #3f7d99;
+  --edufis-mental-end: #3f7d99;
+  --edufis-fisico-start: #e8613f;
+  --edufis-fisico-end: #e8613f;
+  --edufis-interior-start: #2c5c66;
+  --edufis-interior-end: #2c5c66;
+  --edufis-peligro-start: #e65454;
+  --edufis-peligro-end: #e65454;
 
-  /* LME Theme Tokens (Dark First) */
-  --lme-bg-start: #040614;
-  --lme-bg-end: #0b1425;
-  --lme-surface: rgba(25, 40, 66, .72);
-  --lme-surface-soft: rgba(13, 22, 38, .78);
-  --lme-border: rgba(90, 126, 181, .38);
-  --lme-text: #f5fbff;
-  --lme-muted: #96aac7;
-  --lme-primary: #3c7dff;
-  --lme-primary-dark: #2a5fd0;
-  --lme-secondary: #3ddad7;
-  --lme-accent: #a963ff;
-  --lme-success: #21d1b1;
-  --lme-warning: #FBBF24;
-  --lme-danger: #ef4444;
-  --lme-shadow: 0 24px 46px rgba(4, 10, 28, .55);
-  --lme-radius-xl: 24px;
-  --lme-radius-lg: 18px;
-  --lme-radius-md: 12px;
-  --lme-radius-sm: 8px;
+  /* LME Theme Tokens — derivados del sistema Lámina, tema noche */
+  --lme-bg-start: #1b1916;
+  --lme-bg-end: #242019;
+  --lme-surface: rgba(36, 32, 25, .72);
+  --lme-surface-soft: rgba(30, 27, 22, .78);
+  --lme-border: rgba(125, 118, 106, .38);
+  --lme-text: #ece8dd;
+  --lme-muted: #b8b1a3;
+  --lme-primary: #3f7d99;
+  --lme-primary-dark: #2f6076;
+  --lme-secondary: #8cc26a;
+  --lme-accent: #5d93a1;
+  --lme-success: #6ea94a;
+  --lme-warning: #f2bc55;
+  --lme-danger: #e65454;
+  --lme-shadow: 0 24px 46px rgba(10, 9, 7, .55);
+  --lme-radius-xl: 6px;
+  --lme-radius-lg: 4px;
+  --lme-radius-md: 3px;
+  --lme-radius-sm: 2px;
 
-  /* shadcn/ui compatibility */
-  --background: 222 47% 4%;
-  --foreground: 200 55% 97%;
-  --card: 218 42% 16%;
-  --card-foreground: 200 55% 97%;
-  --popover: 218 42% 16%;
-  --popover-foreground: 200 55% 97%;
-  --primary: 220 100% 62%;
+  /* shadcn/ui compatibility — paleta Lámina noche en HSL */
+  --background: 36 10% 10%;
+  --foreground: 44 28% 90%;
+  --card: 38 13% 13%;
+  --card-foreground: 44 28% 90%;
+  --popover: 38 13% 13%;
+  --popover-foreground: 44 28% 90%;
+  --primary: 199 42% 42%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 178 61% 55%;
-  --secondary-foreground: 222 47% 4%;
-  --muted: 218 42% 18%;
-  --muted-foreground: 215 24% 68%;
-  --accent: 270 100% 70%;
+  --secondary: 97 42% 59%;
+  --secondary-foreground: 36 10% 10%;
+  --muted: 38 13% 16%;
+  --muted-foreground: 40 12% 68%;
+  --accent: 192 27% 50%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 218 42% 30%;
-  --input: 218 42% 20%;
-  --ring: 220 100% 62%;
+  --border: 40 11% 30%;
+  --input: 38 13% 16%;
+  --ring: 199 42% 42%;
   --radius: 0.75rem;
 }
 
@@ -132,21 +208,19 @@ body.lme-body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 15% 50%, rgba(61, 218, 215, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(60, 125, 255, 0.08), transparent 25%),
-    linear-gradient(180deg, #040614 0%, #0b1425 100%);
+    
+    
+    linear-gradient(180deg, var(--lme-bg-start) 0%, var(--lme-bg-end) 100%);
   background-color: var(--bg0);
   color: var(--lme-text);
   position: relative;
 }
 
+/* La Lámina no usa glows: fondo plano de papel nocturno */
 .lme-gradient {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(60, 125, 255, 0.12), transparent 55%),
-    radial-gradient(circle at 80% 0%, rgba(169, 99, 255, 0.08), transparent 65%),
-    radial-gradient(circle at 50% 100%, rgba(61, 218, 215, 0.06), transparent 60%);
+  background: none;
   pointer-events: none;
   z-index: 0;
 }
@@ -155,7 +229,7 @@ body.lme-body {
    NAVBAR - EDUmind Dark Style
    ============================================ */
 .navbar-edufis {
-  background: rgba(4, 6, 20, 0.85);
+  background: rgba(27,25,22, 0.85);
   backdrop-filter: blur(20px) saturate(140%);
   border-bottom: 1px solid var(--line);
   padding: 0.75rem 0;
@@ -288,7 +362,7 @@ main.lme-main {
 
 .glass-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 30px 60px rgba(3, 10, 28, .65);
+  box-shadow: 0 30px 60px rgba(10,9,7, .65);
 }
 
 .lme-card {
@@ -303,7 +377,7 @@ main.lme-main {
 
 .lme-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 30px 60px rgba(3, 10, 28, .65);
+  box-shadow: 0 30px 60px rgba(10,9,7, .65);
 }
 
 .lme-card-grid {
@@ -324,7 +398,7 @@ main.lme-main {
   transition: all 0.2s ease;
   background: linear-gradient(135deg, var(--mint), var(--sky));
   color: var(--bg0);
-  box-shadow: 0 12px 28px rgba(61, 218, 215, 0.25);
+  box-shadow: 0 12px 28px rgba(140,194,106, 0.25);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -336,7 +410,7 @@ main.lme-main {
 .btn-lme:hover {
   transform: translateY(-2px);
   color: var(--bg0);
-  box-shadow: 0 18px 36px rgba(61, 218, 215, 0.35);
+  box-shadow: 0 18px 36px rgba(140,194,106, 0.35);
 }
 
 .btn-lme:disabled {
@@ -377,13 +451,13 @@ main.lme-main {
   font-weight: 600;
   padding: 0.65rem 1.5rem;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(141, 131, 255, 0.25);
+  box-shadow: 0 12px 28px rgba(106,163,191, 0.25);
   transition: all 0.2s ease;
 }
 
 .btn-mental:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(141, 131, 255, 0.35);
+  box-shadow: 0 18px 36px rgba(106,163,191, 0.35);
 }
 
 .btn-fisico {
@@ -428,13 +502,13 @@ main.lme-main {
   font-weight: 600;
   padding: 0.65rem 1.5rem;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(169, 99, 255, 0.25);
+  box-shadow: 0 12px 28px rgba(240,121,90, 0.25);
   transition: all 0.2s ease;
 }
 
 .btn-emocional:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(169, 99, 255, 0.35);
+  box-shadow: 0 18px 36px rgba(240,121,90, 0.35);
 }
 
 /* ============================================
@@ -471,7 +545,7 @@ main.lme-main {
 
 .login-split__image-frame {
   text-align: center;
-  background: linear-gradient(135deg, rgba(60, 125, 255, 0.12), rgba(169, 99, 255, 0.10));
+  background: linear-gradient(135deg, rgba(106,163,191, 0.12), rgba(240,121,90, 0.10));
   border-radius: var(--lme-radius-lg);
   padding: clamp(1.5rem, 4vw, 2.5rem);
   border: 1px solid var(--line);
@@ -483,7 +557,7 @@ main.lme-main {
   width: min(280px, 100%);
   height: auto;
   border-radius: var(--lme-radius-md);
-  box-shadow: 0 18px 36px rgba(4, 10, 28, 0.4);
+  box-shadow: 0 18px 36px rgba(10,9,7, 0.4);
   background: rgba(255, 255, 255, 0.05);
   padding: clamp(1rem, 3vw, 1.5rem);
   border: 1px solid var(--line);
@@ -530,7 +604,7 @@ main.lme-main {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #8edcff;
-  background: rgba(74, 132, 255, 0.14);
+  background: rgba(106,163,191, 0.14);
   border: 1px solid rgba(116, 171, 255, 0.42);
   border-radius: var(--radius-pill);
   padding: 0.24rem 0.62rem;
@@ -640,7 +714,7 @@ main.lme-main {
   min-height: 2.45rem;
   border-radius: var(--radius-pill);
   border: 1px solid color-mix(in srgb, var(--lme-border) 72%, white 9%);
-  background: rgba(82, 217, 199, 0.12);
+  background: rgba(140,194,106, 0.12);
   color: var(--lme-text);
   font-size: 0.87rem;
   font-weight: 600;
@@ -650,13 +724,13 @@ main.lme-main {
 
 .auth-login-quick-link:hover {
   color: var(--lme-text);
-  border-color: rgba(82, 217, 199, 0.55);
-  background: rgba(82, 217, 199, 0.2);
+  border-color: rgba(140,194,106, 0.55);
+  background: rgba(140,194,106, 0.2);
   transform: translateY(-1px);
 }
 
 .auth-login-quick-link--secondary {
-  background: rgba(74, 132, 255, 0.1);
+  background: rgba(106,163,191, 0.1);
 }
 
 .auth-login-register {
@@ -681,8 +755,8 @@ main.lme-main {
   padding: 1.2rem;
   border: 1px solid color-mix(in srgb, var(--lme-border) 72%, white 8%);
   background:
-    linear-gradient(155deg, rgba(44, 71, 123, 0.42), rgba(20, 38, 72, 0.5)),
-    rgba(13, 22, 38, 0.46);
+    linear-gradient(155deg, rgba(44, 71, 123, 0.42), rgba(36,32,25, 0.5)),
+    rgba(30,27,22, 0.46);
   box-shadow: var(--elevation-1);
 }
 
@@ -724,7 +798,7 @@ main.lme-main {
   min-height: 2rem;
   border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--lme-border) 72%, white 8%);
-  background: rgba(74, 132, 255, 0.08);
+  background: rgba(106,163,191, 0.08);
   color: var(--lme-text);
   padding: 0.45rem 0.62rem;
   font-size: 0.82rem;
@@ -794,7 +868,7 @@ main.lme-main {
   padding: 2rem 0 2.5rem;
   font-size: 0.875rem;
   border-top: 1px solid var(--line);
-  background: rgba(4, 6, 20, 0.5);
+  background: rgba(27,25,22, 0.5);
   backdrop-filter: blur(10px);
 }
 
@@ -828,7 +902,7 @@ main.lme-main {
   font-weight: 400;
   line-height: 1.5;
   color: var(--ink);
-  background-color: rgba(30, 41, 59, 0.7);
+  background-color: rgba(36,32,25, 0.7);
   background-clip: padding-box;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: var(--lme-radius-sm);
@@ -842,10 +916,10 @@ main.lme-main {
 
 .form-control:focus {
   color: var(--ink);
-  background-color: rgba(11, 20, 37, 0.95);
+  background-color: rgba(30,27,22, 0.95);
   border-color: var(--sky);
   outline: 0;
-  box-shadow: 0 0 0 3px rgba(60, 125, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(106,163,191, 0.2);
 }
 
 .alert {
@@ -1048,16 +1122,16 @@ main.lme-main {
 /* Hero Background */
 .hero-bg {
   background:
-    radial-gradient(460px 300px at 50% 32%, rgba(61, 218, 215, .15), transparent 70%),
-    radial-gradient(540px 340px at 50% 120%, rgba(60, 125, 255, .18), transparent 72%),
-    linear-gradient(150deg, #0d1730, #081021);
+    radial-gradient(460px 300px at 50% 32%, rgba(140,194,106, .15), transparent 70%),
+    radial-gradient(540px 340px at 50% 120%, rgba(106,163,191, .18), transparent 72%),
+    linear-gradient(150deg, #201d19, #181613);
 }
 
 /* ============================================
    ACCESSIBILITY & ANIMATIONS
    ============================================ */
 :focus-visible {
-  outline: 3px solid rgba(60, 125, 255, .65);
+  outline: 3px solid rgba(106,163,191, .65);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -1118,7 +1192,7 @@ main.lme-main {
 }
 
 .lme-table th {
-  background: rgba(60, 125, 255, 0.1);
+  background: rgba(106,163,191, 0.1);
   color: var(--ink);
   font-weight: 600;
   padding: 0.875rem 1rem;
@@ -1141,7 +1215,7 @@ main.lme-main {
 }
 
 .lme-table tbody tr:hover {
-  background: rgba(60, 125, 255, 0.05);
+  background: rgba(106,163,191, 0.05);
 }
 
 .lme-table tbody tr:last-child td {
@@ -1170,9 +1244,9 @@ main.lme-main {
 }
 
 .lme-badge-primary {
-  background: rgba(60, 125, 255, 0.15);
+  background: rgba(106,163,191, 0.15);
   color: var(--sky);
-  border-color: rgba(60, 125, 255, 0.3);
+  border-color: rgba(106,163,191, 0.3);
 }
 
 .lme-badge-secondary {
@@ -1200,9 +1274,9 @@ main.lme-main {
 }
 
 .lme-badge-accent {
-  background: rgba(169, 99, 255, 0.15);
+  background: rgba(240,121,90, 0.15);
   color: var(--vio);
-  border-color: rgba(169, 99, 255, 0.3);
+  border-color: rgba(240,121,90, 0.3);
 }
 
 /* ============================================
@@ -1268,6 +1342,23 @@ html {
 .high-contrast :focus-visible {
   outline: 4px solid #ffff00 !important;
   outline-offset: 3px;
+}
+
+/* Objetivos táctiles grandes para alumnado (alta visibilidad):
+   todo control interactivo alcanza el mínimo WCAG de 48×48px */
+.high-visibility button,
+.high-visibility [role="button"],
+.high-visibility a[href],
+.high-visibility input,
+.high-visibility select {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Foco visible en modo tinta electrónica (tinta sobre papel) */
+.eink :focus-visible {
+  outline: 3px solid var(--eink-ink) !important;
+  outline-offset: 2px;
 }
 
 /* Reduce Motion */
@@ -1364,8 +1455,10 @@ textarea:focus-visible,
    ============================================ */
 
 :root {
-  --font-body: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Fraunces', Georgia, Cambria, 'Times New Roman', serif;
+  /* Tipografía del Sistema Lámina: Outfit (display y cuerpo) + IBM Plex Mono */
+  --font-body: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
 
   --space-2xs: 0.375rem;
   --space-xs: 0.5rem;
@@ -1375,44 +1468,47 @@ textarea:focus-visible,
   --space-xl: 2rem;
   --space-2xl: 3rem;
 
-  --radius-2xs: 0.375rem;
-  --radius-xs: 0.5rem;
-  --radius-sm: 0.75rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
+  /* Geometría Lámina: piezas regladas, casi cuadradas (canon 2px) */
+  --radius-2xs: 2px;
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
   --radius-pill: 999px;
 
-  --elevation-1: 0 6px 24px rgba(3, 8, 24, 0.18);
-  --elevation-2: 0 12px 32px rgba(3, 8, 24, 0.28);
-  --elevation-soft: 0 4px 18px rgba(7, 16, 38, 0.14);
+  --elevation-1: 0 6px 24px rgba(10,9,7, 0.18);
+  --elevation-2: 0 12px 32px rgba(10,9,7, 0.28);
+  --elevation-soft: 0 4px 18px rgba(20,18,15, 0.14);
 
-  --mint: #52d9c7;
-  --sky: #4a84ff;
-  --vio: #8e79ff;
-  --ink: #f2f7ff;
-  --sub: #afbdd5;
-  --mint-ch: 82 217 199;
-  --sky-ch: 74 132 255;
-  --vio-ch: 142 121 255;
-  --ink-ch: 242 247 255;
-  --sub-ch: 175 189 213;
-  --line: rgba(128, 161, 214, 0.32);
-  --bg0: #070d1f;
-  --surface-soft: rgba(19, 34, 59, 0.76);
+  /* Marca re-mapeada al sistema Lámina (tema noche):
+     mint → emocional · sky → mental · vio → físico (acento cálido) */
+  --mint: #8cc26a;
+  --sky: #6aa3bf;
+  --vio: #f0795a;
+  --ink: #ece8dd;
+  --sub: #b8b1a3;
+  --mint-ch: 140 194 106;
+  --sky-ch: 106 163 191;
+  --vio-ch: 240 121 90;
+  --ink-ch: 236 232 221;
+  --sub-ch: 184 177 163;
+  --line: rgba(125, 118, 106, 0.32);
+  --bg0: #1b1916;
+  --surface-soft: rgba(36, 32, 25, 0.76);
 
-  --lme-bg-start: #070d1f;
-  --lme-bg-end: #101a33;
-  --lme-surface: rgba(20, 33, 57, 0.88);
-  --lme-surface-soft: rgba(17, 28, 50, 0.94);
-  --lme-border: rgba(128, 161, 214, 0.32);
-  --lme-text: #f2f7ff;
-  --lme-muted: #afbdd5;
-  --lme-primary: #4a84ff;
-  --lme-primary-dark: #2b5dcc;
-  --lme-secondary: #52d9c7;
-  --lme-accent: #8e79ff;
-  --lme-success: #24b47e;
-  --lme-warning: #f2b949;
+  --lme-bg-start: #1b1916;
+  --lme-bg-end: #242019;
+  --lme-surface: rgba(36, 32, 25, 0.88);
+  --lme-surface-soft: rgba(30, 27, 22, 0.94);
+  --lme-border: rgba(125, 118, 106, 0.32);
+  --lme-text: #ece8dd;
+  --lme-muted: #b8b1a3;
+  --lme-primary: #3f7d99;
+  --lme-primary-dark: #2f6076;
+  --lme-secondary: #8cc26a;
+  --lme-accent: #5d93a1;
+  --lme-success: #6ea94a;
+  --lme-warning: #f2bc55;
   --lme-danger: #e65454;
   --lme-shadow: var(--elevation-2);
   --lme-radius-xl: var(--radius-lg);
@@ -1420,22 +1516,23 @@ textarea:focus-visible,
   --lme-radius-md: var(--radius-sm);
   --lme-radius-sm: var(--radius-xs);
 
-  --status-info-bg: rgba(74, 132, 255, 0.18);
-  --status-info-fg: #bcd4ff;
-  --status-success-bg: rgba(36, 180, 126, 0.18);
-  --status-success-fg: #b8f2db;
-  --status-warning-bg: rgba(242, 185, 73, 0.22);
+  --status-info-bg: rgba(63, 125, 153, 0.18);
+  --status-info-fg: #a8cede;
+  --status-success-bg: rgba(110, 169, 74, 0.18);
+  --status-success-fg: #cfe8bd;
+  --status-warning-bg: rgba(242, 188, 85, 0.22);
   --status-warning-fg: #ffe2a1;
   --status-danger-bg: rgba(230, 84, 84, 0.22);
   --status-danger-fg: #ffc0c0;
 
-  --editorial-paper: #f6f2ea;
-  --editorial-paper-strong: #efe7d7;
-  --editorial-ink: #20304a;
-  --editorial-muted: #5d6f8f;
-  --editorial-border: #cfd7e7;
-  --editorial-card: #fbf8f2;
-  --editorial-highlight: #dce9ff;
+  /* Superficie editorial alineada con el papel Lámina */
+  --editorial-paper: #e9e6dd;
+  --editorial-paper-strong: #dfdacb;
+  --editorial-ink: #1c1a16;
+  --editorial-muted: #4f4a41;
+  --editorial-border: #c7c0b1;
+  --editorial-card: #f0ede5;
+  --editorial-highlight: #efe0c0;
 
   --a11y-font-scale: 1;
 }
@@ -1467,8 +1564,8 @@ h3,
 
 .app-shell--private {
   background:
-    radial-gradient(circle at 12% 22%, rgba(82, 217, 199, 0.08), transparent 32%),
-    radial-gradient(circle at 82% 10%, rgba(74, 132, 255, 0.14), transparent 36%),
+    
+    
     linear-gradient(180deg, var(--lme-bg-start) 0%, var(--lme-bg-end) 100%);
 }
 
@@ -1478,10 +1575,27 @@ h3,
 
 .app-shell--public {
   color: var(--editorial-ink);
-  background:
-    radial-gradient(circle at 18% 14%, rgba(82, 217, 199, 0.08), transparent 34%),
-    radial-gradient(circle at 85% 0%, rgba(74, 132, 255, 0.11), transparent 45%),
-    linear-gradient(180deg, var(--editorial-paper) 0%, #f4f1ea 100%);
+  background: linear-gradient(180deg, var(--editorial-paper) 0%, #efece2 100%);
+
+  /* Capa clara (papel Lámina): remapea texto, acentos y superficies a
+     las variantes de tinta sobre papel para el contexto editorial */
+  --bg0: #e9e6dd;
+  --ink: #1c1a16;
+  --sub: #4f4a41;
+  --ink-ch: 28 26 22;
+  --sub-ch: 79 74 65;
+  --mint-ch: 63 107 42;   /* emocional deep */
+  --sky-ch: 47 96 118;    /* mental deep */
+  --vio-ch: 166 58 31;    /* físico deep */
+  --mint: #3f6b2a;
+  --sky: #2f6076;
+  --vio: #a63a1f;
+  --line: #c7c0b1;
+  --lme-border: #c7c0b1;
+  --lme-surface: #f0ede5;
+  --lme-surface-soft: #efece2;
+  --lme-text: #1c1a16;
+  --lme-muted: #4f4a41;
 }
 
 .app-shell--public .lme-gradient {
@@ -1490,7 +1604,7 @@ h3,
 }
 
 .saas-panel {
-  background: linear-gradient(160deg, rgba(23, 39, 69, 0.92), rgba(14, 24, 45, 0.94));
+  background: linear-gradient(160deg, rgba(36,32,25, 0.92), rgba(30,27,22, 0.94));
   border: 1px solid var(--lme-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--elevation-1);
@@ -1506,7 +1620,7 @@ h3,
   border: 1px solid var(--editorial-border);
   background:
     linear-gradient(140deg, rgba(255, 255, 255, 0.92), rgba(236, 243, 255, 0.92)),
-    radial-gradient(circle at 15% 20%, rgba(82, 217, 199, 0.14), transparent 45%);
+    radial-gradient(circle at 15% 20%, rgba(140,194,106, 0.14), transparent 45%);
   box-shadow: var(--elevation-soft);
 }
 
@@ -1514,7 +1628,7 @@ h3,
   border: 1px solid var(--editorial-border);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--editorial-card) 88%, white 12%);
-  box-shadow: 0 7px 26px rgba(29, 42, 69, 0.11);
+  box-shadow: 0 7px 26px rgba(36,32,25, 0.11);
 }
 
 .editorial-chip {
@@ -1524,7 +1638,7 @@ h3,
   border-radius: var(--radius-pill);
   border: 1px solid #afc2e6;
   background: var(--editorial-highlight);
-  color: #254372;
+  color: #2f6076;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.34rem 0.72rem;
@@ -1568,9 +1682,9 @@ h3,
 }
 
 .navbar-edufis {
-  background: rgba(7, 13, 31, 0.9);
+  background: rgba(20,18,15, 0.9);
   border-bottom: 1px solid var(--lme-border);
-  box-shadow: 0 4px 18px rgba(3, 7, 19, 0.35);
+  box-shadow: 0 4px 18px rgba(10,9,7, 0.35);
 }
 
 .navbar-edufis .nav-link {
@@ -1591,12 +1705,12 @@ h3,
 
 .navbar-edufis .nav-link.active {
   color: #d8f6f0;
-  border-color: rgba(82, 217, 199, 0.55);
-  background: rgba(82, 217, 199, 0.18);
+  border-color: rgba(140,194,106, 0.55);
+  background: rgba(140,194,106, 0.18);
 }
 
 .lme-shell {
-  background: linear-gradient(180deg, rgba(21, 34, 57, 0.92), rgba(14, 24, 44, 0.94));
+  background: linear-gradient(180deg, rgba(32,28,23, 0.92), rgba(30,27,22, 0.94));
   border: 1px solid color-mix(in srgb, var(--lme-border) 72%, white 8%);
   border-radius: var(--radius-lg);
   box-shadow: var(--elevation-2);
@@ -1607,7 +1721,7 @@ h3,
 .lme-card {
   border: 1px solid color-mix(in srgb, var(--lme-border) 74%, white 9%);
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--lme-surface-soft) 92%, #10203f 8%);
+  background: color-mix(in srgb, var(--lme-surface-soft) 92%, #242019 8%);
   box-shadow: var(--elevation-1);
 }
 
@@ -1635,20 +1749,29 @@ h3,
   gap: var(--space-2xs);
 }
 
+/* Cabecera de lámina: epígrafe en mono + titular display con regla fuerte */
 .context-header__eyebrow {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--lme-secondary);
+  color: var(--vio);
 }
 
 .context-header__title {
   margin: 0;
   color: var(--lme-text);
-  font-family: var(--font-body);
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.context-header {
+  border-bottom: 2px solid var(--lme-text);
+  padding-bottom: var(--space-md);
 }
 
 .context-header__description {
@@ -1685,7 +1808,7 @@ h3,
   padding: 0.45rem 0.9rem;
   font-size: 0.84rem;
   border: 1px solid #b6c9eb;
-  color: #264777;
+  color: #2f6076;
   background: #eaf2ff;
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -1695,7 +1818,7 @@ h3,
 .public-subnav a:hover {
   background: #dce9ff;
   border-color: #8ca8d7;
-  color: #193764;
+  color: #2f6076;
 }
 
 .public-subnav a[aria-current="page"] {
@@ -1719,14 +1842,14 @@ h3,
 .high-visibility .app-shell--public .ui-button--editorial-outline,
 .high-visibility .app-shell--public .surface-public-select-content {
   border-width: 2px;
-  border-color: #234470;
+  border-color: #2f6076;
 }
 
 .high-visibility .app-shell--public .surface-public-input,
 .high-visibility .app-shell--public .surface-public-select {
   min-height: 3.25rem;
   border-width: 2px;
-  border-color: #234470;
+  border-color: #2f6076;
   font-size: 1rem;
 }
 
@@ -1823,7 +1946,7 @@ h3,
 @media (hover: hover) and (pointer: fine) {
   .editorial-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(29, 42, 69, 0.14);
+    box-shadow: 0 16px 34px rgba(36,32,25, 0.14);
   }
 
   .status-chip:hover,

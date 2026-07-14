@@ -31,7 +31,7 @@ const tabsListVariants = cva(
       variant: {
         default: "bg-lme-surface-soft border-lme-border text-sub",
         editorial:
-          "surface-public-tabs bg-[var(--editorial-paper)] border-[var(--editorial-border)] text-[var(--editorial-muted)] shadow-[0_1px_2px_rgba(24,39,75,0.06)]",
+          "surface-public-tabs bg-[var(--editorial-paper)] border-[var(--editorial-border)] text-[var(--editorial-muted)] shadow-[0_1px_2px_rgba(28,26,22,0.06)]",
       },
     },
     defaultVariants: {
@@ -46,9 +46,9 @@ const tabsTriggerVariants = cva(
     variants: {
       variant: {
         default:
-          "data-[state=active]:bg-gradient-to-r data-[state=active]:from-mint data-[state=active]:to-sky data-[state=active]:text-[#040614] data-[state=active]:shadow-[0_4px_12px_rgba(61,218,215,0.3)]",
+          "data-[state=active]:bg-ink data-[state=active]:text-[color:var(--bg0)] data-[state=active]:shadow-none",
         editorial:
-          "text-[var(--editorial-muted)] hover:text-[var(--editorial-ink)] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#365f9f] data-[state=active]:to-[#4b7bd0] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_18px_rgba(75,123,208,0.24)]",
+          "text-[var(--editorial-muted)] hover:text-[var(--editorial-ink)] data-[state=active]:bg-[#2f6076] data-[state=active]:text-white data-[state=active]:shadow-none",
       },
     },
     defaultVariants: {

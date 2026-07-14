@@ -24,9 +24,9 @@ interface Sport {
 }
 
 const editorialSelectTriggerClassName =
-    'min-h-11 border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] shadow-[0_1px_2px_rgba(24,39,75,0.08)] focus:ring-[#4f76b6]';
+    'min-h-11 border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] shadow-[0_1px_2px_rgba(28,26,22,0.08)] focus:ring-[#4f76b6]';
 const editorialSelectPanelClassName =
-    'border-[var(--editorial-border)] bg-[rgba(246,242,234,0.98)] shadow-[0_20px_45px_rgba(24,39,75,0.16)] backdrop-blur-md';
+    'border-[var(--editorial-border)] bg-[rgba(246,242,234,0.98)] shadow-[0_20px_45px_rgba(28,26,22,0.16)] backdrop-blur-md';
 const editorialSelectOptionClassName =
     'text-[var(--editorial-ink)] hover:bg-[rgba(39,76,136,0.08)]';
 
@@ -201,7 +201,7 @@ export default function RepositorioJuegos() {
                             {filteredGames.length} resultado{filteredGames.length !== 1 ? 's' : ''} visible{filteredGames.length !== 1 ? 's' : ''}
                         </p>
                         {selectedSport !== 'all' && (
-                            <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2b4d7f]">
+                            <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2f6076]">
                                 {sportOptions.find((option) => option.value === selectedSport)?.label || 'Deporte'}
                             </Badge>
                         )}
@@ -216,7 +216,7 @@ export default function RepositorioJuegos() {
             ) : filteredGames.length === 0 ? (
                 <Card variant="editorial" className="editorial-card">
                     <CardContent className="py-20 text-center">
-                        <p className="text-xl font-medium text-[#445977]">No se encontraron juegos</p>
+                        <p className="text-xl font-medium text-[#4f4a41]">No se encontraron juegos</p>
                         <p className="mt-2 text-sm text-[#5d6f8f]">Ajusta filtros para ver resultados.</p>
                         <Button className="mt-6" variant="editorialOutline" onClick={clearFilters}>
                             Mostrar todo
@@ -229,11 +229,11 @@ export default function RepositorioJuegos() {
                         <Card key={game.id} variant="editorial" className="editorial-card group">
                             <CardHeader>
                                 <div className="mb-2 flex justify-between items-start">
-                                    <Badge variant="secondary" className="bg-[#dce9ff] text-[#244575] hover:bg-[#dce9ff]">
+                                    <Badge variant="secondary" className="bg-[#dce9ff] text-[#2f6076] hover:bg-[#dce9ff]">
                                         {game.sport_name}
                                     </Badge>
                                 </div>
-                                <CardTitle className="line-clamp-2 text-xl text-[#20304a] transition-colors group-hover:text-[#315b9a]">
+                                <CardTitle className="line-clamp-2 text-xl text-[#1c1a16] transition-colors group-hover:text-[#315b9a]">
                                     {game.title}
                                 </CardTitle>
                                 <CardDescription className="mt-2 flex items-center gap-2 text-[#5d6f8f]">
@@ -257,7 +257,7 @@ export default function RepositorioJuegos() {
             )}
 
             <Card variant="editorial" className="editorial-card">
-                <CardContent className="flex items-center gap-3 py-5 text-[#425776]">
+                <CardContent className="flex items-center gap-3 py-5 text-[#4f4a41]">
                     <BookOpen className="h-5 w-5 text-[#315b9a]" />
                     <p className="text-sm">
                         Este repositorio está diseñado para reutilización rápida en aula: descarga directa sin exponer datos personales.

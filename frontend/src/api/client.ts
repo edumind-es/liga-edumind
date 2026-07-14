@@ -289,6 +289,18 @@ export class ApiClient {
         return response.data;
     }
 
+    // Admin: integra la propuesta en el catálogo (crea el deporte y la aprueba)
+    async integrateSportProposal(id: number, overrides: {
+        codigo?: string;
+        tipo_marcador?: string;
+        icono?: string;
+        permite_empate?: boolean;
+        config?: Record<string, unknown>;
+    }) {
+        const response = await this.client.post(`/sport-proposals/${id}/integrate`, overrides);
+        return response.data;
+    }
+
     async changePassword(currentPassword: string, newPassword: string) {
         const response = await this.client.post('/auth/change-password', {
             current_password: currentPassword,

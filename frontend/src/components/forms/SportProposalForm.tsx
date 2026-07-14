@@ -225,13 +225,13 @@ export default function SportProposalForm() {
                 <div className="h-16 w-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-2">
                     <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">¡Propuesta Recibida!</h3>
+                <h3 className="text-xl font-bold text-ink dark:text-white">¡Propuesta Recibida!</h3>
                 <p className="text-gray-600 dark:text-gray-300 max-w-md">
                     Gracias por contribuir a EDUmind. Hemos recibido tu propuesta de deporte y la revisaremos en breve. Te contactaremos si necesitamos más detalles.
                 </p>
                 <button
                     onClick={() => setIsSuccess(false)}
-                    className="mt-4 px-6 py-2 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                    className="mt-4 px-6 py-2 bg-[var(--lme-surface-soft)] border border-lme-border rounded-lg text-sm font-medium hover:border-ink transition-colors"
                 >
                     Enviar otra propuesta
                 </button>
@@ -244,16 +244,16 @@ export default function SportProposalForm() {
             <div className="space-y-4">
                 {/* Nombre del Deporte */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
-                        Nombre del Deporte <span className="text-red-500">*</span>
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
+                        Nombre del Deporte <span className="text-vio">*</span>
                     </label>
                     <input
                         {...form.register("nombre")}
                         placeholder="Ej: Pickleball, Kin-Ball..."
-                        className="flex h-10 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-500"
+                        className="flex h-10 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  focus-visible:ring-sky"
                     />
                     {form.formState.errors.nombre && (
-                        <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                        <p className="text-sm font-medium text-ink">
                             {form.formState.errors.nombre.message}
                         </p>
                     )}
@@ -261,12 +261,12 @@ export default function SportProposalForm() {
 
                 {/* Tipo de Marcador */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
-                        Tipo de Marcador <span className="text-red-500">*</span>
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
+                        Tipo de Marcador <span className="text-vio">*</span>
                     </label>
                     <select
                         {...form.register("tipo_marcador")}
-                        className="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus:ring-blue-500"
+                        className="flex h-10 w-full items-center justify-between rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white placeholder:text-sub focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  dark:focus:ring-blue-500"
                     >
                         <option value="" disabled hidden>Selecciona cómo se puntúa...</option>
                         <option value="goles">Goles (Fútbol, Balonmano, Hockey...)</option>
@@ -276,36 +276,36 @@ export default function SportProposalForm() {
                         <option value="carreras">Carreras (Béisbol, Softball...)</option>
                     </select>
                     {form.formState.errors.tipo_marcador && (
-                        <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                        <p className="text-sm font-medium text-ink">
                             {form.formState.errors.tipo_marcador.message}
                         </p>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-sub">
                         Esto determinará la estructura básica del marcador en la app.
                     </p>
                 </div>
 
                 {/* Características Adicionales del Marcador */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
                         Características Adicionales del Marcador (Opcional)
                     </label>
                     <textarea
                         {...form.register("caracteristicas_adicionales")}
                         rows={3}
                         placeholder="Ej: Sets a 27 puntos, tiempo de 5 minutos por periodo, penaltis al final..."
-                        className="flex w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-500 resize-none"
+                        className="flex w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white placeholder:text-sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  focus-visible:ring-sky resize-none"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-sub">
                         Si el marcador necesita algo especial (ej: tiempos, puntos variables), descríbelo aquí.
                     </p>
                 </div>
 
                 {/* Configuración estructurada del marcador */}
-                <div className="space-y-3 rounded-lg border border-blue-100 dark:border-blue-900/40 bg-blue-50/40 dark:bg-blue-900/10 p-4">
+                <div className="space-y-3 rounded-lg border border-lme-border bg-[var(--lme-surface)] p-4">
                     <div>
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Configuración del marcador (opcional)</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <h4 className="text-sm font-semibold text-ink">Configuración del marcador (opcional)</h4>
+                        <p className="text-xs text-sub">
                             Si rellenas estos campos, el sistema podrá automatizar el marcador sin interpretar texto libre.
                         </p>
                     </div>
@@ -316,7 +316,7 @@ export default function SportProposalForm() {
                                 {...form.register("tiempo_regulacion")}
                                 inputMode="numeric"
                                 placeholder="Ej: 40"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -325,7 +325,7 @@ export default function SportProposalForm() {
                                 {...form.register("tiempo_limite")}
                                 inputMode="numeric"
                                 placeholder="Ej: 10"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -334,7 +334,7 @@ export default function SportProposalForm() {
                                 {...form.register("tiempo_posesion_segundos")}
                                 inputMode="numeric"
                                 placeholder="Ej: 12"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -343,7 +343,7 @@ export default function SportProposalForm() {
                                 {...form.register("cambio_campo_tiempo_min")}
                                 inputMode="numeric"
                                 placeholder="Ej: 5"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -352,7 +352,7 @@ export default function SportProposalForm() {
                                 {...form.register("cambio_campo_puntos")}
                                 inputMode="numeric"
                                 placeholder="Ej: 7"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -361,7 +361,7 @@ export default function SportProposalForm() {
                                 {...form.register("puntos_para_ganar")}
                                 inputMode="numeric"
                                 placeholder="Ej: 21"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -369,7 +369,7 @@ export default function SportProposalForm() {
                             <input
                                 {...form.register("puntos_por_set")}
                                 placeholder="Ej: 21 o 15,15,10"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -378,7 +378,7 @@ export default function SportProposalForm() {
                                 {...form.register("sets_para_ganar")}
                                 inputMode="numeric"
                                 placeholder="Ej: 2"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -386,7 +386,7 @@ export default function SportProposalForm() {
                             <input
                                 {...form.register("botones_puntuacion")}
                                 placeholder="Ej: 1,2,3"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -394,7 +394,7 @@ export default function SportProposalForm() {
                             <input
                                 {...form.register("objetivo_nombre")}
                                 placeholder="Ej: Conos"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -403,7 +403,7 @@ export default function SportProposalForm() {
                                 {...form.register("objetivo_max")}
                                 inputMode="numeric"
                                 placeholder="Ej: 6"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                         <div className="space-y-1">
@@ -411,7 +411,7 @@ export default function SportProposalForm() {
                             <input
                                 {...form.register("objetivo_icono")}
                                 placeholder="Ej: ⚠️"
-                                className="flex h-9 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm"
+                                className="flex h-9 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm"
                             />
                         </div>
                     </div>
@@ -425,9 +425,9 @@ export default function SportProposalForm() {
                             {...form.register("config_json")}
                             rows={3}
                             placeholder='{"tiempo_posesion_segundos":12,"botones_puntuacion":[1,2,3]}'
-                            className="flex w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-xs text-gray-900 dark:text-gray-100 resize-none"
+                            className="flex w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-xs text-ink resize-none"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-sub">
                             Si rellenas JSON, se combinara con los campos anteriores y tendra prioridad.
                         </p>
                     </div>
@@ -435,11 +435,11 @@ export default function SportProposalForm() {
 
                 {/* Logo Upload */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
                         Logo del Deporte (Opcional)
                     </label>
                     <div className="flex items-center gap-4">
-                        <label className="flex items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:border-blue-500 transition-colors bg-gray-50 dark:bg-zinc-900">
+                        <label className="flex items-center justify-center w-24 h-24 border-2 border-dashed border-lme-border rounded-lg cursor-pointer hover:border-sky transition-colors bg-[var(--lme-surface-soft)]">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -462,24 +462,24 @@ export default function SportProposalForm() {
                             </button>
                         )}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-sub">
                         Sube el logo o imagen representativa del deporte.
                     </p>
                 </div>
 
                 {/* Descripción / Reglas */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
-                        Explicación del Deporte y Reglas <span className="text-red-500">*</span>
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
+                        Explicación del Deporte y Reglas <span className="text-vio">*</span>
                     </label>
                     <textarea
                         {...form.register("descripcion")}
                         rows={5}
                         placeholder="Describe brevemente el deporte y las reglas específicas para el marcador (ej: tiempos, puntos por acción...)"
-                        className="flex w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-500 resize-none"
+                        className="flex w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white placeholder:text-sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  focus-visible:ring-sky resize-none"
                     />
                     {form.formState.errors.descripcion && (
-                        <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                        <p className="text-sm font-medium text-ink">
                             {form.formState.errors.descripcion.message}
                         </p>
                     )}
@@ -487,37 +487,37 @@ export default function SportProposalForm() {
 
                 {/* Email de contacto */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
-                        Tu Email <span className="text-red-500">*</span>
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
+                        Tu Email <span className="text-vio">*</span>
                     </label>
                     <input
                         type="email"
                         {...form.register("email")}
                         placeholder="tu@email.com"
-                        className="flex h-10 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-500"
+                        className="flex h-10 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  focus-visible:ring-sky"
                     />
                     {form.formState.errors.email && (
-                        <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                        <p className="text-sm font-medium text-ink">
                             {form.formState.errors.email.message}
                         </p>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-sub">
                         Solo para notificarte cuando el deporte esté activo.
                     </p>
                 </div>
 
                 {/* Web Oficial (Opcional) */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink">
                         Web con reglamento oficial (Opcional)
                     </label>
                     <input
                         {...form.register("web")}
                         placeholder="https://..."
-                        className="flex h-10 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-500"
+                        className="flex h-10 w-full rounded-md border border-lme-border bg-[var(--lme-surface-soft)] px-3 py-2 text-sm text-ink ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-zinc-950  focus-visible:ring-sky"
                     />
                     {form.formState.errors.web && (
-                        <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                        <p className="text-sm font-medium text-ink">
                             {form.formState.errors.web.message}
                         </p>
                     )}
@@ -525,7 +525,7 @@ export default function SportProposalForm() {
             </div>
 
             {error && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-300 rounded-md text-sm">
                     {error}
                 </div>
             )}
@@ -533,7 +533,7 @@ export default function SportProposalForm() {
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-zinc-950 dark:focus-visible:ring-blue-500 bg-blue-600 text-gray-50 hover:bg-blue-600/90 dark:bg-blue-500 dark:text-gray-50 dark:hover:bg-blue-500/90 h-10 px-4 py-2 w-full"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-zinc-950 focus-visible:ring-sky bg-ink text-[color:var(--bg0)] uppercase tracking-[0.03em] hover:bg-vio h-10 px-4 py-2 w-full"
             >
                 {isSubmitting ? (
                     <>

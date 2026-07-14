@@ -81,9 +81,9 @@ const categoryLabels: Record<string, string> = {
 };
 
 const editorialSelectTriggerClassName =
-    'min-h-11 border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] shadow-[0_1px_2px_rgba(24,39,75,0.08)] focus:ring-[#4f76b6]';
+    'min-h-11 border-[var(--editorial-border)] bg-[var(--editorial-paper)] text-[var(--editorial-ink)] shadow-[0_1px_2px_rgba(28,26,22,0.08)] focus:ring-[#4f76b6]';
 const editorialSelectPanelClassName =
-    'border-[var(--editorial-border)] bg-[rgba(246,242,234,0.98)] shadow-[0_20px_45px_rgba(24,39,75,0.16)] backdrop-blur-md';
+    'border-[var(--editorial-border)] bg-[rgba(246,242,234,0.98)] shadow-[0_20px_45px_rgba(28,26,22,0.16)] backdrop-blur-md';
 const editorialSelectOptionClassName =
     'text-[var(--editorial-ink)] hover:bg-[rgba(39,76,136,0.08)]';
 
@@ -368,17 +368,17 @@ export default function WikiJuegos() {
                         </p>
                         <div className="flex flex-wrap gap-2">
                             {selectedCategory !== 'all' && (
-                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2b4d7f]">
+                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2f6076]">
                                     {categoryLabels[selectedCategory] || selectedCategory}
                                 </Badge>
                             )}
                             {selectedSport !== 'all' && (
-                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2b4d7f]">
+                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2f6076]">
                                     {sportOptions.find((option) => option.value === selectedSport)?.label || 'Deporte'}
                                 </Badge>
                             )}
                             {selectedTaxonomia !== 'all' && (
-                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2b4d7f]">
+                                <Badge variant="outline" className="border-[#b6c9e5] bg-[#eef4ff] text-[#2f6076]">
                                     {taxonomiaOptions.find((option) => option.value === selectedTaxonomia)?.label || 'Taxonomía'}
                                 </Badge>
                             )}
@@ -397,7 +397,7 @@ export default function WikiJuegos() {
                 <Card variant="editorial" className="editorial-card">
                     <CardContent className="py-16 text-center">
                         <BookOpen className="mx-auto mb-4 h-12 w-12 text-[#5d6f8f]" />
-                        <p className="text-xl text-[#445977]">No hay juegos para estos filtros</p>
+                        <p className="text-xl text-[#4f4a41]">No hay juegos para estos filtros</p>
                         <p className="mt-2 text-sm text-[#5d6f8f]">
                             Ajusta búsqueda o categorías para encontrar fichas.
                         </p>
@@ -412,12 +412,12 @@ export default function WikiJuegos() {
                         <Card
                             key={game.id}
                             variant="editorial"
-                            className="editorial-card overflow-hidden transition-shadow hover:shadow-[0_20px_36px_rgba(24,39,75,0.12)]"
+                            className="editorial-card overflow-hidden transition-shadow hover:shadow-[0_20px_36px_rgba(28,26,22,0.12)]"
                         >
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <CardTitle className="line-clamp-2 text-lg text-[#20304a]">
+                                        <CardTitle className="line-clamp-2 text-lg text-[#1c1a16]">
                                             {game.title}
                                         </CardTitle>
                                         {game.sport_name && (

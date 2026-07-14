@@ -39,7 +39,7 @@ export function ListToolbar({
     className,
 }: ListToolbarProps) {
     return (
-        <Card className={cn('border-lme-border/90 bg-[rgba(10,20,38,0.72)] shadow-[0_18px_40px_rgba(3,10,28,0.18)]', className)}>
+        <Card className={cn('border-lme-border/90 bg-[rgba(30,27,22,0.72)] shadow-[0_18px_40px_rgba(10,9,7,0.18)]', className)}>
             <CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex w-full flex-col gap-3 lg:max-w-xl">
                     <div className="relative">

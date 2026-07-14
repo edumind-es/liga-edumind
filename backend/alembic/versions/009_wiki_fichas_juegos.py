@@ -42,6 +42,32 @@ depends_on = None
 
 def upgrade() -> None:
     # ═══════════════════════════════════════════════════════════════════
+    # 0. REPARACIÓN DE CADENA: game_submissions se creó manualmente en
+    #    producción (create_submissions_table.py, fuera de Alembic), así
+    #    que esta migración asumía su existencia y una instalación desde
+    #    cero fallaba aquí. Se crea la forma pre-009 solo si falta:
+    #    en bases existentes este bloque es un no-op.
+    # ═══════════════════════════════════════════════════════════════════
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if not inspector.has_table('game_submissions'):
+        op.create_table(
+            'game_submissions',
+            sa.Column('id', sa.Integer(), primary_key=True),
+            sa.Column('token_hash', sa.String(64), nullable=False),
+            sa.Column('title', sa.String(100), nullable=False),
+            sa.Column('sport_id', sa.Integer(), sa.ForeignKey('tipos_deporte.id'), nullable=True),
+            sa.Column('liga_id', sa.Integer(), sa.ForeignKey('ligas.id'), nullable=True),
+            sa.Column('is_public', sa.Boolean(), nullable=False, server_default='false'),
+            # NOT NULL aquí: el paso 2 de esta misma migración la hace nullable
+            sa.Column('file_path', sa.String(255), nullable=False),
+            sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        )
+        op.create_index('ix_game_submissions_id', 'game_submissions', ['id'])
+        op.create_index('ix_game_submissions_token_hash', 'game_submissions', ['token_hash'], unique=True)
+        op.create_index('ix_game_submissions_is_public', 'game_submissions', ['is_public'])
+
+    # ═══════════════════════════════════════════════════════════════════
     # 1. TIPOS_DEPORTE: Añadir categoría para clasificación en Wiki
     # ═══════════════════════════════════════════════════════════════════
     op.add_column(

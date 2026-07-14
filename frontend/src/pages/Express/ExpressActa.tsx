@@ -281,7 +281,7 @@ export default function ExpressActa() {
     const marcadorVisitante = getMarcadorValue(match.marcador, match.deporte.tipo_marcador, match.deporte.config, 'visitante');
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#040614] via-[#0a0f24] to-[#040614] p-4 py-8 pb-24">
+        <div className="min-h-screen bg-gradient-to-br from-[#1b1916] via-[#242019] to-[#1b1916] p-4 py-8 pb-24">
             <div className="mx-auto max-w-6xl space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <Link to="/express" className="inline-flex items-center text-sm text-sub transition-colors hover:text-mint">
@@ -355,7 +355,7 @@ export default function ExpressActa() {
                 <div className="overflow-x-auto pb-2">
                     <div
                         ref={actaRef}
-                        className="min-w-[760px] rounded-[28px] bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.14)] sm:p-8"
+                        className="min-w-[760px] rounded-[28px] bg-white p-6 shadow-[0_24px_70px_rgba(30,27,22,0.14)] sm:p-8"
                         style={{ minHeight: '297mm' }}
                     >
                         <div className="mb-8 border-b-2 border-slate-200 pb-6 text-center">

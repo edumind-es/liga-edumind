@@ -5,21 +5,25 @@
 # API Router for Pending Actions (gestiones pendientes)
 #
 
+import asyncio
+import json
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from sqlalchemy.sql import func
 from pydantic import BaseModel
 from pathlib import Path
 
-from app.database import get_db
+from app.database import get_db, AsyncSessionLocal
 from app.models.pending_action import PendingAction
 from app.models.equipo import Equipo
 from app.models.liga import Liga
 from app.models.partido import Partido
 from app.api.deps import get_current_user
 from app.models.user import User
+from app.services.evaluacion_clasica import aplicar_evaluacion_clasica, es_evaluacion_clasica_completa
 
 router = APIRouter(prefix="/pending-actions", tags=["Pending Actions"])
 
@@ -39,75 +43,22 @@ CLASSIC_EVALUACION_FIELDS = {
 }
 
 
-def _check_classic_evaluacion_completa(partido: Partido) -> bool:
-    """Comprueba si la evaluación clásica tiene todos los campos requeridos."""
-    if partido.puntos_juego_limpio_local is None or partido.puntos_juego_limpio_visitante is None:
-        return False
-    if partido.arbitro_id:
-        if any(v is None for v in (partido.arbitro_conocimiento, partido.arbitro_gestion, partido.arbitro_apoyo)):
-            return False
-    if partido.tutor_grada_local_id:
-        if any(v is None for v in (partido.grada_animar_local, partido.grada_respeto_local, partido.grada_participacion_local)):
-            return False
-    if partido.tutor_grada_visitante_id:
-        if any(v is None for v in (partido.grada_animar_visitante, partido.grada_respeto_visitante, partido.grada_participacion_visitante)):
-            return False
-    return True
-
-
 def _apply_classic_evaluacion(partido: Partido, evaluacion: dict | None) -> None:
+    """
+    Aplica una evaluación enviada por el alumnado: filtra a los campos
+    permitidos, normaliza a entero y delega el cálculo de medias/puntos
+    en el servicio compartido (app/services/evaluacion_clasica.py).
+    """
     if not isinstance(evaluacion, dict):
         return
 
-    for key, value in evaluacion.items():
-        if key in CLASSIC_EVALUACION_FIELDS and isinstance(value, (int, float, bool)):
-            setattr(partido, key, int(value))
-
-    vals_arbitro = [
-        partido.arbitro_conocimiento,
-        partido.arbitro_gestion,
-        partido.arbitro_apoyo,
-    ]
-    valid_arbitro = [value for value in vals_arbitro if value is not None]
-    if valid_arbitro:
-        partido.arbitro_media = sum(valid_arbitro) / len(valid_arbitro)
-        config = partido.liga.config or {}
-        arbitro_points = config.get("arbitro_points", 2)
-        partido.puntos_arbitro = arbitro_points if partido.arbitro_media >= 5 else 0
-
-    vals_grada_local = [
-        partido.grada_animar_local,
-        partido.grada_respeto_local,
-        partido.grada_participacion_local,
-    ]
-    valid_grada_local = [value for value in vals_grada_local if value is not None]
-    if valid_grada_local:
-        media_local = sum(valid_grada_local) / len(valid_grada_local)
-        config = partido.liga.config or {}
-        if media_local > 3:
-            partido.puntos_grada_local = config.get("grada_max_points", 1)
-        elif media_local >= 2:
-            partido.puntos_grada_local = config.get("grada_mid_points", 0.5)
-        else:
-            partido.puntos_grada_local = 0
-
-    vals_grada_visitante = [
-        partido.grada_animar_visitante,
-        partido.grada_respeto_visitante,
-        partido.grada_participacion_visitante,
-    ]
-    valid_grada_visitante = [value for value in vals_grada_visitante if value is not None]
-    if valid_grada_visitante:
-        media_visitante = sum(valid_grada_visitante) / len(valid_grada_visitante)
-        config = partido.liga.config or {}
-        if media_visitante > 3:
-            partido.puntos_grada_visitante = config.get("grada_max_points", 1)
-        elif media_visitante >= 2:
-            partido.puntos_grada_visitante = config.get("grada_mid_points", 0.5)
-        else:
-            partido.puntos_grada_visitante = 0
-
-    partido.evaluacion_completa = _check_classic_evaluacion_completa(partido)
+    datos = {
+        key: int(value)
+        for key, value in evaluacion.items()
+        if key in CLASSIC_EVALUACION_FIELDS and isinstance(value, (int, float, bool))
+    }
+    aplicar_evaluacion_clasica(partido, datos)
+    partido.evaluacion_completa = es_evaluacion_clasica_completa(partido)
 
 
 # Schemas
@@ -221,6 +172,23 @@ async def list_pending_actions(
     ]
 
 
+async def _contar_pendientes(db: AsyncSession, user_id: int, liga_id: Optional[int]) -> int:
+    """Cuenta las acciones pendientes del docente (opcionalmente por liga)."""
+    query = (
+        select(func.count(PendingAction.id))
+        .select_from(PendingAction)
+        .join(Liga, PendingAction.liga_id == Liga.id)
+        .where(
+            PendingAction.status == "pending",
+            Liga.usuario_id == user_id,
+        )
+    )
+    if liga_id:
+        query = query.where(PendingAction.liga_id == liga_id)
+    result = await db.execute(query)
+    return result.scalar() or 0
+
+
 @router.get("/count")
 async def count_pending_actions(
     liga_id: Optional[int] = None,
@@ -228,24 +196,54 @@ async def count_pending_actions(
     db: AsyncSession = Depends(get_db)
 ):
     """Get count of pending actions for badge display."""
-    
-    query = (
-        select(func.count(PendingAction.id))
-        .select_from(PendingAction)
-        .join(Liga, PendingAction.liga_id == Liga.id)
-        .where(
-            PendingAction.status == "pending",
-            Liga.usuario_id == current_user.id,
-        )
-    )
-    
-    if liga_id:
-        query = query.where(PendingAction.liga_id == liga_id)
-    
-    result = await db.execute(query)
-    count = result.scalar()
-    
+    count = await _contar_pendientes(db, current_user.id, liga_id)
     return {"count": count}
+
+
+# Cadencia del stream de pendientes (segundos entre comprobaciones)
+STREAM_INTERVALO = 10
+
+
+@router.get("/stream")
+async def stream_pending_actions(
+    liga_id: Optional[int] = None,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    SSE: emite el contador de pendientes solo cuando cambia. Sustituye el
+    polling HTTP de 15s del frontend por una única conexión persistente
+    (el frontend degrada a polling si el stream no está disponible).
+    """
+    user_id = current_user.id
+
+    async def eventos():
+        ultimo: Optional[int] = None
+        # Primer valor inmediato; después, comprobación cada STREAM_INTERVALO
+        while True:
+            try:
+                # Sesión corta por consulta: no retener conexiones del pool
+                # durante la vida (larga) del stream
+                async with AsyncSessionLocal() as session:
+                    count = await _contar_pendientes(session, user_id, liga_id)
+            except Exception:
+                count = ultimo
+            if count is not None and count != ultimo:
+                ultimo = count
+                yield f"event: pendientes\ndata: {json.dumps({'count': count})}\n\n"
+            else:
+                # Comentario SSE como latido: mantiene viva la conexión a
+                # través de proxies sin generar eventos en el cliente
+                yield ": ping\n\n"
+            await asyncio.sleep(STREAM_INTERVALO)
+
+    return StreamingResponse(
+        eventos(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  # nginx: desactiva buffering para SSE
+        },
+    )
 
 
 @router.put("/{action_id}/approve", response_model=PendingActionResponse)

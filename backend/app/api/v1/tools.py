@@ -21,14 +21,14 @@ import logging
 
 _tools_logger = logging.getLogger(__name__)
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from app.database import get_db
 from app.models.liga import Liga
 from app.models.game_submission import GameSubmission
 from app.models.tipo_deporte import TipoDeporte
-from app.services.email_service import send_email_with_attachment
+from app.services.email_service import send_email
 from app.services.pdf_generator import generate_game_sheet_pdf
 from app.services.nextcloud_service import nextcloud_service, NextcloudService
 from app.services.submission_policy_service import (
@@ -43,55 +43,6 @@ from app.config import settings
 from app.utils.upload_validation import validate_upload_file
 
 router = APIRouter()
-
-
-async def _send_email_and_log(
-    submission_id: int,
-    to_email: str,
-    subject: str,
-    body: str,
-    file_content: bytes,
-    filename: str,
-) -> None:
-    """
-    Envía el email de la ficha y registra el resultado (éxito o error) en BD.
-    Se ejecuta como background task para no bloquear la respuesta al alumno.
-    """
-    from app.services.email_service import send_email_with_attachment
-
-    success = False
-    error_msg = None
-    try:
-        success = send_email_with_attachment(
-            to_email=to_email,
-            subject=subject,
-            body=body,
-            file_content=file_content,
-            filename=filename,
-        )
-        if not success:
-            error_msg = "send_email_with_attachment devolvió False (sin excepción)"
-    except Exception as exc:
-        error_msg = str(exc)[:500]
-
-    # Abrir sesión independiente para actualizar el registro
-    db_url = os.getenv("DATABASE_URL", "")
-    engine = create_async_engine(db_url)
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    try:
-        async with async_session() as session:
-            submission = await session.get(GameSubmission, submission_id)
-            if submission:
-                submission.email_enviado = success
-                submission.email_error = None if success else error_msg
-                await session.commit()
-    except Exception as db_exc:
-        print(f"[email_log] Error actualizando submission {submission_id}: {db_exc}")
-    finally:
-        await engine.dispose()
-
-    if not success:
-        print(f"[email_log] FALLO enviando email para submission {submission_id}: {error_msg}")
 
 
 # Paths de almacenamiento
@@ -458,15 +409,13 @@ async def send_game_sheet(
     
     filename = f"Ficha_{game_name.replace(' ', '_')}.pdf"
 
-    # Enviar email en background con registro del resultado en BD
-    background_tasks.add_task(
-        _send_email_and_log,
-        submission_id=new_submission.id,
+    # Encolar email (el worker arq registra el resultado en la ficha)
+    await send_email(
         to_email=liga.email_fichas,
         subject=subject,
         body=body,
-        file_content=pdf_content,
-        filename=filename,
+        attachments=[(pdf_content, filename)],
+        submission_id=new_submission.id,
     )
     
     # Subir a Nextcloud Xunta (evidencias) en background

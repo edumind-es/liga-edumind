@@ -153,6 +153,7 @@ export default function ForgotPassword() {
 
             <EDUmindFooter
                 appName="Liga EDUmind"
+                repoUrl="https://github.com/edumind-es/liga-edumind"
                 version={APP_BUILD_INFO.version}
                 versionStage={APP_BUILD_INFO.stage}
                 feedbackUrl="mailto:contacto@edumind.es"

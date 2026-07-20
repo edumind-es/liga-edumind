@@ -18,7 +18,7 @@ qrcode[pil]==7.4.2
 reportlab==4.0.9
 openpyxl==3.1.2
 pillow==12.3.0
-faker==22.0.0
+faker==40.31.0
 arq==0.26.3            # cola de trabajos sobre Redis (emails en background)
 aiosmtplib==5.1.2      # SMTP asíncrono (no bloquea el event loop)
 

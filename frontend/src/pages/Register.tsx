@@ -280,7 +280,7 @@ export default function Register() {
             {/* Footer */}
             <EDUmindFooter
                 appName="Liga EDUmind"
-                repoUrl="https://github.com/edumind-es/liga-edumind"
+                repoUrl="https://github.com/edumind-es/liga-de-valores"
                 version={APP_BUILD_INFO.version}
                 versionStage={APP_BUILD_INFO.stage}
                 feedbackUrl="mailto:contacto@edumind.es"
